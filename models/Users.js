@@ -3,7 +3,7 @@
 // ###################################################
 //■► PAQUETES EXTERNOS:  ◄■: 
 const { DataTypes, Model } = require('sequelize');
-
+// Add branch
 
 //■► CLASE: Modelo Usuarios ◄■: 
 class UsersModel extends Model {
