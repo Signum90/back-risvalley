@@ -1,34 +1,39 @@
 // #########################################
 // ############### DATABASE ################
 // #########################################
-//■► IMPORTS:  ◄■: 
+//■► IMPORTS:  ◄■:
 const { Sequelize } = require('sequelize');
 const config_db = require('../config/config');
 const UsersModel = require('../models/Users');
+const XTiposModel = require("../models/XTipos")
+const EntidadesModel = require('../models/Entidades')
 
-//■► CLASE: DataBase ◄■: 
+//■► CLASE: DataBase ◄■:
 class DataBase {
-  //■► MET: Constructor ◄■: 
+  //■► MET: Constructor ◄■:
   constructor() {
-    //■► instancia ◄■: 
+    //■► instancia ◄■:
     this.sequelize = new Sequelize(config_db);
-    //■► Construccion de modelos ◄■: USUARIOS 
+    //■► Construccion de modelos ◄■:USUARIOS
+    this.XTiposModel = XTiposModel.initialize(this.sequelize);
     this.UsersModel = UsersModel.initialize(this.sequelize);
+    this.EntidadModel = EntidadesModel.initialize(this.sequelize);
+
   }
-  //■► MET: Autenticación de la DB ◄■: 
-  async authenticateDB(){
-    //■► Try connect ◄■: 
+  //■► MET: Autenticación de la DB ◄■:
+  async authenticateDB() {
+    //■► Try connect ◄■:
     try {
       await this.sequelize.authenticate();
       // Temporal Log
       console.log("Connect DB");
-    } catch (error) { 
+    } catch (error) {
       console.error('Error DB Connect', error);
     }
   }
-  //■► MET: Sincronización de la DB ◄■: 
-  async synchronizeDB(){
-    //■► Try sync ◄■: 
+  //■► MET: Sincronización de la DB ◄■:
+  async synchronizeDB() {
+    //■► Try sync ◄■:
     try {
       await this.sequelize.sync();
       // Temporal Log
@@ -37,12 +42,12 @@ class DataBase {
       console.error('Error DB Synchronize', error);
     }
   }
-  //■► MET: Cerrar la DB ◄■: 
-  closeConnection(){
+  //■► MET: Cerrar la DB ◄■:
+  closeConnection() {
     this.sequelize.close();
   }
 }
-//■► EXPORTS:  ◄■: 
+//■► EXPORTS:  ◄■:
 module.exports = {
   DataBase,
   sequelize: new Sequelize(config_db)
