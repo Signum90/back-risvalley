@@ -1,17 +1,17 @@
 // #########################################
 // ############### SERVER ##################
 // #########################################
-//■► IMPORTS: Express  ◄■: 
+//■► IMPORTS: Express  ◄■:
 const express = require('express')
-//■► IMPORTS: Cors ◄■: 
-const cors    = require('cors');
-//■► IMPORTS: body parser ◄■: 
+//■► IMPORTS: Cors ◄■:
+const cors = require('cors');
+//■► IMPORTS: body parser ◄■:
 const bodyParser = require('body-parser');
-//■► IMPORTS: Data Base connect◄■: 
-const {DataBase} = require('../db/connection')
+//■► IMPORTS: Data Base connect◄■:
+const { DataBase } = require('../db/connection')
 //■► CLASE: SERVIDOR ◄■
 class Server {
-  
+
   //■► MET: Constructor ◄■
   constructor() {
     //■► puerto ◄■
@@ -22,12 +22,13 @@ class Server {
     this.endpoint_base = '/api';
     //■► endpoints de rutas ◄■
     this.endpoints = {
-      auth:  `${this.endpoint_base}/auth`,
+      auth: `${this.endpoint_base}/auth`,
       users: `${this.endpoint_base}/users`,
+      types: `${this.endpoint_base}/tipos`,
     }
     //■► lista blanca: 
-    this.whitelist = ['http://localhost:80', 
-                      'http://localhost' ];
+    this.whitelist = ['http://localhost:80',
+      'http://localhost'];
     //■► configuracion cors: 
     this.config_cors = {
       origin: (origin, callback) => {
@@ -47,7 +48,7 @@ class Server {
     //■► Activar Rutas: 
     this.routes();
   }
-  
+
   //■► MET: Conectar a la DB ◄■
   async start() {
     //■► autenticar ◄■
@@ -57,7 +58,7 @@ class Server {
     //■► ejecutar puerto ◄■
     this.listen()
   }
-  
+
   //■► MET: Middlewares ◄■
   middlewares() {
     //■► cors ◄■
@@ -65,9 +66,9 @@ class Server {
     this.app.use(express.json());
     //■► parsers ◄■
     this.app.use(bodyParser.json());
-    this.app.use(bodyParser.urlencoded({extended: true}));
+    this.app.use(bodyParser.urlencoded({ extended: true }));
   }
-  
+
   //■► MET: Rutas ◄■
   routes() {
     // this.app.use(this.endpoints.basic, require('../routes/basic.routes'));
@@ -75,6 +76,7 @@ class Server {
     // this.app.use(this.endpoints.auth, require('../routes/auth.routes'))
     //■► MET: Rutas Usuarios◄■
     this.app.use(this.endpoints.users, require('../routes/users.routes'));
+    this.app.use(this.endpoints.types, require('../routes/types.routes'));
   }
 
   //■► MET: listen ◄■
@@ -85,5 +87,5 @@ class Server {
   }
 
 }
-//■► EXPORTS:  ◄■: 
+//■► EXPORTS:  ◄■:
 module.exports = Server;
