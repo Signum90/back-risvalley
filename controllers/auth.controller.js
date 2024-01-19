@@ -1,15 +1,25 @@
 // #########################################
-// ####  CONTROLADOR USUARIOS #############
+// ####  CONTROLADOR AUTENTICACION #############
 // ########################################
-//■► PAQUETES EXTERNOS:  ◄■: 
-const { request:req, response:res } = require('express');
+//■► PAQUETES EXTERNOS:  ◄■:
+const bcrypt = require('bcrypt')
+const { request: req, response: res } = require('express');
+const UsersModel = require('../models/Users');
+const { generarJWT } = require('../helpers/helpers');
 
 class AuthController {
-  
-  login(req, res){
-    res.status(200).json({
-      msg: 'success'
-    })
+  async login(req = request, res = response) {
+    const { correo, password } = req.body
+    let user = await UsersModel.findByEmail(correo);
+    if (!user) return res.status(400).json({ errors: { username: ['Usuario no existe'] } })
+
+    if (bcrypt.compareSync(password, user.password)) {
+      const token = await generarJWT(user.id)
+      delete user.password
+      res.status(200).json({ data: { token, user } });
+    } else {
+      res.status(400).json({ errors: { password: ['Contraseña incorrecta'] } })
+    }
   }
 }
 

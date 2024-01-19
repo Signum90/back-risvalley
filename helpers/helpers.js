@@ -1,41 +1,32 @@
 // #########################################
 // ############### HELPERS #################
 // #########################################
-//■► PAQUETES EXTERNOS:  ◄■: 
+//■► PAQUETES EXTERNOS:  ◄■:
 const jwt = require('jsonwebtoken')
 
-//■► CLASE: Helpers de Datos ◄■: 
+//■► CLASE: Helpers de Datos ◄■:
 class Helpers {
-  //■► MET: Crear JWT ◄■: 
-  generarJWT(){
-    
-    return new Promise( (resolve, reject) => {
-      
-      //■► id usuario /  ◄■: 
-      const payload = { uid };
-      
-      //■► id usuario /  ◄■: 
-      jwt.sign( payload, process.env.SECRETKEYJWT, {
-        
+  //■► MET: Crear JWT ◄■:
+  generarJWT(id) {
+    return new Promise((resolve, reject) => {
+      const payload = { id };
+      jwt.sign(payload, process.env.SECRETKEYJWT, {
         expiresIn: '1d'
-
-      }, ( err, token ) => {
-
-        if ( err ) {
+      }, (err, token) => {
+        if (err) {
           console.log(err);
-          reject( 'No se pudo generar el token' )
+          reject('No se pudo generar el token')
         } else {
-          resolve( token );
+          //return token;
+          resolve(token);
         }
-
       })
 
     })
   }
-  //■► MET: Crear JWT ◄■: 
-  response_handlers(){
+  response_handlers() {
 
   }
 }
-//■► EXPORTAR:  ◄■: 
+//■► EXPORTAR:  ◄■:
 module.exports = new Helpers();

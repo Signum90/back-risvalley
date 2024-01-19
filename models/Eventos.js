@@ -16,98 +16,54 @@ class EventosModel extends Model {
         },
         nombre: {
           type: DataTypes.STRING(120),
+          field: 'nombre',
           allowNull: false,
-          field: 'nombre'
         },
         descripcion: {
           type: DataTypes.STRING(250),
           field: 'descripcion',
-          allowNull: true,
+          allowNull: false,
         },
         logo: {
           type: DataTypes.STRING(120),
           field: 'logo',
           allowNull: true,
         },
-        contactoNombre: {
-          type: DataTypes.STRING(70),
-          allowNull: false,
-          field: 'contacto_nombre',
-        },
-        contactoCargo: {
-          type: DataTypes.STRING(70),
-          allowNull: false,
-          field: 'contacto_cargo',
-        },
-        contactoCorreo: {
-          type: DataTypes.STRING(80),
-          allowNull: false,
-          field: 'contacto_correo',
-        },
-        contactoTelefono: {
-          type: DataTypes.STRING(10),
-          allowNull: false,
-          field: 'contacto_telefono',
-        },
-        direccion: {
-          type: DataTypes.STRING(80),
-          allowNull: false,
-          field: 'direccion',
-        },
-        urlDominio: {
-          type: DataTypes.STRING(80),
-          allowNull: false,
-          field: 'url_dominio',
-        },
-        urlFacebook: {
-          type: DataTypes.STRING(80),
-          allowNull: false,
-          field: 'url_Facebook',
-        },
-        urlTwitter: {
-          type: DataTypes.STRING(80),
-          allowNull: false,
-          field: 'url_twitter',
-        },
-        urlLinkedin: {
-          type: DataTypes.STRING(80),
-          allowNull: false,
-          field: 'url_linkedin',
-        },
-        descripcion: {
-          type: DataTypes.STRING(80),
-          allowNull: false,
-          field: 'url_linkedin',
-        },
-        idTipoServicio: {
+        idCiudad: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: false,
+          field: 'id_ciudad',
           references: {
-            model: 'x_Tipos',
+            model: 'ciudades',
             key: 'id'
           },
-          comment: "Tipo 2",
-          field: 'id_tipo_servicio'
         },
-        idTipoClienteServicio: {
+        fechaInicio: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          field: 'fecha_inicio',
+        },
+        horaInicio: {
+          type: DataTypes.TIME,
+          allowNull: false,
+          field: 'hora_inicio',
+        },
+        urlRegistro: {
+          type: DataTypes.STRING(80),
+          allowNull: false,
+          field: 'url_registro',
+        },
+        precio: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
-          allowNull: false,
-          references: {
-            model: 'x_tipos',
-            key: 'id'
-          },
-          comment: "Tipo 3",
-          field: 'id_tipo_cliente_servicio'
+          field: 'precio',
+          allowNull: null,
+          comment: "NULL = gratuito"
         },
-        nombreServicio: {
-          type: DataTypes.STRING(30),
+        tipoResponsable: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'tipo_responsable',
           allowNull: false,
-          field: 'nombre_servicio',
-        },
-        descripcionServico: {
-          type: DataTypes.STRING(50),
-          allowNull: false,
-          field: 'descripcion_servicio',
+          comment: "1=Entidad, 2=Entidades educativas 3=Persona natural"
         },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
@@ -145,8 +101,8 @@ class EventosModel extends Model {
       },
       {
         sequelize: sequelizeInstace,
-        modelName: 'Entidades',
-        tableName: 'entidades'
+        modelName: 'Eventos',
+        tableName: 'eventos'
       },
 
     )

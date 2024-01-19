@@ -57,8 +57,10 @@ class UsersModel extends Model {
 
     )
   }
-  static findByEmail() {
-
+  static async findByEmail(email) {
+    return await this.findOne({
+      where: { email }, raw: true
+    })
   }
 }
 // Relacionamiento

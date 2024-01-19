@@ -7,6 +7,8 @@ const config_db = require('../config/config');
 const UsersModel = require('../models/Users');
 const XTiposModel = require("../models/XTipos")
 const EntidadesModel = require('../models/Entidades')
+const CiudadesModel = require('../models/Ciudades');
+const EventosModel = require('../models/Eventos');
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -17,7 +19,9 @@ class DataBase {
     //■► Construccion de modelos ◄■:USUARIOS
     this.XTiposModel = XTiposModel.initialize(this.sequelize);
     this.UsersModel = UsersModel.initialize(this.sequelize);
-    this.EntidadModel = EntidadesModel.initialize(this.sequelize);
+    this.EntidadesModel = EntidadesModel.initialize(this.sequelize);
+    this.CiudadesModel = CiudadesModel.initialize(this.sequelize);
+    this.EventosModel = EventosModel.initialize(this.sequelize);
 
   }
   //■► MET: Autenticación de la DB ◄■:

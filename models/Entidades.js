@@ -2,12 +2,8 @@
 // ######### MODELO: ENTIDADES ###################
 // ###################################################
 //■► PAQUETES EXTERNOS:  ◄■:
-const { Sequelize } = require('sequelize');
 const { DataTypes, Model } = require('sequelize');
 const XTipoModel = require('./XTipos');
-
-
-// this.sequelize = new Sequelize(config_db)
 
 //■► CLASE: Modelo Usuarios ◄■:
 class EntidadesModel extends Model {
@@ -172,7 +168,7 @@ class EntidadesModel extends Model {
       },
 
     )
-    EntidadesModel.belongsTo(XTipoModel.initialize(sequelizeInstace), { foreignKey: 'id_tipo_naturaleza_juridica' });
+    EntidadesModel.belongsTo(XTipoModel.initialize(sequelizeInstace), { foreignKey: 'id_tipo_naturaleza_juridica', as: 'tipoNaturalezaJuridica' });
     return Entidades;
   }
 }

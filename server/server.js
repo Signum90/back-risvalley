@@ -25,6 +25,7 @@ class Server {
       auth: `${this.endpoint_base}/auth`,
       users: `${this.endpoint_base}/users`,
       types: `${this.endpoint_base}/tipos`,
+      entidades: `${this.endpoint_base}/entidades`,
     }
     //■► lista blanca: 
     this.whitelist = ['http://localhost:80',
@@ -71,12 +72,11 @@ class Server {
 
   //■► MET: Rutas ◄■
   routes() {
-    // this.app.use(this.endpoints.basic, require('../routes/basic.routes'));
-    //■► MET: Rutas Auth◄■
-    // this.app.use(this.endpoints.auth, require('../routes/auth.routes'))
-    //■► MET: Rutas Usuarios◄■
+    this.app.use(this.endpoints.auth, require('../routes/auth.routes'));
     this.app.use(this.endpoints.users, require('../routes/users.routes'));
     this.app.use(this.endpoints.types, require('../routes/types.routes'));
+    this.app.use(this.endpoints.entidades, require('../routes/entidades.routes'));
+
   }
 
   //■► MET: listen ◄■
