@@ -11,9 +11,9 @@ const EntidadesModel = require('../models/Entidades')
 //■► CLASE: DataBase ◄■:
 class DataBase {
   //■► MET: Constructor ◄■:
-  constructor() {
+  constructor(sequelizeInstace) {
     //■► instancia ◄■:
-    this.sequelize = new Sequelize(config_db);
+    this.sequelize = sequelizeInstace || new Sequelize(config_db);
     //■► Construccion de modelos ◄■:USUARIOS
     this.XTiposModel = XTiposModel.initialize(this.sequelize);
     this.UsersModel = UsersModel.initialize(this.sequelize);

@@ -8,7 +8,7 @@ const cors = require('cors');
 //■► IMPORTS: body parser ◄■:
 const bodyParser = require('body-parser');
 //■► IMPORTS: Data Base connect◄■:
-const { DataBase } = require('../db/connection')
+const { DataBase, sequelize } = require('../db/connection')
 //■► CLASE: SERVIDOR ◄■
 class Server {
 
@@ -42,7 +42,7 @@ class Server {
       }
     }
     //■► Instacia DB: 
-    this.database = new DataBase();
+    this.database = new DataBase(sequelize);
     //■► Activar Middlewares: 
     this.middlewares();
     //■► Activar Rutas: 

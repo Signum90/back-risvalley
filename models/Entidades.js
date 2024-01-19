@@ -4,15 +4,15 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 const { Sequelize } = require('sequelize');
 const { DataTypes, Model } = require('sequelize');
-const config_db = require('../config/config');
-const XTipo = require('./XTipos');
+const XTipoModel = require('./XTipos');
 
-this.sequelize = new Sequelize(config_db)
+
+// this.sequelize = new Sequelize(config_db)
 
 //■► CLASE: Modelo Usuarios ◄■:
 class EntidadesModel extends Model {
   static initialize(sequelizeInstace) {
-    return super.init(
+    const Entidades = super.init(
       {
         id: {
           type: DataTypes.MEDIUMINT,
@@ -172,11 +172,12 @@ class EntidadesModel extends Model {
       },
 
     )
+    EntidadesModel.belongsTo(XTipoModel.initialize(sequelizeInstace), { foreignKey: 'id_tipo_naturaleza_juridica' });
+    return Entidades;
   }
 }
 
 //RELACIONES
-//EntidadesModel.belongsTo(new XTipo(this.sequelize), { foreignKey: 'id_tipo_naturaleza_juridica' });
 
 //■► EXPORTAR:  ◄■:
 module.exports = EntidadesModel;
