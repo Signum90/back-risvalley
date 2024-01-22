@@ -20,11 +20,6 @@ const router = Router();
 const upload = multer();
 
 //■► RUTEO: ===================================== ◄■:
-//■► POST'S: ◄■:
-router.post("/create", upload.none(), async (req, res) => await typesController.saveTypes(req, res));
-// console.log("rutas ctr");
-//■► GET'S: ◄■:
-//■► PUT'S: ◄■:
-//■► DELETES'S: ◄■:
+router.post("/create", Middlewares.validateJWTMiddleware, async (req, res) => await typesController.saveTypes(req, res));
 
 module.exports = router;

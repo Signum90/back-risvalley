@@ -1,43 +1,54 @@
 // #########################################
 // ######### MIDDLEWARES ##################
 // ########################################
-//■► PAQUETES EXTERNOS:  ◄■: 
+//■► PAQUETES EXTERNOS:  ◄■:
 // const {request:req, response:res} = require('express')
 const { validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../helpers/helpers')
 
+const invalidTokens = new Set()
 
 class Middlewares {
 
   //■► METHOD: Escanea Errores / Express Validators ◄■
-  scan_errors(req, res, next){
+  scan_errors(req, res, next) {
     const errors = validationResult(req);
-    // ■► Si Errores no esta vacio ◄■: 
-    if(!errors.isEmpty()){
-      // ■► get errors ◄■: 
+    // ■► Si Errores no esta vacio ◄■:
+    if (!errors.isEmpty()) {
       const err = errors.errors[0];
-      // ■► destructure errors ◄■: 
-      const {type, msg, path} = err;
-      // ■► return errors ◄■: 
+      const { type, msg, path } = err;
       return res.status(400).json({
         type,
         msg,
         path
       });
     }
-    // ■► next ◄■: 
+    // ■► next ◄■:
     next();
   }
-  validateJWT(req, res, next){
-    const token = req.header('x-token')
 
+  validateJWTMiddleware(req, res, next) {
     try {
-      const { uid } = jwt.verify( token, process.env.SECRETKEYJWT);
+      const { authorization } = req.headers
+      if (!authorization) throw res.status(401).json({ msg: 'Token no proporcionado' });
 
+      const token = authorization.split(' ')[1]
+      if (invalidTokens.has(token)) throw res.status(401).json({ msg: 'Token inválido' });
+      if (!verifyToken(token)) throw res.status(401).json({ msg: 'Token inválido' });
+
+      next();
     } catch (error) {
-      
+      console.log("🚀 ~ Middlewares ~ validateJWT ~ error:", error)
+      next(error)
     }
   }
+
+  logoutMiddleware = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1]
+
+    if (token && !invalidTokens.has(token)) invalidTokens.add(token)
+    next()
+  }
 }
-//■► EXPORTS:  ◄■: 
+//■► EXPORTS:  ◄■:
 module.exports = new Middlewares()

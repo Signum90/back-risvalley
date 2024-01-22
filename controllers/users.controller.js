@@ -1,26 +1,38 @@
 // ###################################################
 // ######### CONTROLADOR: USUARIOS ###################
 // ###################################################
-//■► PAQUETES EXTERNOS:  ◄■: 
+//■► PAQUETES EXTERNOS:  ◄■:
 const { response, request } = require('express');
+const { sequelize } = require('../db/connection');
+const bcrypt = require('bcrypt')
+const crypto = require('node:crypto')
+const UsersModel = require("../models/Users");
 
-//■► CLASE: Controlador de Usuarios ◄■: 
+//■► CLASE: Controlador de Usuarios ◄■:
 class UsersCTR {
-  //■► MET: Crear Usuarios ◄■: 
-  async create_users(req=request, res=response){
-    const {nombre} = req.body
-    res.status(200).json({
-      msg: "Creando Usuario",
-      nombre
-    });
+  async registerUser(req = request, res = response) {
+    return await sequelize.transaction(async (t) => {
 
-  }
-  //■► MET: Listado de Usuarios ◄■: 
-  get_users(){
-    console.log("Enviando Usuarios");  
+      const { nombre, telefono, email, password } = req.body;
+
+      const exists = await UsersModel.findOne({where: { email }})
+      if( exists ) return res.status(400).json({ msg: "El correo electronico ya se encuentra registrado" });
+
+      const passHash = await bcrypt.hash(password, 10);
+      const keyData = await crypto.randomBytes(16).toString('hex');
+
+      const model = await UsersModel.create({
+        nombre, telefono, email,
+        password: passHash,
+        keydata: email.split('@')[0] + keyData
+      }, { transaction: t })
+
+      return res.status(200).json({ msg: "Usuario creado correctamente", data: model });
+
+    })
+
   }
 
 }
 
-//■► EXPORTAR:  ◄■: 
 module.exports = UsersCTR;

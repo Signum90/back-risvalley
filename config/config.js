@@ -6,7 +6,8 @@ const config_db = {
   username: "root" ?? process.env.USERDB,
   password: "" ?? process.env.PASSDB,
   database:  "rispark" ?? process.env.DATABASE,
-  dialect:  "mysql" ?? process.env.DIALECT
+  dialect:  "mysql" ?? process.env.DIALECT,
+  secret: process.env.SECRETKEYJWT ?? ''
 }
 
 //■► EXPORTS:  ◄■: 

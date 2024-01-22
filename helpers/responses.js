@@ -1,15 +1,15 @@
 // ###################################################
 // ######### OBJETOS: RESPUESTAs #####################
 // ###################################################
-/**Objetos de respuestas: 
+/**Objetos de respuestas:
  * En este archivo se declaran
  * las posibles respuestas de las peticiones HTTP,
  * en la API, se deben usar para documentar las
  * respuestas a las peticiones ya sea de uso general
  * o peticiones con respuestas especificas.
- * 
+ *
  */
-//■► RESPONSE: Generales ◄■: 
+//■► RESPONSE: Generales ◄■:
 const generals = {
   // Ok
   success:{

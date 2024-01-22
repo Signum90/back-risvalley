@@ -14,7 +14,7 @@ class AuthController {
     if (!user) return res.status(400).json({ errors: { username: ['Usuario no existe'] } })
 
     if (bcrypt.compareSync(password, user.password)) {
-      const token = await generarJWT(user.id)
+      const token = await generarJWT({ id: user.id, keyData: user.keydata })
       delete user.password
       res.status(200).json({ data: { token, user } });
     } else {

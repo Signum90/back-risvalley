@@ -16,7 +16,7 @@ class UsersModel extends Model {
           autoIncrement: true
         },
         nombre: {
-          type: DataTypes.STRING,
+          type: DataTypes.STRING(40),
           allowNull: false
         },
         telefono: {
@@ -24,7 +24,7 @@ class UsersModel extends Model {
           allowNull: true
         },
         email: {
-          type: DataTypes.STRING,
+          type: DataTypes.STRING(30),
           unique: true,
           allowNull: false
         },
@@ -63,8 +63,6 @@ class UsersModel extends Model {
     })
   }
 }
-// Relacionamiento
-//UsersModel.hasMany(require('./Posts'), { foreignKey: 'userId' });
 
 //■► EXPORTAR:  ◄■:
 module.exports = UsersModel;

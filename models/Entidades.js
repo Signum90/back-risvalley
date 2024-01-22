@@ -32,6 +32,14 @@ class EntidadesModel extends Model {
           allowNull: false,
           comment: "1=Privada, 2=Pública 3=Mixta"
         },
+        tipoEntidad: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const types = { 1: 'Privada', 2: 'Pública', 3: 'Mixta' }
+            const type = this.getDataValue('tipo');
+            return types[type] ?? '';
+          }
+        },
         idTipoNaturalezaJuridica: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: false,
@@ -169,6 +177,9 @@ class EntidadesModel extends Model {
 
     )
     EntidadesModel.belongsTo(XTipoModel.initialize(sequelizeInstace), { foreignKey: 'id_tipo_naturaleza_juridica', as: 'tipoNaturalezaJuridica' });
+    EntidadesModel.belongsTo(XTipoModel.initialize(sequelizeInstace), { foreignKey: 'idTipoServicio', as: 'tipoServicio' });
+    EntidadesModel.belongsTo(XTipoModel.initialize(sequelizeInstace), { foreignKey: 'idTipoClienteServicio', as: 'tipoClienteServicio' });
+
     return Entidades;
   }
 }
