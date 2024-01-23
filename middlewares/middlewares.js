@@ -34,7 +34,9 @@ class Middlewares {
 
       const token = authorization.split(' ')[1]
       if (invalidTokens.has(token)) throw res.status(401).json({ msg: 'Token inválido' });
-      if (!verifyToken(token)) throw res.status(401).json({ msg: 'Token inválido' });
+      const tokenData = verifyToken(token);
+      if (!tokenData) throw res.status(401).json({ msg: 'Token inválido' });
+      req.token = tokenData;
 
       next();
     } catch (error) {

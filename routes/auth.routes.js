@@ -25,7 +25,7 @@ router.post("/login", [
     Middlewares.scan_errors
 ], async (req, res) => await authController.login(req, res));
 
-router.post("/logout", Middlewares.logoutMiddleware , async (req, res) =>{
+router.post("/logout", Middlewares.logoutMiddleware, async (req, res) => {
     res.status(200).json({ data: true, msg: 'Logout exitoso' });
 });
 

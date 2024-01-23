@@ -32,7 +32,7 @@ class TypesCTR {
                     { nombre: 'Centros de ciencia', clasificacion: 3 },
                     { nombre: 'Centros de desarrollo tecnológico ', clasificacion: 3 },
                     { nombre: 'Centros de innovación y productividad', clasificacion: 3 },
-                    { nombre: 'Centros o institutos de innovación', clasificacion: 3},
+                    { nombre: 'Centros o institutos de innovación', clasificacion: 3 },
                     { nombre: 'Sociedad', clasificacion: 3 },
                     { nombre: 'Entidades públicas', clasificacion: 3 },
                     { nombre: 'Entidad privadas', clasificacion: 3 },
@@ -48,7 +48,7 @@ class TypesCTR {
                 ]
                 await XTiposModel.bulkCreate(types, { transaction: t });
 
-                res.status(200).json({ data: types, msg: 'Tipos creados correctamente'});
+                res.status(200).json({ data: types, msg: 'Tipos creados correctamente' });
             })
         } catch (error) {
             console.log("🚀 ~ TypesCTR ~ saveTypes ~ error:", error)

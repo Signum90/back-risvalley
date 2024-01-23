@@ -71,7 +71,7 @@ class EntidadesModel extends Model {
           field: 'contacto_correo',
         },
         contactoTelefono: {
-          type: DataTypes.STRING(10),
+          type: DataTypes.INTEGER,
           allowNull: false,
           field: 'contacto_telefono',
         },
@@ -82,28 +82,28 @@ class EntidadesModel extends Model {
         },
         urlDominio: {
           type: DataTypes.STRING(80),
-          allowNull: false,
+          allowNull: true,
           field: 'url_dominio',
         },
         urlFacebook: {
           type: DataTypes.STRING(80),
-          allowNull: false,
+          allowNull: true,
           field: 'url_Facebook',
         },
         urlTwitter: {
           type: DataTypes.STRING(80),
-          allowNull: false,
+          allowNull: true,
           field: 'url_twitter',
         },
         urlLinkedin: {
           type: DataTypes.STRING(80),
-          allowNull: false,
+          allowNull: true,
           field: 'url_linkedin',
         },
         descripcion: {
           type: DataTypes.STRING(80),
           allowNull: false,
-          field: 'url_linkedin',
+          field: 'descripcion',
         },
         idTipoServicio: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
@@ -130,7 +130,7 @@ class EntidadesModel extends Model {
           allowNull: false,
           field: 'nombre_servicio',
         },
-        descripcionServico: {
+        descripcionServicio: {
           type: DataTypes.STRING(50),
           allowNull: false,
           field: 'descripcion_servicio',
@@ -176,10 +176,6 @@ class EntidadesModel extends Model {
       },
 
     )
-    EntidadesModel.belongsTo(XTipoModel.initialize(sequelizeInstace), { foreignKey: 'id_tipo_naturaleza_juridica', as: 'tipoNaturalezaJuridica' });
-    EntidadesModel.belongsTo(XTipoModel.initialize(sequelizeInstace), { foreignKey: 'idTipoServicio', as: 'tipoServicio' });
-    EntidadesModel.belongsTo(XTipoModel.initialize(sequelizeInstace), { foreignKey: 'idTipoClienteServicio', as: 'tipoClienteServicio' });
-
     return Entidades;
   }
 }
