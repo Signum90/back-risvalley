@@ -34,7 +34,7 @@ class UsersCTR {
 
   async getUsers(req = request, res = response) {
     const users = await UsersModel.findAll({
-      attributes: ['id', 'nombre', 'telefono']
+      attributes: ['id', 'nombre', 'telefono', 'email']
     })
 
     return res.status(200).json({ msg: "Usuario creado correctamente", data: users });

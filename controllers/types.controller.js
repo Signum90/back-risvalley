@@ -55,7 +55,7 @@ class TypesCTR {
         }
     }
 
-    async getTypes(req, res) {
+    async getTypes(req = request, res = response) {
         try {
             const types = await XTiposModel.findAll({
                 attributes: ['id', 'nombre', 'descripcion'],

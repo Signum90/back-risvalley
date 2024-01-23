@@ -28,7 +28,7 @@ class XTipoModel extends Model {
                 },
                 clasificacion: {
                     type: DataTypes.TINYINT.UNSIGNED,
-                    field: 'tipo',
+                    field: 'clasificacion',
                     allowNull: false,
                     comment: "1=tipo naturaleza juridica, 2=Tipo de servicio 3=Tipo de clientes de servicio"
                 },

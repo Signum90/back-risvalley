@@ -43,6 +43,8 @@ class EntidadesCTR {
         }
     }
 
+    async saveEntidad(req = request, res = response){}
+
 }
 
 //■► EXPORTAR:  ◄■:
