@@ -21,5 +21,6 @@ const upload = multer();
 
 //■► RUTEO: ===================================== ◄■:
 router.post("/create", Middlewares.validateJWTMiddleware, async (req, res) => await typesController.saveTypes(req, res));
+router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await typesController.getTypes(req, res));
 
 module.exports = router;

@@ -20,10 +20,6 @@ const router = Router();
 const upload = multer();
 
 //■► RUTEO: ===================================== ◄■:
-//■► POST'S: ◄■:
-router.get("/list", async (req, res) => await typesController.getEntidades(req, res));
-//■► GET'S: ◄■:
-//■► PUT'S: ◄■:
-//■► DELETES'S: ◄■:
+router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await typesController.getEntidades(req, res));
 
 module.exports = router;

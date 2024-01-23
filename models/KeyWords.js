@@ -1,12 +1,12 @@
 // ###################################################
-// ######### MODELO: XTIPOS ###################
+// ######### MODELO: KEYWORDS ###################
 // ###################################################
 //■► PAQUETES EXTERNOS:  ◄■:
 const { DataTypes, Model } = require('sequelize');
 
 
 //■► CLASE: Modelo Usuarios ◄■:
-class XTipoModel extends Model {
+class KeyWordsModel extends Model {
     static initialize(sequelizeInstace) {
         return super.init(
             {
@@ -15,22 +15,20 @@ class XTipoModel extends Model {
                     primaryKey: true,
                     autoIncrement: true
                 },
-                nombre: {
-                    type: DataTypes.STRING(70),
+                word: {
+                    type: DataTypes.STRING(20),
                     allowNull: false,
-                    field: 'nombre',
-                    //unique: 'nombre'
+                    field: 'word'
                 },
-                descripcion: {
-                    type: DataTypes.STRING(120),
-                    allowNull: true,
-                    field: 'descripcion',
-                },
-                clasificacion: {
-                    type: DataTypes.TINYINT.UNSIGNED,
-                    field: 'tipo',
+                key: {
+                    type: DataTypes.STRING(20),
                     allowNull: false,
-                    comment: "1=tipo naturaleza juridica, 2=Tipo de servicio 3=Tipo de clientes de servicio"
+                    field: 'key'
+                },
+                idRegistroAsociado: {
+                    type: DataTypes.MEDIUMINT.UNSIGNED,
+                    allowNull: false,
+                    field: 'id_registro_asociado'
                 },
                 createdBy: {
                     type: DataTypes.MEDIUMINT.UNSIGNED,
@@ -43,33 +41,23 @@ class XTipoModel extends Model {
                     onDelete: 'NO ACTION',
                     field: 'created_by'
                 },
-                updatedBy: {
-                    type: DataTypes.MEDIUMINT.UNSIGNED,
-                    allowNull: true,
-                    references: {
-                        model: 'users',
-                        key: 'id',
-                    },
-                    onDelete: 'NO ACTION',
-                    field: 'updated_by'
-                },
                 createdAt: {
                     type: DataTypes.DATE,
                     allowNull: true,
                     defaultValue: DataTypes.NOW,
                     field: 'created_at'
                 },
-                updatedAt: {
-                    type: DataTypes.DATE,
-                    allowNull: true,
-                    defaultValue: DataTypes.NOW,
-                    field: 'updated_at'
-                },
             },
             {
                 sequelize: sequelizeInstace,
-                modelName: 'x_tipos',
-                tableName: 'x_tipos'
+                modelName: 'keywords',
+                tableName: 'keywords',
+                indexes: [
+                    {
+                        unique: true,
+                        fields: ['key', 'word'],
+                    },
+                ],
             },
 
         )
@@ -77,4 +65,4 @@ class XTipoModel extends Model {
 }
 
 //■► EXPORTAR:  ◄■:
-module.exports = XTipoModel;
+module.exports = KeyWordsModel;

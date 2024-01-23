@@ -20,6 +20,8 @@ const router = Router();
 const upload = multer();
 
 //■► RUTEO: ===================================== ◄■:
+router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getUsers(req, res));
+
 router.post("/create", [
   body('nombre')
     .trim()
@@ -40,6 +42,6 @@ router.post("/create", [
     .trim()
     .notEmpty().withMessage('La contraseña es obligatoria'),
   Middlewares.scan_errors
-], usersController.registerUser);
+], Middlewares.validateJWTMiddleware, usersController.registerUser);
 
 module.exports = router;

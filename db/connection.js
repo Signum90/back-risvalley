@@ -9,6 +9,7 @@ const XTiposModel = require("../models/XTipos")
 const EntidadesModel = require('../models/Entidades')
 const CiudadesModel = require('../models/Ciudades');
 const EventosModel = require('../models/Eventos');
+const KeyWordsModel = require('../models/KeyWords');
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -22,6 +23,7 @@ class DataBase {
     this.EntidadesModel = EntidadesModel.initialize(this.sequelize);
     this.CiudadesModel = CiudadesModel.initialize(this.sequelize);
     this.EventosModel = EventosModel.initialize(this.sequelize);
+    this.KeyWordsModel = KeyWordsModel.initialize(this.sequelize);
 
   }
   //■► MET: Autenticación de la DB ◄■:
