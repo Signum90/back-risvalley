@@ -10,6 +10,7 @@ const EntidadesModel = require('../models/Entidades')
 const CiudadesModel = require('../models/Ciudades');
 const EventosModel = require('../models/Eventos');
 const KeyWordsModel = require('../models/KeyWords');
+const DepartamentosModel = require('../models/Departamentos');
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -21,10 +22,10 @@ class DataBase {
     this.XTiposModel = XTiposModel.initialize(this.sequelize);
     this.UsersModel = UsersModel.initialize(this.sequelize);
     this.EntidadesModel = EntidadesModel.initialize(this.sequelize);
+    this.DepartamentosModel = DepartamentosModel.initialize(this.sequelize);
     this.CiudadesModel = CiudadesModel.initialize(this.sequelize);
     this.EventosModel = EventosModel.initialize(this.sequelize);
     this.KeyWordsModel = KeyWordsModel.initialize(this.sequelize);
-
   }
   //■► MET: Autenticación de la DB ◄■:
   async authenticateDB() {

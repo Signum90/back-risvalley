@@ -19,14 +19,14 @@ class UsersCTR {
       if (exists) return res.status(400).json({ msg: "El correo electronico ya se encuentra registrado" });
 
       const passHash = await bcrypt.hash(password, 10);
-      const keydata = await generateKeyWord( email.split('@')[0], 'U')
+      const keydata = await generateKeyWord(email.split('@')[0], 'U')
 
       const model = await UsersModel.create({
         nombre, telefono, email, keydata,
         password: passHash
       }, { transaction: t });
 
-      await registerKeyData( model.id, email.split('@')[0], keydata, 'U')
+      await registerKeyData(model.id, email.split('@')[0], keydata, 'U')
 
       return res.status(200).json({ msg: "Usuario creado correctamente", data: model });
     })

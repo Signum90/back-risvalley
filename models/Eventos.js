@@ -43,11 +43,6 @@ class EventosModel extends Model {
           allowNull: false,
           field: 'fecha_inicio',
         },
-        horaInicio: {
-          type: DataTypes.TIME,
-          allowNull: false,
-          field: 'hora_inicio',
-        },
         urlRegistro: {
           type: DataTypes.STRING(80),
           allowNull: false,
@@ -58,6 +53,13 @@ class EventosModel extends Model {
           field: 'precio',
           allowNull: null,
           comment: "NULL = gratuito"
+        },
+        estado: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'estado',
+          allowNull: false,
+          defaultValue: 1,
+          comment: "1=Pendiente, 2=Cancelado 3=Finalizado"
         },
         tipoResponsable: {
           type: DataTypes.TINYINT.UNSIGNED,

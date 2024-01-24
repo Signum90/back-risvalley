@@ -26,6 +26,7 @@ class Server {
       users: `${this.endpoint_base}/users`,
       types: `${this.endpoint_base}/tipos`,
       entidades: `${this.endpoint_base}/entidades`,
+      eventos: `${this.endpoint_base}/eventos`,
     }
     //■► lista blanca: 
     this.whitelist = ['http://localhost:80',
@@ -76,6 +77,7 @@ class Server {
     this.app.use(this.endpoints.users, require('../routes/users.routes'));
     this.app.use(this.endpoints.types, require('../routes/types.routes'));
     this.app.use(this.endpoints.entidades, require('../routes/entidades.routes'));
+    this.app.use(this.endpoints.eventos, require('../routes/eventos.routes'));
 
   }
 

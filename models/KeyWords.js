@@ -50,6 +50,7 @@ class KeyWordsModel extends Model {
             },
             {
                 sequelize: sequelizeInstace,
+                timestamps: false,
                 modelName: 'keywords',
                 tableName: 'keywords',
                 indexes: [
@@ -59,7 +60,6 @@ class KeyWordsModel extends Model {
                     },
                 ],
             },
-
         )
     }
 }
