@@ -11,13 +11,12 @@ const { body } = require('express-validator');
 const UsersCTR = require('../controllers/users.controller');
 //■► Middlewares:  ◄■:
 const Middlewares = require('../middlewares/middlewares');
+const UsersModel = require('../models/Users');
 
 //■► Instancia controlador:  ◄■:
 const usersController = new UsersCTR();
 //■► Router:  ◄■:
 const router = Router();
-//■► Multer:  ◄■:
-const upload = multer();
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getUsers(req, res));
@@ -28,11 +27,10 @@ router.post("/create", [
     .notEmpty().withMessage('El nombre es obligatorio')
     .isString().withMessage('El nombre debe ser una cadena de caracteres')
     .isLength({ max: 40 }).withMessage('El nombre debe tener como máximo 255 caracteres'),
-  body('email')
-    .trim()
-    .notEmpty().withMessage('El correo es obligatorio')
-    .isEmail().withMessage('El formato del correo electrónico no es válido')
-    .isLength({ max: 30 }).withMessage('El correo electrónico debe tener como máximo 30 caracteres'),
+  body('email').trim().notEmpty().isEmail().custom(async (email) => {
+    const existsEmail = await UsersModel.findOne({ where: { email } })
+    if (existsEmail) return Promise.reject('El correo electronico ya se encuentra registrado');
+  }),
   body('telefono')
     .trim()
     .optional({ nullable: true })

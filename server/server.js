@@ -5,7 +5,7 @@
 const express = require('express')
 //■► IMPORTS: Cors ◄■:
 const cors = require('cors');
-//■► IMPORTS: body parser ◄■:
+//■► IMPORTS: ◄■:
 const bodyParser = require('body-parser');
 //■► IMPORTS: Data Base connect◄■:
 const { DataBase, sequelize } = require('../db/connection')
@@ -27,11 +27,12 @@ class Server {
       types: `${this.endpoint_base}/tipos`,
       entidades: `${this.endpoint_base}/entidades`,
       eventos: `${this.endpoint_base}/eventos`,
+      archivos: `${this.endpoint_base}/archivos`,
     }
-    //■► lista blanca: 
+    //■► lista blanca:
     this.whitelist = ['http://localhost:80',
       'http://localhost'];
-    //■► configuracion cors: 
+    //■► configuracion cors:
     this.config_cors = {
       origin: (origin, callback) => {
         // Validate Origins >
@@ -43,11 +44,11 @@ class Server {
         }
       }
     }
-    //■► Instacia DB: 
+    //■► Instacia DB:
     this.database = new DataBase(sequelize);
-    //■► Activar Middlewares: 
+    //■► Activar Middlewares:
     this.middlewares();
-    //■► Activar Rutas: 
+    //■► Activar Rutas:
     this.routes();
   }
 
@@ -78,7 +79,7 @@ class Server {
     this.app.use(this.endpoints.types, require('../routes/types.routes'));
     this.app.use(this.endpoints.entidades, require('../routes/entidades.routes'));
     this.app.use(this.endpoints.eventos, require('../routes/eventos.routes'));
-
+    this.app.use(this.endpoints.archivos, require('../routes/archivos.routes'));
   }
 
   //■► MET: listen ◄■

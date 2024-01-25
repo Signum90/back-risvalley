@@ -42,11 +42,14 @@ class EventosCTR {
     async saveEvent(req = request, res = response) {
         try {
             return await sequelize.transaction(async (t) => {
-                const { nombre, descripcion, logo, fechaInicio, urlRegistro, precio, tipoResponsable, idCiudad } = req.body;
+
+                const { nombre, descripcion, fechaInicio, urlRegistro, precio, tipoResponsable, idCiudad } = req.body;
+                const { file } = req
                 const token = req.token;
 
                 const model = await EventosModel.create({
-                    nombre, descripcion, logo, urlRegistro, precio, tipoResponsable, idCiudad,
+                    nombre, descripcion, urlRegistro, precio, tipoResponsable, idCiudad,
+                    logo: file?.destination.split('/').splice(1, 1) + '/' + file?.filename,
                     createdBy: token.id,
                     fechaInicio: new Date(fechaInicio)
                 }, { transaction: t })

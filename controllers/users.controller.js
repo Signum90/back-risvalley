@@ -15,9 +15,6 @@ class UsersCTR {
 
       const { nombre, telefono, email, password } = req.body;
 
-      const exists = await UsersModel.findOne({ where: { email } })
-      if (exists) return res.status(400).json({ msg: "El correo electronico ya se encuentra registrado" });
-
       const passHash = await bcrypt.hash(password, 10);
       const keydata = await generateKeyWord(email.split('@')[0], 'U')
 
