@@ -1,29 +1,22 @@
-// ############################################
-// ######### RUTAS: USUARIOS ##################
-// ###########################################
-//■► PAQUETES EXTERNOS:  ◄■:
 const { Router } = require('express');
-// ■► Multer / formData object parser ◄■:
-const multer = require('multer');
-// ■► Express Validator ◄■:
 const { body } = require('express-validator');
-//■► CONTROLADOR:  ◄■:
 const entidadesCTR = require('../controllers/entidades.controller');
-//■► Middlewares:  ◄■:
+const EntidadesModel = require('../models/Entidades');
 const Middlewares = require('../middlewares/middlewares');
 
 //■► Instancia controlador:  ◄■:
 const typesController = new entidadesCTR();
 //■► Router:  ◄■:
 const router = Router();
-//■► Multer:  ◄■:
-const upload = multer();
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await typesController.getEntidades(req, res));
 
 router.post("/create", [
-  body('nombre').trim().notEmpty().isString().isLength({ max: 120 }),
+  body('nombre').trim().notEmpty().isString().isLength({ max: 120 }).custom(async (nombre) => {
+    const exists = await EntidadesModel.findOne({ where: { nombre } });
+    if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
+  }),
   body('descripcion').trim().notEmpty().isString().isLength({ max: 80 }),
   body('logo').trim().optional({ nullable: true }).isString().isLength({ max: 120 }),
   body('sigla').trim().notEmpty().isString().isLength({ max: 10 }),

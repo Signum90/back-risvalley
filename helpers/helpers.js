@@ -5,7 +5,9 @@
 const jwt = require('jsonwebtoken')
 const config_db = require('../config/config');
 const bcrypt = require('bcrypt')
+const path = require('path');
 const { sequelize } = require('../db/connection');
+const fs = require('fs');
 const crypto = require('node:crypto');
 const KeyWordsModel = require('../models/KeyWords');
 
@@ -45,6 +47,17 @@ class Helpers {
         word: letter + word
       }, { transaction: t });
     })
+  }
+  deleteFile(fileName, callback) {
+    const rutaArchivo = path.join('public/files', fileName);
+    fs.unlink(rutaArchivo, (err) => {
+      if (err) {
+        callback(err);
+        return;
+      }
+      console.log('Archivo eliminado correctamente');
+      callback(null);
+    });
   }
   response_handlers() {
 

@@ -7,7 +7,8 @@ const config_db = {
   password: "" ?? process.env.PASSDB,
   database: "rispark" ?? process.env.DATABASE,
   dialect: "mysql" ?? process.env.DIALECT,
-  secret: process.env.SECRETKEYJWT ?? ''
+  secret: process.env.SECRETKEYJWT ?? '',
+  urlFiles: `http://${process.env.HOST}:${process.env.PORT}/api/archivos/`
 }
 
 //■► EXPORTS:  ◄■:

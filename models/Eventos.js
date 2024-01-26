@@ -3,6 +3,7 @@
 // ###################################################
 //■► PAQUETES EXTERNOS:  ◄■:
 const { DataTypes, Model } = require('sequelize');
+const { urlFiles } = require('../config/config');
 
 //■► CLASE: Modelo Usuarios ◄■:
 class EventosModel extends Model {
@@ -66,6 +67,13 @@ class EventosModel extends Model {
           field: 'tipo_responsable',
           allowNull: false,
           comment: "1=Entidad, 2=Entidades educativas 3=Persona natural"
+        },
+        urlLogo: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const logo = this.getDataValue('logo');
+            return logo ? `${urlFiles}${logo}` : null
+          }
         },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,

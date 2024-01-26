@@ -1,13 +1,9 @@
-// ###################################################
-// ######### CONTROLADOR: USUARIOS ###################
-// ###################################################
-//■► PAQUETES EXTERNOS:  ◄■:
 const { response, request } = require('express');
 const { sequelize } = require('../db/connection');
 const EventosModel = require('../models/Eventos');
 const { Op, literal } = require('sequelize');
+const { deleteFile } = require('../helpers/helpers');
 
-//■► CLASE: Controlador de Usuarios ◄■:
 class EventosCTR {
     async getEvents(req = request, res = response) {
         try {
@@ -27,6 +23,7 @@ class EventosCTR {
                     'precio',
                     'tipoResponsable',
                     'createdBy',
+                    'urlLogo',
                     [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = eventos.id_ciudad)'), 'ciudad'],
                     [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = eventos.id_ciudad)'), 'departamento']
                 ],
@@ -49,7 +46,7 @@ class EventosCTR {
 
                 const model = await EventosModel.create({
                     nombre, descripcion, urlRegistro, precio, tipoResponsable, idCiudad,
-                    logo: file?.destination.split('/').splice(1, 1) + '/' + file?.filename,
+                    logo: file ? file?.filename : null,
                     createdBy: token.id,
                     fechaInicio: new Date(fechaInicio)
                 }, { transaction: t })
@@ -60,6 +57,73 @@ class EventosCTR {
             return res.status(400).json({ error });
         }
     }
+
+    async updateLogoEvent(req = request, res = response) {
+        try {
+            return await sequelize.transaction(async (t) => {
+                const { file, token } = req
+
+                const event = await EventosModel.findByPk(req.params.idEvento);
+                const fileToDelete = event?.logo;
+                await event.update({
+                    logo: file ? file?.filename : null,
+                    updatedBy: token.id
+                }, { transaction: t });
+
+                if (fileToDelete) {
+                    deleteFile(fileToDelete, (err) => {
+                        if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
+                    })
+                }
+                res.status(200).json({ msg: 'Logo editado correctamente', event });
+            })
+        } catch (error) {
+            console.log("🚀 ~ EventosCTR ~ updateLogoEvent ~ error:", error)
+            return res.status(400).json({ error })
+        }
+    }
+
+    async updateEvent(req, res) {
+        try {
+            return await sequelize.transaction(async (t) => {
+                const id = req.params.idEvento
+                const { body, token } = req
+                body.updatedBy = token.id
+                const model = await EventosModel.update(body, {
+                    where: { id },
+                }, { transaction: t })
+
+                res.status(200).json({ msg: 'Evento editado correctamente', data: model });
+            })
+        } catch (error) {
+            console.log("🚀 ~ EventosCTR ~ updateEvent ~ error:", error)
+            return res.status(400).json({ error })
+        }
+    }
+
+    async deleteEvent(req, res) {
+        try {
+            return await sequelize.transaction(async (t) => {
+                const id = req.params.idEvento
+
+                const event = await EventosModel.findByPk(id);
+                const fileToDelete = event?.logo;
+
+                await event.destroy({ transaction: t });
+
+                if (fileToDelete) {
+                    deleteFile(fileToDelete, (err) => {
+                        if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
+                    })
+                }
+                res.status(200).json({ msg: 'Evento eliminado correctamente' });
+            })
+        } catch (error) {
+            console.log("🚀 ~ EventosCTR ~ updateEvent ~ error:", error)
+            return res.status(400).json({ error })
+        }
+    }
+
 }
 
 module.exports = EventosCTR;
