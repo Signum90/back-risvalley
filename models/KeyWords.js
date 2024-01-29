@@ -1,11 +1,8 @@
 // ###################################################
 // ######### MODELO: KEYWORDS ###################
-// ###################################################
 //■► PAQUETES EXTERNOS:  ◄■:
 const { DataTypes, Model } = require('sequelize');
 
-
-//■► CLASE: Modelo Usuarios ◄■:
 class KeyWordsModel extends Model {
     static initialize(sequelizeInstace) {
         return super.init(

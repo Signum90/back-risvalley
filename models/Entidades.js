@@ -3,7 +3,6 @@
 // ###################################################
 //■► PAQUETES EXTERNOS:  ◄■:
 const { DataTypes, Model } = require('sequelize');
-const XTipoModel = require('./XTipos');
 
 //■► CLASE: Modelo Usuarios ◄■:
 class EntidadesModel extends Model {
@@ -88,7 +87,7 @@ class EntidadesModel extends Model {
         urlFacebook: {
           type: DataTypes.STRING(80),
           allowNull: true,
-          field: 'url_Facebook',
+          field: 'url_facebook',
         },
         urlTwitter: {
           type: DataTypes.STRING(80),

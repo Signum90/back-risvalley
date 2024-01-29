@@ -15,6 +15,13 @@ class UsersModel extends Model {
           primaryKey: true,
           autoIncrement: true
         },
+        superadmin: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'superadmin',
+          allowNull: false,
+          defaultValue: 0,
+          comment: "1=si 0=no"
+        },
         nombre: {
           type: DataTypes.STRING(40),
           allowNull: false

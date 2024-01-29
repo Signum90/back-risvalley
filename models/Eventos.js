@@ -52,7 +52,7 @@ class EventosModel extends Model {
         precio: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           field: 'precio',
-          allowNull: null,
+          allowNull: true,
           comment: "NULL = gratuito"
         },
         estado: {
