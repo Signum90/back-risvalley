@@ -6,7 +6,7 @@ const { response, request } = require('express');
 const EntidadesModel = require('../models/Entidades');
 const { sequelize } = require('../db/connection');
 const { literal } = require('sequelize');
-
+const { deleteFile } = require('../helpers/helpers');
 
 class EntidadesCTR {
     async getEntidades(req = request, res = response) {
@@ -49,7 +49,7 @@ class EntidadesCTR {
     async saveEntidad(req = request, res = response) {
         try {
             return await sequelize.transaction(async (t) => {
-                const { body } = req;
+                const { body, file, token } = req;
 
                 const postData = {
                     nombre: body.nombre,
@@ -57,7 +57,7 @@ class EntidadesCTR {
                     tipo: body.tipo,
                     descripcion: body.descripcion,
                     idTipoNaturalezaJuridica: body.idTipoNaturalezaJuridica,
-                    logo: body.logo,
+                    logo: file ? file?.filename : null,
                     contactoNombre: body.contactoNombre,
                     contactoCargo: body.contactoCargo,
                     contactoCorreo: body.contactoCorreo,
@@ -71,7 +71,7 @@ class EntidadesCTR {
                     idTipoClienteServicio: body.idTipoClienteServicio,
                     nombreServicio: body.nombreServicio,
                     descripcionServicio: body.descripcionServicio,
-                    createdBy: req.token.id
+                    createdBy: token.id
                 }
 
                 const model = await EntidadesModel.create(postData, { transaction: t });
@@ -99,6 +99,54 @@ class EntidadesCTR {
             })
         } catch (error) {
             throw (error);
+        }
+    }
+
+    async updateLogoEntidad(req = request, res = response) {
+        try {
+            return await sequelize.transaction(async (t) => {
+                const { file, token } = req
+
+                const entidad = await EntidadesModel.findByPk(req.params.idEntidad);
+                const fileToDelete = entidad?.logo;
+                await entidad.update({
+                    logo: file ? file?.filename : null,
+                    updatedBy: token.id
+                }, { transaction: t });
+
+                if (fileToDelete) {
+                    deleteFile(fileToDelete, (err) => {
+                        if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
+                    })
+                }
+                res.status(200).json({ msg: 'Logo editado correctamente', data: entidad });
+            })
+        } catch (error) {
+            console.log("🚀 ~ EventosCTR ~ updateLogoEvent ~ error:", error)
+            return res.status(400).json({ error })
+        }
+    }
+
+    async deleteEntidad(req, res) {
+        try {
+            return await sequelize.transaction(async (t) => {
+                const id = req.params.idEntidad
+
+                const entidad = await EntidadesModel.findByPk(id);
+                const fileToDelete = entidad?.logo;
+
+                await entidad.destroy({ transaction: t });
+
+                if (fileToDelete) {
+                    deleteFile(fileToDelete, (err) => {
+                        if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
+                    })
+                }
+                res.status(200).json({ msg: 'Entidad eliminado correctamente' });
+            })
+        } catch (error) {
+            console.log("🚀 ~ EventosCTR ~ updateEvent ~ error:", error)
+            return res.status(400).json({ error })
         }
     }
 }

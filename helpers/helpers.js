@@ -10,6 +10,8 @@ const { sequelize } = require('../db/connection');
 const fs = require('fs');
 const crypto = require('node:crypto');
 const KeyWordsModel = require('../models/KeyWords');
+const EntidadesModel = require('../models/Entidades');
+const EventosModel = require('../models/Eventos');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -58,6 +60,21 @@ class Helpers {
       console.log('Archivo eliminado correctamente');
       callback(null);
     });
+  }
+  async validateExistId(model, id) {
+    const register = null
+    switch (model) {
+      case 'entidad':
+        register = await EntidadesModel.findByPk(id);
+        break;
+      case '':
+        register = await EventosModel.findByPk(id);
+        break;
+      default:
+        register = false
+        break;
+    }
+    if (!register) return false;
   }
   response_handlers() {
 
