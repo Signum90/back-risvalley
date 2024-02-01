@@ -39,6 +39,13 @@ class UsersModel extends Model {
           type: DataTypes.STRING,
           allowNull: false
         },
+        sesionActiva: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'sesion_activa',
+          allowNull: false,
+          defaultValue: 0,
+          comment: "1=si 0=no"
+        },
         keydata: {
           type: DataTypes.STRING,
           allowNull: false
@@ -66,7 +73,7 @@ class UsersModel extends Model {
   }
   static async findByEmail(email) {
     return await this.findOne({
-      where: { email }, raw: true
+      where: { email }
     })
   }
 }

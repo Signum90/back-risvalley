@@ -24,8 +24,14 @@ class UsersCTR {
       }, { transaction: t });
 
       await registerKeyData(model.id, email.split('@')[0], keydata, 'U')
-
-      return res.status(200).json({ msg: "Usuario creado correctamente", data: model });
+      const data = {
+        id: model.id,
+        nombre: model.nombre,
+        telefono: model.telefono,
+        email: model.email,
+        keydata: model.keydata
+      }
+      return res.status(200).json({ msg: "Usuario creado correctamente", data });
     })
   }
 

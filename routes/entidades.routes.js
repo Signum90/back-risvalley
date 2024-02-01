@@ -1,10 +1,9 @@
 const { Router } = require('express');
 const { body, param, check, validationResult } = require('express-validator');
 const entidadesCTR = require('../controllers/entidades.controller');
-const EntidadesModel = require('../models/Entidades');
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
-const { validateExistId } = require('../helpers/helpers');
+const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
 
 //■► Instancia controlador:  ◄■:
 const typesController = new entidadesCTR();
@@ -35,9 +34,9 @@ const validations = [
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await typesController.getEntidades(req, res));
 
-router.post("/create", multerConfig.upload.single('logo'), [
+router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
   check('nombre').trim().notEmpty().isString().isLength({ max: 120 }).custom(async (nombre) => {
-    const exists = await EntidadesModel.findOne({ where: { nombre } });
+    const exists = await validateFieldUnique('entidad', 'nombre', nombre)
     if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
   }),
   check('descripcion').trim().notEmpty().isString().isLength({ max: 80 }),
@@ -58,9 +57,9 @@ router.post("/create", multerConfig.upload.single('logo'), [
   check('urlTwitter').trim().isString().isLength({ max: 80 }),
   check('urlLinkedin').trim().isString().isLength({ max: 80 }),
   Middlewares.scan_errors
-], Middlewares.validateJWTMiddleware, typesController.saveEntidad);
+], typesController.saveEntidad);
 
-router.put("/:idEntidad/update", [
+router.put("/:idEntidad/update", Middlewares.validateJWTMiddleware, [
   param('idEntidad').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('entidad', id)
     if (!exists) return Promise.reject('Id entidad no válido');
@@ -75,23 +74,22 @@ router.put("/:idEntidad/update", [
     //comprueba si hay errores y los retorna
     if (!errors.isEmpty()) return Promise.reject('error');
   }),
-  Middlewares.scan_errors],
-  Middlewares.validateJWTMiddleware, async (req, res) => await typesController.updateFieldEntidad(req, res))
+  Middlewares.scan_errors], async (req, res) => await typesController.updateFieldEntidad(req, res))
 
-router.put("/:idEntidad/update-logo", multerConfig.upload.single('logo'), [
-  param('idEntidad').notEmpty().isInt().custom(async (id) => {
-    const exists = await EntidadesModel.findByPk(id)
-    if (!exists) return Promise.reject('Id entidad no válido');
-  }),
-  Middlewares.scan_errors
-], Middlewares.validateJWTMiddleware, async (req, res) => await typesController.updateLogoEntidad(req, res));
-
-router.delete("/:idEntidad/delete", [
+router.put("/:idEntidad/update-logo", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
   param('idEntidad').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('entidad', id)
     if (!exists) return Promise.reject('Id entidad no válido');
   }),
   Middlewares.scan_errors
-], Middlewares.validateJWTMiddleware, async (req, res) => await typesController.deleteEntidad(req, res))
+], async (req, res) => await typesController.updateLogoEntidad(req, res));
+
+router.delete("/:idEntidad/delete", Middlewares.validateJWTMiddleware, [
+  param('idEntidad').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('entidad', id)
+    if (!exists) return Promise.reject('Id entidad no válido');
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await typesController.deleteEntidad(req, res))
 
 module.exports = router;

@@ -3,8 +3,6 @@
 // ###########################################
 //■► PAQUETES EXTERNOS:  ◄■:
 const { Router } = require('express');
-// ■► Multer / formData object parser ◄■:
-const multer = require('multer');
 // ■► Express Validator ◄■:
 const { check } = require('express-validator');
 //■► CONTROLADOR:  ◄■:
@@ -16,8 +14,6 @@ const Middlewares = require('../middlewares/middlewares');
 const authController = new authCTR();
 //■► Router:  ◄■:
 const router = Router();
-//■► Multer:  ◄■:
-const upload = multer();
 
 //■► RUTEO: ===================================== ◄■:
 router.post("/login", [
@@ -25,8 +21,6 @@ router.post("/login", [
     Middlewares.scan_errors
 ], async (req, res) => await authController.login(req, res));
 
-router.post("/logout", Middlewares.logoutMiddleware, async (req, res) => {
-    res.status(200).json({ data: true, msg: 'Logout exitoso' });
-});
+router.post("/logout", Middlewares.validateJWTMiddleware, Middlewares.logoutMiddleware, async (req, res) => await authController.logout(req, res));
 
 module.exports = router;

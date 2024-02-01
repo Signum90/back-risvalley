@@ -12,6 +12,8 @@ const crypto = require('node:crypto');
 const KeyWordsModel = require('../models/KeyWords');
 const EntidadesModel = require('../models/Entidades');
 const EventosModel = require('../models/Eventos');
+const { Op } = require('sequelize');
+const CiudadesModel = require('../models/Ciudades');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -70,6 +72,9 @@ class Helpers {
       case 'evento':
         register = await EventosModel.findByPk(id);
         break;
+      case 'ciudad':
+        register = await CiudadesModel.findByPk(id);
+        break;
       default:
         register = false
         break;
@@ -79,7 +84,21 @@ class Helpers {
   }
   //■► MET: Validar si un campo tiene un registro duplicado o ya existe un registro para ese valor ◄■:
   async validateFieldUnique(model, campo, value, id = null) {
-
+    let exists = null
+    const condition = {
+      [campo]: value,
+      ...(id ? { id: { [Op.not]: id } } : {}),
+    }
+    switch (model) {
+      case 'entidad':
+        exists = await EntidadesModel.findOne({ where: condition })
+        break;
+      default:
+        exists = false;
+        break;
+    }
+    if (!exists) return false;
+    return true;
   }
   response_handlers() {
 

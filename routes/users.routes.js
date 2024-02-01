@@ -21,7 +21,7 @@ const router = Router();
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getUsers(req, res));
 
-router.post("/create", [
+router.post("/create", Middlewares.validateJWTMiddleware, [
   body('nombre')
     .trim()
     .notEmpty().withMessage('El nombre es obligatorio')
@@ -40,6 +40,6 @@ router.post("/create", [
     .trim()
     .notEmpty().withMessage('La contraseña es obligatoria'),
   Middlewares.scan_errors
-], Middlewares.validateJWTMiddleware, usersController.registerUser);
+], usersController.registerUser);
 
 module.exports = router;

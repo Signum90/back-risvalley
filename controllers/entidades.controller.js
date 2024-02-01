@@ -6,7 +6,7 @@ const { response, request } = require('express');
 const EntidadesModel = require('../models/Entidades');
 const { sequelize } = require('../db/connection');
 const { literal } = require('sequelize');
-const { deleteFile } = require('../helpers/helpers');
+const { deleteFile, validateFieldUnique } = require('../helpers/helpers');
 
 class EntidadesCTR {
     async getEntidades(req = request, res = response) {
@@ -89,10 +89,14 @@ class EntidadesCTR {
                 const { body, token } = req;
                 const { campo, value } = body;
                 const id = req.params.idEntidad
-
-                const updateData = { updatedBy: token.id }
-                updateData[campo] = value;
-
+                if (campo == 'nombre') {
+                    const exists = await validateFieldUnique('entidad', 'nombre', value, id)
+                    if (exists) return res.status(400).json({ msg: 'Ya existe una entidad con ese nombre' });
+                }
+                const updateData = {
+                    [campo]: value,
+                    updatedBy: token.id
+                }
                 await EntidadesModel.update(updateData, { where: { id } }, { transaction: t });
 
                 res.status(200).json({ msg: 'Entidad editada correctamente' });
