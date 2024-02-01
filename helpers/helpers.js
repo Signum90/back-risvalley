@@ -62,12 +62,12 @@ class Helpers {
     });
   }
   async validateExistId(model, id) {
-    const register = null
+    let register = null
     switch (model) {
       case 'entidad':
         register = await EntidadesModel.findByPk(id);
         break;
-      case '':
+      case 'evento':
         register = await EventosModel.findByPk(id);
         break;
       default:
@@ -75,6 +75,11 @@ class Helpers {
         break;
     }
     if (!register) return false;
+    return true;
+  }
+  //■► MET: Validar si un campo tiene un registro duplicado o ya existe un registro para ese valor ◄■:
+  async validateFieldUnique(model, campo, value, id = null) {
+
   }
   response_handlers() {
 

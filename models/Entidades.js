@@ -100,7 +100,7 @@ class EntidadesModel extends Model {
           field: 'url_linkedin',
         },
         descripcion: {
-          type: DataTypes.STRING(80),
+          type: DataTypes.STRING(150),
           allowNull: false,
           field: 'descripcion',
         },
@@ -108,7 +108,7 @@ class EntidadesModel extends Model {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: false,
           references: {
-            model: 'x_Tipos',
+            model: 'x_tipos',
             key: 'id'
           },
           comment: "Tipo 2",
