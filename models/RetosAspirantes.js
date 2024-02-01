@@ -33,7 +33,7 @@ class RetosAspirantesModel extends Model {
                 fichaTecnica: {
                     type: DataTypes.STRING(120),
                     allowNull: false,
-                    field: 'fichaTecnica',
+                    field: 'ficha_tecnica',
                     comment: "Archivo PDF",
                 },
                 createdBy: {

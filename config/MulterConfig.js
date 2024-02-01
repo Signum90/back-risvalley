@@ -17,6 +17,15 @@ class MulterConfig {
         this.upload = multer({
             storage: this.storage,
             limits: { fileSize: 5 * 1024 * 1024 },
+            fileFilter: (req, file, cb) => {
+                const allowedMimes = ['image/jpeg', 'image/png', 'video/mp4', 'video/mpeg', 'application/pdf'];
+
+                if (allowedMimes.includes(file.mimetype)) {
+                    cb(null, true);
+                } else {
+                    cb(new Error('Tipo de archivo no permitido.'));
+                }
+            },
         });
     }
 }

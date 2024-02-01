@@ -10,15 +10,10 @@ class RetosAspirantesModel extends Model {
                     primaryKey: true,
                     autoIncrement: true
                 },
-                idReto: {
-                    type: DataTypes.MEDIUMINT.UNSIGNED,
+                recurso: {
+                    type: DataTypes.STRING(120),
                     allowNull: false,
-                    references: {
-                        model: 'retos_tecnologicos',
-                        key: 'id'
-                    },
-                    onDelete: 'CASCADE',
-                    field: 'id_reto'
+                    field: 'recurso',
                 },
                 tipo: {
                     type: DataTypes.TINYINT.UNSIGNED,

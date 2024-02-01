@@ -22,17 +22,17 @@ class RetosTecnologicosModel extends Model {
                 fechaInicio: {
                     type: DataTypes.DATEONLY,
                     allowNull: false,
-                    field: 'fechaInicio'
+                    field: 'fecha_inicio'
                 },
                 fechaFin: {
                     type: DataTypes.DATEONLY,
                     allowNull: false,
-                    field: 'fechaFin'
+                    field: 'fecha_fin'
                 },
                 fichaTecnica: {
                     type: DataTypes.STRING(120),
                     allowNull: false,
-                    field: 'fichaTecnica',
+                    field: 'ficha_tecnica',
                     comment: "Archivo PDF",
                 },
                 idRecursoMultimedia: {
