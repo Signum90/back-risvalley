@@ -1,11 +1,6 @@
-// ###################################################
-// ######### MODELO: ENTIDADES ###################
-// ###################################################
-//■► PAQUETES EXTERNOS:  ◄■:
 const { DataTypes, Model } = require('sequelize');
 const { urlFiles } = require('../config/config');
 
-//■► CLASE: Modelo Usuarios ◄■:
 class EventosModel extends Model {
   static initialize(sequelizeInstace) {
     return super.init(

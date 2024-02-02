@@ -14,6 +14,7 @@ const EntidadesModel = require('../models/Entidades');
 const EventosModel = require('../models/Eventos');
 const { Op } = require('sequelize');
 const CiudadesModel = require('../models/Ciudades');
+const RecursosMultimediaModel = require('../models/RecursosMultimedia');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -100,6 +101,30 @@ class Helpers {
     if (!exists) return false;
     return true;
   }
+
+  async saveResourceMultimedia(file, createdBy) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const types = {
+          'image/png': 1,
+          'image/jpeg': 1,
+          'video/mp4': 2,
+          'video/mpeg': 2,
+          'application/pdf': 3
+        }
+        const model = await RecursosMultimediaModel.create(
+          {
+            recurso: file?.filename,
+            tipo: types[file?.mimetype],
+            createdBy
+          }, { transaction: t })
+        return model;
+      })
+    } catch (e) {
+      throw e;
+    }
+  }
+
   response_handlers() {
 
   }

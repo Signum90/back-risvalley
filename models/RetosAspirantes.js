@@ -6,7 +6,7 @@ class RetosAspirantesModel extends Model {
         const RetosAspirantes = super.init(
             {
                 id: {
-                    type: DataTypes.MEDIUMINT,
+                    type: DataTypes.MEDIUMINT.UNSIGNED,
                     primaryKey: true,
                     autoIncrement: true
                 },

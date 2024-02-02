@@ -11,6 +11,9 @@ const CiudadesModel = require('../models/Ciudades');
 const EventosModel = require('../models/Eventos');
 const KeyWordsModel = require('../models/KeyWords');
 const DepartamentosModel = require('../models/Departamentos');
+const RecursosMultimediaModel = require('../models/RecursosMultimedia');
+const RetosTecnologicosModel = require('../models/RetosTecnologicos');
+const RetosAspirantesModel = require('../models/RetosAspirantes')
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -26,6 +29,9 @@ class DataBase {
     this.CiudadesModel = CiudadesModel.initialize(this.sequelize);
     this.EventosModel = EventosModel.initialize(this.sequelize);
     this.KeyWordsModel = KeyWordsModel.initialize(this.sequelize);
+    this.RecursosMultimediaModel = RecursosMultimediaModel.initialize(this.sequelize);
+    this.RetosTecnologicosModel = RetosTecnologicosModel.initialize(this.sequelize);
+    this.RetosAspirantesModel = RetosAspirantesModel.initialize(this.sequelize);
   }
   //■► MET: Autenticación de la DB ◄■:
   async authenticateDB() {

@@ -1,11 +1,12 @@
 const { DataTypes, Model } = require('sequelize');
+const { urlFiles } = require('../config/config');
 
 class RetosTecnologicosModel extends Model {
     static initialize(sequelizeInstace) {
         const RetosTecnologicos = super.init(
             {
                 id: {
-                    type: DataTypes.MEDIUMINT,
+                    type: DataTypes.MEDIUMINT.UNSIGNED,
                     primaryKey: true,
                     autoIncrement: true
                 },
@@ -19,21 +20,43 @@ class RetosTecnologicosModel extends Model {
                     allowNull: false,
                     field: 'descripcion',
                 },
-                fechaInicio: {
-                    type: DataTypes.DATEONLY,
+                estado: {
+                    type: DataTypes.TINYINT.UNSIGNED,
+                    field: 'estado',
                     allowNull: false,
-                    field: 'fecha_inicio'
+                    defaultValue: 1,
+                    comment: "1=Pendiente, 2=Convocatoria abierta 3=finalizado"
                 },
-                fechaFin: {
+                fechaInicioConvocatoria: {
                     type: DataTypes.DATEONLY,
                     allowNull: false,
-                    field: 'fecha_fin'
+                    field: 'fecha_inicio_convocatoria'
+                },
+                fechaFinConvocatoria: {
+                    type: DataTypes.DATEONLY,
+                    allowNull: false,
+                    field: 'fecha_fin_convocatoria'
                 },
                 fichaTecnica: {
                     type: DataTypes.STRING(120),
                     allowNull: false,
                     field: 'ficha_tecnica',
                     comment: "Archivo PDF",
+                },
+                urlFichaTecnica: {
+                    type: DataTypes.VIRTUAL,
+                    get() {
+                        const ficha = this.getDataValue('fichaTecnica');
+                        return ficha ? `${urlFiles}${ficha}` : null
+                    }
+                },
+                estadoLabel: {
+                    type: DataTypes.VIRTUAL,
+                    get() {
+                        const types = { 1: 'Pendiente', 2: 'Convocatoria abierta', 3: 'Finalizado' }
+                        const type = this.getDataValue('estado');
+                        return types[type] ?? '';
+                    }
                 },
                 idRecursoMultimedia: {
                     type: DataTypes.STRING(120),

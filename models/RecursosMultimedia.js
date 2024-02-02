@@ -1,9 +1,9 @@
 
 const { DataTypes, Model } = require('sequelize');
 
-class RetosAspirantesModel extends Model {
+class RecursosMultimediaModel extends Model {
     static initialize(sequelizeInstace) {
-        const RetosAspirantes = super.init(
+        const RecursosMultimedia = super.init(
             {
                 id: {
                     type: DataTypes.MEDIUMINT,
@@ -41,17 +41,17 @@ class RetosAspirantesModel extends Model {
             },
             {
                 sequelize: sequelizeInstace,
-                modelName: 'RetosAspirantes',
-                tableName: 'retos_aspirantes',
+                modelName: 'RecursosMultimedia',
+                tableName: 'recursos_multimedia',
                 timestamps: false,
             },
 
         )
-        return RetosAspirantes;
+        return RecursosMultimedia;
     }
 }
 
 //RELACIONES
 
 //■► EXPORTAR:  ◄■:
-module.exports = RetosAspirantesModel;
+module.exports = RecursosMultimediaModel;

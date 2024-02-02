@@ -6,7 +6,7 @@ const multerConfig = require('../config/MulterConfig');
 const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
 
 //■► Instancia controlador:  ◄■:
-const typesController = new entidadesCTR();
+const entidadesController = new entidadesCTR();
 //■► Router:  ◄■:
 const router = Router();
 
@@ -32,7 +32,7 @@ const validations = [
 ]
 
 //■► RUTEO: ===================================== ◄■:
-router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await typesController.getEntidades(req, res));
+router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getEntidades(req, res));
 
 router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
   check('nombre').trim().notEmpty().isString().isLength({ max: 120 }).custom(async (nombre) => {
@@ -57,7 +57,7 @@ router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.si
   check('urlTwitter').trim().isString().isLength({ max: 80 }),
   check('urlLinkedin').trim().isString().isLength({ max: 80 }),
   Middlewares.scan_errors
-], typesController.saveEntidad);
+], entidadesController.saveEntidad);
 
 router.put("/:idEntidad/update", Middlewares.validateJWTMiddleware, [
   param('idEntidad').notEmpty().isInt().custom(async (id) => {
@@ -74,7 +74,7 @@ router.put("/:idEntidad/update", Middlewares.validateJWTMiddleware, [
     //comprueba si hay errores y los retorna
     if (!errors.isEmpty()) return Promise.reject('error');
   }),
-  Middlewares.scan_errors], async (req, res) => await typesController.updateFieldEntidad(req, res))
+  Middlewares.scan_errors], async (req, res) => await entidadesController.updateFieldEntidad(req, res))
 
 router.put("/:idEntidad/update-logo", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
   param('idEntidad').notEmpty().isInt().custom(async (id) => {
@@ -82,7 +82,7 @@ router.put("/:idEntidad/update-logo", Middlewares.validateJWTMiddleware, multerC
     if (!exists) return Promise.reject('Id entidad no válido');
   }),
   Middlewares.scan_errors
-], async (req, res) => await typesController.updateLogoEntidad(req, res));
+], async (req, res) => await entidadesController.updateLogoEntidad(req, res));
 
 router.delete("/:idEntidad/delete", Middlewares.validateJWTMiddleware, [
   param('idEntidad').notEmpty().isInt().custom(async (id) => {
@@ -90,6 +90,6 @@ router.delete("/:idEntidad/delete", Middlewares.validateJWTMiddleware, [
     if (!exists) return Promise.reject('Id entidad no válido');
   }),
   Middlewares.scan_errors
-], async (req, res) => await typesController.deleteEntidad(req, res))
+], async (req, res) => await entidadesController.deleteEntidad(req, res))
 
 module.exports = router;

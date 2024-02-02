@@ -8,7 +8,7 @@ const Middlewares = require('../middlewares/middlewares');
 const { secret } = require('../config/config');
 
 //■► RUTEO: ===================================== ◄■:
-router.use("/", Middlewares.validateJWTMiddleware, express.static(path.join(__dirname, '../public/files')));
+router.use("/", express.static(path.join(__dirname, '../public/files')));
 
 // router.get('/:nombreArchivo', (req, res) => {
 //     const fileName = req.params.nombreArchivo;
