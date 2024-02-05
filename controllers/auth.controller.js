@@ -16,7 +16,7 @@ class AuthController {
 
       if (bcrypt.compareSync(password, user.password)) {
         await user.update({ sesionActiva: 1 }, { transaction: t })
-        const token = await generarJWT({ id: user.id, keyData: user.keydata })
+        const token = await generarJWT({ id: user.id, keyData: user.keydata, superadmin: user.superadmin })
         const data = {
           id: user.id,
           superadmin: user.superadmin,

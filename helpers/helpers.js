@@ -15,6 +15,7 @@ const EventosModel = require('../models/Eventos');
 const { Op } = require('sequelize');
 const CiudadesModel = require('../models/Ciudades');
 const RecursosMultimediaModel = require('../models/RecursosMultimedia');
+const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -76,6 +77,9 @@ class Helpers {
       case 'ciudad':
         register = await CiudadesModel.findByPk(id);
         break;
+      case 'reto':
+        register = await RetosTecnologicosModel.findByPk(id);
+        break;
       default:
         register = false
         break;
@@ -122,6 +126,20 @@ class Helpers {
       })
     } catch (e) {
       throw e;
+    }
+  }
+
+  //■► MET: Elimina un registro de la tabla recursos multimedia y retorna el nombre del archivo eliminado ◄■:
+  async deleteResourceMultimedia(id) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const resource = await RecursosMultimediaModel.findByPk(id);
+        const fileToDelete = resource?.recurso
+        await resource.destroy({ transaction: t })
+        return fileToDelete;
+      })
+    } catch (error) {
+      throw error;
     }
   }
 
