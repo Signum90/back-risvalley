@@ -31,6 +31,11 @@ class EntidadesModel extends Model {
           allowNull: false,
           comment: "1=Privada, 2=Pública 3=Mixta"
         },
+        descripcion: {
+          type: DataTypes.STRING(150),
+          allowNull: false,
+          field: 'descripcion',
+        },
         tipoEntidad: {
           type: DataTypes.VIRTUAL,
           get() {
@@ -98,41 +103,6 @@ class EntidadesModel extends Model {
           type: DataTypes.STRING(80),
           allowNull: true,
           field: 'url_linkedin',
-        },
-        descripcion: {
-          type: DataTypes.STRING(150),
-          allowNull: false,
-          field: 'descripcion',
-        },
-        idTipoServicio: {
-          type: DataTypes.MEDIUMINT.UNSIGNED,
-          allowNull: false,
-          references: {
-            model: 'x_tipos',
-            key: 'id'
-          },
-          comment: "Tipo 2",
-          field: 'id_tipo_servicio'
-        },
-        idTipoClienteServicio: {
-          type: DataTypes.MEDIUMINT.UNSIGNED,
-          allowNull: false,
-          references: {
-            model: 'x_tipos',
-            key: 'id'
-          },
-          comment: "Tipo 3",
-          field: 'id_tipo_cliente_servicio'
-        },
-        nombreServicio: {
-          type: DataTypes.STRING(30),
-          allowNull: false,
-          field: 'nombre_servicio',
-        },
-        descripcionServicio: {
-          type: DataTypes.STRING(50),
-          allowNull: false,
-          field: 'descripcion_servicio',
         },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,

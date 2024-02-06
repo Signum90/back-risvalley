@@ -13,7 +13,8 @@ const KeyWordsModel = require('../models/KeyWords');
 const DepartamentosModel = require('../models/Departamentos');
 const RecursosMultimediaModel = require('../models/RecursosMultimedia');
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
-const RetosAspirantesModel = require('../models/RetosAspirantes')
+const RetosAspirantesModel = require('../models/RetosAspirantes');
+const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos')
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -21,7 +22,7 @@ class DataBase {
   constructor(sequelizeInstace) {
     //■► instancia ◄■:
     this.sequelize = sequelizeInstace || new Sequelize(config_db);
-    //■► Construccion de modelos ◄■:USUARIOS
+
     this.XTiposModel = XTiposModel.initialize(this.sequelize);
     this.UsersModel = UsersModel.initialize(this.sequelize);
     this.EntidadesModel = EntidadesModel.initialize(this.sequelize);
@@ -32,6 +33,7 @@ class DataBase {
     this.RecursosMultimediaModel = RecursosMultimediaModel.initialize(this.sequelize);
     this.RetosTecnologicosModel = RetosTecnologicosModel.initialize(this.sequelize);
     this.RetosAspirantesModel = RetosAspirantesModel.initialize(this.sequelize);
+    this.ServiciosTecnologicosModel = ServiciosTecnologicosModel.initialize(this.sequelize);
   }
   //■► MET: Autenticación de la DB ◄■:
   async authenticateDB() {

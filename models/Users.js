@@ -15,6 +15,12 @@ class UsersModel extends Model {
           primaryKey: true,
           autoIncrement: true
         },
+        tipo: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'tipo',
+          allowNull: false,
+          comment: "1=Entidad, 2=Institución educativa 3=Persona natural"
+        },
         superadmin: {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'superadmin',
@@ -24,7 +30,13 @@ class UsersModel extends Model {
         },
         nombre: {
           type: DataTypes.STRING(40),
-          allowNull: false
+          field: 'nombre',
+          allowNull: false,
+        },
+        logo: {
+          type: DataTypes.STRING(120),
+          field: 'logo',
+          allowNull: true,
         },
         telefono: {
           type: DataTypes.INTEGER,
