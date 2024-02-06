@@ -1,7 +1,7 @@
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const { sequelize } = require('../db/connection');
 const { literal, Op } = require('sequelize');
-const { deleteFile, validateFieldUnique, saveResourceMultimedia, deleteResourceMultimedia } = require('../helpers/helpers');
+const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia } = require('../helpers/helpers');
 const { urlFiles } = require('../config/config');
 
 class RetosCTR {
@@ -97,7 +97,7 @@ class RetosCTR {
             if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
           })
         }
-        return res.status(200).json({ msg: 'Logo editado correctamente', data: reto });
+        return res.status(200).json({ msg: 'Reto editado correctamente', data: reto });
       })
     } catch (error) {
       throw error;
@@ -126,7 +126,7 @@ class RetosCTR {
         }
         await RetosTecnologicosModel.update(updateData, { where: { id } }, { transaction: t });
 
-        return res.status(200).json({ msg: 'Entidad editada correctamente' });
+        return res.status(200).json({ msg: 'Reto editado correctamente' });
       })
     } catch (error) {
       throw error;

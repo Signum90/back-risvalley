@@ -82,6 +82,7 @@ class Server {
     this.app.use(this.endpoints.eventos, require('../routes/eventos.routes'));
     this.app.use(this.endpoints.archivos, require('../routes/archivos.routes'));
     this.app.use(this.endpoints.retos, require('../routes/retosTecnologicos.routes'));
+    this.app.use(this.endpoints.retos, require('../routes/retosAspirantes.routes'));
   }
 
   //■► MET: listen ◄■

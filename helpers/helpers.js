@@ -16,6 +16,8 @@ const { Op } = require('sequelize');
 const CiudadesModel = require('../models/Ciudades');
 const RecursosMultimediaModel = require('../models/RecursosMultimedia');
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
+const RetosAspirantesModel = require('../models/RetosAspirantes');
+const UsersModel = require('../models/Users');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -80,6 +82,12 @@ class Helpers {
       case 'reto':
         register = await RetosTecnologicosModel.findByPk(id);
         break;
+      case 'retoAspirante':
+        register = await RetosAspirantesModel.findByPk(id);
+        break;
+      case 'user':
+        register = await UsersModel.findByPk(id)
+        break;
       default:
         register = false
         break;
@@ -88,15 +96,19 @@ class Helpers {
     return true;
   }
   //■► MET: Validar si un campo tiene un registro duplicado o ya existe un registro para ese valor ◄■:
-  async validateFieldUnique(model, campo, value, id = null) {
+  async validateFieldUnique(model, campo, value, id = null, campo2 = null, value2 = null) {
     let exists = null
     const condition = {
       [campo]: value,
       ...(id ? { id: { [Op.not]: id } } : {}),
+      ...(campo2 && value2 ? { [campo2]: value2 } : {})
     }
     switch (model) {
       case 'entidad':
         exists = await EntidadesModel.findOne({ where: condition })
+        break;
+      case 'retoAspirante':
+        exists = await RetosAspirantesModel.findOne({ where: condition })
         break;
       default:
         exists = false;
