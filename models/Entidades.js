@@ -3,6 +3,7 @@
 // ###################################################
 //■► PAQUETES EXTERNOS:  ◄■:
 const { DataTypes, Model } = require('sequelize');
+const { urlFiles } = require('../config/config');
 
 //■► CLASE: Modelo Usuarios ◄■:
 class EntidadesModel extends Model {
@@ -58,6 +59,13 @@ class EntidadesModel extends Model {
           type: DataTypes.STRING(120),
           field: 'logo',
           allowNull: true,
+        },
+        urlLogo: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const logo = this.getDataValue('logo');
+            return logo ? `${urlFiles}${logo}` : null
+          }
         },
         contactoNombre: {
           type: DataTypes.STRING(70),

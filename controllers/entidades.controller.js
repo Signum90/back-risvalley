@@ -25,18 +25,13 @@ class EntidadesCTR {
           'contactoCorreo',
           'contactoTelefono',
           'idTipoNaturalezaJuridica',
-          'idTipoServicio',
-          'idTipoClienteServicio',
           'direccion',
-          'nombreServicio',
-          'descripcionServicio',
           'urlDominio',
           'urlFacebook',
           'urlTwitter',
           'urlLinkedin',
+          'urlLogo',
           [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = entidades.id_tipo_naturaleza_juridica)`), 'tipoNaturalezaJuridica'],
-          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = entidades.id_tipo_servicio)`), 'tipoServicio'],
-          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = entidades.id_tipo_cliente_servicio)`), 'tipoClienteServicio']
         ],
       })
 
@@ -67,10 +62,6 @@ class EntidadesCTR {
           urlFacebook: body.urlFacebook,
           urlTwitter: body.urlTwitter,
           urlLinkedin: body.urlLinkedin,
-          idTipoServicio: body.idTipoServicio,
-          idTipoClienteServicio: body.idTipoClienteServicio,
-          nombreServicio: body.nombreServicio,
-          descripcionServicio: body.descripcionServicio,
           createdBy: token.id
         }
 

@@ -12,14 +12,15 @@ const UsersModel = require("../models/Users");
 class UsersCTR {
   async registerUser(req = request, res = response) {
     return await sequelize.transaction(async (t) => {
-
-      const { nombre, telefono, email, password } = req.body;
+      const { file, body } = req
+      const { nombre, telefono, email, password, tipo } = body;
 
       const passHash = await bcrypt.hash(password, 10);
       const keydata = await generateKeyWord(email.split('@')[0], 'U')
 
       const model = await UsersModel.create({
-        nombre, telefono, email, keydata,
+        nombre, telefono, email, keydata, tipo,
+        logo: file ? file?.filename : null,
         password: passHash
       }, { transaction: t });
 
@@ -29,7 +30,10 @@ class UsersCTR {
         nombre: model.nombre,
         telefono: model.telefono,
         email: model.email,
-        keydata: model.keydata
+        keydata: model.keydata,
+        superadmin: model.superadmin,
+        urlLogo: model.urlLogo,
+        tipo: model.tipo
       }
       return res.status(200).json({ msg: "Usuario creado correctamente", data });
     })
@@ -37,7 +41,7 @@ class UsersCTR {
 
   async getUsers(req = request, res = response) {
     const users = await UsersModel.findAll({
-      attributes: ['id', 'nombre', 'telefono', 'email']
+      attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo']
     })
 
     return res.status(200).json({ msg: "Usuario creado correctamente", data: users });
