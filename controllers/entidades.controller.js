@@ -53,6 +53,7 @@ class EntidadesCTR {
           descripcion: body.descripcion,
           idTipoNaturalezaJuridica: body.idTipoNaturalezaJuridica,
           logo: file ? file?.filename : null,
+          idUserResponsable: token.id,
           contactoNombre: body.contactoNombre,
           contactoCargo: body.contactoCargo,
           contactoCorreo: body.contactoCorreo,

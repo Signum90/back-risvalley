@@ -20,7 +20,7 @@ class UsersModel extends Model {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'tipo',
           allowNull: false,
-          comment: "1=Entidad, 2=Institución educativa 3=Persona natural"
+          comment: "1=Socieda civil, 2=Empresa 3=Estado 4=Educativo"
         },
         superadmin: {
           type: DataTypes.TINYINT.UNSIGNED,
@@ -65,6 +65,13 @@ class UsersModel extends Model {
           allowNull: false,
           defaultValue: 0,
           comment: "1=si 0=no"
+        },
+        registroValidado: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'registro_validado',
+          allowNull: false,
+          defaultValue: 0,
+          comment: "0=no 1=si"
         },
         keydata: {
           type: DataTypes.STRING,

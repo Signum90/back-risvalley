@@ -67,6 +67,16 @@ class EntidadesModel extends Model {
             return logo ? `${urlFiles}${logo}` : null
           }
         },
+        idUserResponsable: {
+          type: DataTypes.MEDIUMINT.UNSIGNED,
+          allowNull: false,
+          comment: "User",
+          references: {
+            model: 'users',
+            key: 'id',
+          },
+          field: 'id_user_responsable'
+        },
         contactoNombre: {
           type: DataTypes.STRING(70),
           allowNull: false,

@@ -18,6 +18,8 @@ const RecursosMultimediaModel = require('../models/RecursosMultimedia');
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const RetosAspirantesModel = require('../models/RetosAspirantes');
 const UsersModel = require('../models/Users');
+const { emailTransport } = require('../config/email');
+const usersValidacionesModel = require('../models/UsersValidaciones');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -153,6 +155,23 @@ class Helpers {
     } catch (error) {
       throw error;
     }
+  }
+
+  async sendEmail(email) {
+    try {
+      email['from'] = config_db.email.from
+      await emailTransport.sendMail(email);
+      return true;
+    } catch (error) {
+      console.log("🚀 ~ Helpers ~ sendEmail ~ error:", error)
+    }
+  }
+
+  async generateCodeTemporal() {
+    const codigoTemporal = Math.random().toString().substring(2, 8);
+    const codeRegister = await usersValidacionesModel.findOne({ where: { codigoTemporal } })
+    if (codeRegister) Helpers.generateCodeTemporal();
+    return codigoTemporal;
   }
 
   response_handlers() {

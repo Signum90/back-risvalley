@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenido a Parque tecnologico Rispark</title>
+
+</head>
+
+<body>
+  <div class="container p-10 flex flex-col mx-auto" style="max-width: 600px; margin: auto">
+    <div style="text-align: center;">
+    </div>
+    <div style="margin-top: 20px">
+      <p style="color:#172B4D; font-size: 24px; font-weight: bold; margin-bottom: 15px">¡Hola {{ userName }}!</p>
+      <p style="color:#44546F; font-size: 18px; font-weight: 300; line-height: 21px; margin-bottom: 15px">
+        el codigo de activación es {{ code }} </p>
+    </div>
+    <div style="text-align: center;">
+      <button
+        style="background-color: #000; color: #fff; font-size: 20px; border-radius: 28px; width:360px; height: 56px; margin: 40px auto">
+        <a href="{{ruta}}" style="color: #fff; text-decoration: none;">Para activar su cuenta haga click aquí</a>
+      </button>
+    </div>
+  </div>
+</body>
