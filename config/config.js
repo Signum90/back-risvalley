@@ -22,6 +22,9 @@ const config_db = {
     },
     from: process.env.EMAIL_FROM,
   },
+  url: {
+    urlFront: process.env.APP_URL
+  }
 }
 
 //■► EXPORTS:  ◄■:

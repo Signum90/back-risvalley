@@ -6,20 +6,21 @@ const jwt = require('jsonwebtoken')
 const config_db = require('../config/config');
 const bcrypt = require('bcrypt')
 const path = require('path');
+const { Op } = require('sequelize');
 const { sequelize } = require('../db/connection');
+const { emailTransport } = require('../config/email');
 const fs = require('fs');
 const crypto = require('node:crypto');
 const KeyWordsModel = require('../models/KeyWords');
 const EntidadesModel = require('../models/Entidades');
 const EventosModel = require('../models/Eventos');
-const { Op } = require('sequelize');
 const CiudadesModel = require('../models/Ciudades');
 const RecursosMultimediaModel = require('../models/RecursosMultimedia');
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const RetosAspirantesModel = require('../models/RetosAspirantes');
 const UsersModel = require('../models/Users');
-const { emailTransport } = require('../config/email');
 const usersValidacionesModel = require('../models/UsersValidaciones');
+const UsersValidacionesModel = require('../models/UsersValidaciones');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -47,7 +48,7 @@ class Helpers {
   }
   async generateKeyWord() {
     const keyRamdon = await crypto.randomBytes(16).toString('hex');
-    return await keyRamdon
+    return keyRamdon
   }
   async registerKeyData(idRegistroAsociado, word, keydata, letter) {
     return await sequelize.transaction(async (t) => {
@@ -174,6 +175,18 @@ class Helpers {
     return codigoTemporal;
   }
 
+  async registerUserValidate(idUser, codigoTemporal) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        await UsersValidacionesModel.create({
+          idUser,
+          codigoTemporal
+        }, { transaction: t });
+      })
+    } catch (error) {
+      throw error;
+    }
+  }
   response_handlers() {
 
   }

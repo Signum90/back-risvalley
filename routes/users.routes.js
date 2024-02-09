@@ -21,7 +21,7 @@ const router = Router();
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getUsers(req, res));
 
-router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
+router.post("/create", multerConfig.upload.single('logo'), [
   check('email').trim().notEmpty().isEmail().custom(async (email) => {
     const existsEmail = await UsersModel.findOne({ where: { email } })
     if (existsEmail) return Promise.reject('El correo electronico ya se encuentra registrado');
