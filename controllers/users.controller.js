@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt')
 const path = require('path');
 const config = require('../config/config');
 const UsersModel = require("../models/Users");
+const EntidadesModel = require('../models/Entidades');
 
 //■► CLASE: Controlador de Usuarios ◄■:
 class UsersCTR {
@@ -68,6 +69,11 @@ class UsersCTR {
         registroValidado: 0
       }
 
+      if(tipo != 1){
+        const entidad = await UsersCTR.saveEntidad(body, model.id, model.logo);
+        data.entidad = entidad;
+      }
+
       const codeTemp = await generateCodeTemporal();
       await UsersCTR.sendEmailValidate(model.email, model.nombre, codeTemp, model.id);
       await registerUserValidate(model.id, codeTemp);
@@ -83,6 +89,39 @@ class UsersCTR {
     })
 
     return res.status(200).json({ msg: "Usuario creado correctamente", data: users });
+  }
+
+  static async saveEntidad(body, id, logo = null) {
+    try {
+      return await sequelize.transaction(async (t) => {
+
+        const postData = {
+          nombre: body.nombreEntidad,
+          sigla: body.sigla,
+          tipo: body.tipoEntidad,
+          descripcion: body.descripcion,
+          idTipoNaturalezaJuridica: body.idTipoNaturalezaJuridica,
+          logo,
+          idUserResponsable: id,
+          contactoNombre: body.nombre,
+          contactoCargo: body.contactoCargo,
+          contactoCorreo: body.email,
+          contactoTelefono: body.telefono,
+          direccion: body.direccion,
+          urlDominio: body.urlDominio,
+          urlFacebook: body.urlFacebook,
+          urlTwitter: body.urlTwitter,
+          urlLinkedin: body.urlLinkedin,
+          //createdBy
+        }
+
+        return await EntidadesModel.create(postData, { transaction: t });
+
+        //return true;
+      })
+    } catch (error) {
+      throw (error);
+    }
   }
 
 }

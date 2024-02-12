@@ -12,6 +12,7 @@ const UsersCTR = require('../controllers/users.controller');
 //■► Middlewares:  ◄■:
 const Middlewares = require('../middlewares/middlewares');
 const UsersModel = require('../models/Users');
+const { validateFieldUnique } = require('../helpers/helpers');
 
 //■► Instancia controlador:  ◄■:
 const usersController = new UsersCTR();
@@ -26,10 +27,38 @@ router.post("/create", multerConfig.upload.single('logo'), [
     const existsEmail = await UsersModel.findOne({ where: { email } })
     if (existsEmail) return Promise.reject('El correo electronico ya se encuentra registrado');
   }),
+  check('nombreEntidad').trim().notEmpty().isString().isLength({ max: 120 }).custom(async (nombre, {req}) => {
+    if(req.body.tipo != 1){
+      const exists = await validateFieldUnique('entidad', 'nombre', nombre)
+      if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
+    }
+  }),
   check('nombre').trim().notEmpty().isString().isLength({ max: 40 }),
   check('telefono').trim().optional({ nullable: true }).isInt().isLength({ max: 11 }),
   check('password').trim().notEmpty().withMessage('La contraseña es obligatoria'),
   check('tipo').notEmpty().isInt({ min: 1, max: 3 }),
+  check('descripcion').trim().isString().isLength({ max: 80 }).custom(async (descripcion, {req}) => {
+    if(req.body.tipo != 1 && !descripcion) return Promise.reject('La descripcion de la entidad es obligatoria');
+  }),
+  check('sigla').trim().isString().isLength({ max: 10 }).custom(async (sigla, {req}) => {
+    if(req.body.tipo != 1 && !sigla) return Promise.reject('Las siglas de la entidad son obligatoria');
+  }),
+  check('tipoEntidad').isInt({ min: 1, max: 3 }).custom(async (tipoEntidad, {req}) => {
+    if(req.body.tipo != 1 && !tipoEntidad) return Promise.reject('El tipo de la entidad es obligatorio');
+  }),
+  check('idTipoNaturalezaJuridica').isInt().custom(async (tipoNaturaleza, {req}) => {
+    if(req.body.tipo != 1 && !tipoNaturaleza) return Promise.reject('El tipo de naturaleza de la entidad es obligatorio');
+  }),
+  check('contactoCargo').trim().isString().isLength({ max: 70 }).custom(async (cargo, {req}) => {
+    if(req.body.tipo != 1 && !cargo) return Promise.reject('El cargo del contacto de la entidad es obligatorio');
+  }),
+  check('direccion').trim().isString().isLength({ max: 80 }).custom(async (direccion, {req}) => {
+    if(req.body.tipo != 1 && !direccion) return Promise.reject('La direccion de la entidad es obligatoria');
+  }),
+  check('urlDominio').trim().isString().isLength({ max: 80 }),
+  check('urlFacebook').trim().isString().isLength({ max: 80 }),
+  check('urlTwitter').trim().isString().isLength({ max: 80 }),
+  check('urlLinkedin').trim().isString().isLength({ max: 80 }),
   Middlewares.scan_errors
 ], usersController.registerUser);
 

@@ -18,7 +18,7 @@ class KeyWordsModel extends Model {
                     field: 'word'
                 },
                 key: {
-                    type: DataTypes.STRING(20),
+                    type: DataTypes.STRING(60),
                     allowNull: false,
                     field: 'key'
                 },
