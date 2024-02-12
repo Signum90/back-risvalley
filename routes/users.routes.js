@@ -27,7 +27,7 @@ router.post("/create", multerConfig.upload.single('logo'), [
     const existsEmail = await UsersModel.findOne({ where: { email } })
     if (existsEmail) return Promise.reject('El correo electronico ya se encuentra registrado');
   }),
-  check('nombreEntidad').trim().notEmpty().isString().isLength({ max: 120 }).custom(async (nombre, {req}) => {
+  check('nombreEntidad').trim().isString().isLength({ max: 120 }).custom(async (nombre, {req}) => {
     if(req.body.tipo != 1){
       const exists = await validateFieldUnique('entidad', 'nombre', nombre)
       if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
@@ -43,10 +43,10 @@ router.post("/create", multerConfig.upload.single('logo'), [
   check('sigla').trim().isString().isLength({ max: 10 }).custom(async (sigla, {req}) => {
     if(req.body.tipo != 1 && !sigla) return Promise.reject('Las siglas de la entidad son obligatoria');
   }),
-  check('tipoEntidad').isInt({ min: 1, max: 3 }).custom(async (tipoEntidad, {req}) => {
+  check('tipoEntidad').custom(async (tipoEntidad, {req}) => {
     if(req.body.tipo != 1 && !tipoEntidad) return Promise.reject('El tipo de la entidad es obligatorio');
   }),
-  check('idTipoNaturalezaJuridica').isInt().custom(async (tipoNaturaleza, {req}) => {
+  check('idTipoNaturalezaJuridica').custom(async (tipoNaturaleza, {req}) => {
     if(req.body.tipo != 1 && !tipoNaturaleza) return Promise.reject('El tipo de naturaleza de la entidad es obligatorio');
   }),
   check('contactoCargo').trim().isString().isLength({ max: 70 }).custom(async (cargo, {req}) => {
