@@ -1,4 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
+const UsersModel = require('./Users');
+const { urlFiles } = require('../config/config');
 
 class ServiciosTecnologicosModel extends Model {
   static initialize(sequelizeInstace) {
@@ -15,7 +17,7 @@ class ServiciosTecnologicosModel extends Model {
           field: 'nombre',
         },
         descripcion: {
-          type: DataTypes.STRING(50),
+          type: DataTypes.STRING(150),
           allowNull: false,
           field: 'descripcion',
         },
@@ -35,6 +37,19 @@ class ServiciosTecnologicosModel extends Model {
           },
           comment: "Tipo 2",
           field: 'id_tipo_servicio'
+        },
+        imagen: {
+          type: DataTypes.STRING(120),
+          allowNull: false,
+          field: 'imagen',
+          comment: "Archivo JPG JPEG PNG",
+        },
+        urlImagen: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const img = this.getDataValue('imagen');
+            return img ? `${urlFiles}${img}` : null
+          }
         },
         idTipoClienteServicio: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
@@ -86,6 +101,7 @@ class ServiciosTecnologicosModel extends Model {
         tableName: 'servicios_tecnologicos'
       },
     )
+    ServiciosTecnologicos.belongsTo(UsersModel.initialize(sequelizeInstace), { foreignKey: 'created_by', as: 'contacto' });
     return ServiciosTecnologicos
   }
 }

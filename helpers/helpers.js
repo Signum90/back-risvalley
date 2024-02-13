@@ -21,6 +21,7 @@ const RetosAspirantesModel = require('../models/RetosAspirantes');
 const UsersModel = require('../models/Users');
 const usersValidacionesModel = require('../models/UsersValidaciones');
 const UsersValidacionesModel = require('../models/UsersValidaciones');
+const XTipoModel = require('../models/XTipos');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -90,6 +91,9 @@ class Helpers {
         break;
       case 'user':
         register = await UsersModel.findByPk(id)
+        break;
+      case 'tipo':
+        register = await XTipoModel.findByPk(id)
         break;
       default:
         register = false
