@@ -3,7 +3,7 @@ const { body, param, check, validationResult } = require('express-validator');
 const entidadesCTR = require('../controllers/entidades.controller');
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
-const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
+const { validateExistId } = require('../helpers/helpers');
 
 //■► Instancia controlador:  ◄■:
 const entidadesController = new entidadesCTR();

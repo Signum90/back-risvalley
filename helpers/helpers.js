@@ -73,38 +73,26 @@ class Helpers {
     });
   }
   async validateExistId(model, id) {
-    let register = null
-    switch (model) {
-      case 'entidad':
-        register = await EntidadesModel.findByPk(id);
-        break;
-      case 'evento':
-        register = await EventosModel.findByPk(id);
-        break;
-      case 'ciudad':
-        register = await CiudadesModel.findByPk(id);
-        break;
-      case 'reto':
-        register = await RetosTecnologicosModel.findByPk(id);
-        break;
-      case 'retoAspirante':
-        register = await RetosAspirantesModel.findByPk(id);
-        break;
-      case 'user':
-        register = await UsersModel.findByPk(id)
-        break;
-      case 'tipo':
-        register = await XTipoModel.findByPk(id)
-        break;
-      case 'servicio':
-        register = await ServiciosTecnologicosModel.findByPk(id)
-        break;
-      default:
-        register = false
-        break;
+    try {
+      const models = {
+        'entidad': EntidadesModel,
+        'evento': EventosModel,
+        'servicio': ServiciosTecnologicosModel,
+        'ciudad': CiudadesModel,
+        'reto': RetosTecnologicosModel,
+        'retoAspirante': RetosAspirantesModel,
+        'user': UsersModel,
+        'tipo': XTipoModel,
+        'servicio': ServiciosTecnologicosModel
+      }
+      if (!models[model]) return false;
+      const register = await models[model].findByPk(id);
+      if (!register) return false;
+      return true;
+    } catch (error) {
+      console.log("🚀 ~ Helpers ~ validateExistId ~ error:", error)
+      throw error;
     }
-    if (!register) return false;
-    return true;
   }
   //■► MET: Validar si un campo tiene un registro duplicado o ya existe un registro para ese valor ◄■:
   async validateFieldUnique(model, campo, value, id = null, campo2 = null, value2 = null) {
