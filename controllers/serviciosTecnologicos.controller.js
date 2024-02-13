@@ -1,6 +1,6 @@
 const { sequelize } = require('../db/connection');
 const { literal, col, Op } = require('sequelize');
-const { deleteFile, validateFieldUnique } = require('../helpers/helpers');
+const { deleteFile } = require('../helpers/helpers');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const UsersModel = require('../models/Users');
 
@@ -63,6 +63,76 @@ class ServiciosTecnologicosCTR {
       throw error;
     }
   }
+
+  async updateTechnologicalService(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { body, token } = req;
+        const id = req.params.idServicio;
+
+        const editData = {
+          nombre: body.nombre,
+          descripcion: body.descripcion,
+          idTipoServicio: body.idTipoServicio,
+          idTipoClienteServicio: body.idTipoClienteServicio,
+          updatedBy: token.id
+        };
+        await ServiciosTecnologicosModel.update(editData, { where: { id } }, { transaction: t });
+
+        res.status(200).json({ msg: 'Servicio editada correctamente' });
+      })
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  async updateLogoService(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { file, token } = req
+
+        const service = await ServiciosTecnologicosModel.findByPk(req.params.idServicio);
+        const fileToDelete = service?.imagen;
+        await service.update({
+          imagen: file ? file?.filename : null,
+          updatedBy: token.id
+        }, { transaction: t });
+
+        if (fileToDelete) {
+          deleteFile(fileToDelete, (err) => {
+            if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
+          })
+        }
+        return res.status(200).json({ msg: 'imagen editado correctamente', data: service });
+      })
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteService(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const id = req.params.idServicio
+
+        const service = await ServiciosTecnologicosModel.findByPk(id);
+        const fileToDelete = service?.imagen;
+
+        await service.destroy({ transaction: t });
+
+        if (fileToDelete) {
+          deleteFile(fileToDelete, (err) => {
+            if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
+          })
+        }
+        return res.status(200).json({ msg: 'Servicio eliminado correctamente' });
+      })
+    } catch (error) {
+      console.log("🚀 ~ EventosCTR ~ updateEvent ~ error:", error)
+      return res.status(400).json({ error })
+    }
+  }
+
 }
 
 module.exports = ServiciosTecnologicosCTR;
