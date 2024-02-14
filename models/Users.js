@@ -34,6 +34,11 @@ class UsersModel extends Model {
           field: 'nombre',
           allowNull: false,
         },
+        cargo: {
+          type: DataTypes.STRING(70),
+          allowNull: false,
+          field: 'cargo',
+        },
         logo: {
           type: DataTypes.STRING(120),
           field: 'logo',

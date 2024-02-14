@@ -45,6 +45,33 @@ class Middlewares {
     }
   }
 
+  validateAdminMiddleware(req, res, next) {
+    try {
+      const { authorization } = req.headers
+      if (!authorization ){
+        req.token = false;
+        return next();
+      }
+      const token = authorization.split(' ')[1]
+      if (invalidTokens.has(token)){
+        req.token = false;
+        return next();
+      }
+      const tokenData = verifyToken(token);
+      if(!tokenData || !tokenData?.superadmin){
+        req.token = false;
+        return next();
+      } 
+      req.token = tokenData;
+      next();
+
+    } catch (error) {
+      console.log("🚀 ~ Middlewares ~ validateJWT ~ error:", error)
+      next(error)
+      
+    }
+  }
+
   logoutMiddleware = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1]
 

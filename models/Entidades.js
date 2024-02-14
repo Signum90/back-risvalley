@@ -82,11 +82,11 @@ class EntidadesModel extends Model {
           allowNull: false,
           field: 'contacto_nombre',
         },
-        contactoCargo: {
-          type: DataTypes.STRING(70),
-          allowNull: false,
-          field: 'contacto_cargo',
-        },
+        // contactoCargo: {
+        //   type: DataTypes.STRING(70),
+        //   allowNull: false,
+        //   field: 'contacto_cargo',
+        // },
         contactoCorreo: {
           type: DataTypes.STRING(80),
           allowNull: false,

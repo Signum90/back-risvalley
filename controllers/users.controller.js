@@ -4,7 +4,7 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 const { response, request } = require('express');
 const { sequelize } = require('../db/connection');
-const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate } = require('../helpers/helpers');
+const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate, generatePasswordTemporal } = require('../helpers/helpers');
 const { readHTMLFile } = require('../config/email')
 const hbs = require('hbs');
 const bcrypt = require('bcrypt')
@@ -42,15 +42,22 @@ class UsersCTR {
 
   async registerUser(req = request, res = response) {
     try {
-      const { file, body } = req
-      const { nombre, telefono, email, password, tipo } = body;
-
-      const passHash = await bcrypt.hash(password, 10);
+      const { file, body, token } = req
+      const { nombre, telefono, email, password, tipo, cargo, superadmin } = body;
+      let passHash
+      let passTemp
+      if(!token){
+        passHash = await bcrypt.hash(password, 10);
+      }else {
+        passTemp = await generatePasswordTemporal()
+        passHash = await bcrypt.hash(passTemp, 10);
+      }
       const keydata = await generateKeyWord(email.split('@')[0], 'U')
 
       const model = await sequelize.transaction(async (t) => {
         return await UsersModel.create({
-          nombre, telefono, email, keydata, tipo,
+          nombre, telefono, email, keydata, tipo, cargo, 
+          superadmin: token ? superadmin : 0,
           logo: file ? file?.filename : null,
           password: passHash
         }, { transaction: t });
@@ -74,9 +81,11 @@ class UsersCTR {
         data.entidad = entidad;
       }
 
-      const codeTemp = await generateCodeTemporal();
-      await UsersCTR.sendEmailValidate(model.email, model.nombre, codeTemp, model.id);
-      await registerUserValidate(model.id, codeTemp);
+        const codeTemp = await generateCodeTemporal();
+        if( token ) await UsersCTR.sendEmailValidate(model.email, model.nombre, passTemp, model.id);
+        await UsersCTR.sendEmailValidate(model.email, model.nombre, codeTemp, model.id);
+        await registerUserValidate(model.id, codeTemp);
+
       return res.status(200).json({ msg: "Usuario creado correctamente", data });
     } catch (error) {
       throw error
@@ -104,7 +113,7 @@ class UsersCTR {
           logo,
           idUserResponsable: id,
           contactoNombre: body.nombre,
-          contactoCargo: body.contactoCargo,
+          //contactoCargo: body.cargo,
           contactoCorreo: body.email,
           contactoTelefono: body.telefono,
           direccion: body.direccion,
