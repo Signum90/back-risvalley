@@ -22,7 +22,7 @@ const router = Router();
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getUsers(req, res));
 
-router.post("/create", multerConfig.upload.single('logo'), [
+router.post("/create", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), [
   check('email').trim().notEmpty().isEmail().custom(async (email) => {
     const existsEmail = await UsersModel.findOne({ where: { email } })
     if (existsEmail) return Promise.reject('El correo electronico ya se encuentra registrado');
@@ -34,8 +34,14 @@ router.post("/create", multerConfig.upload.single('logo'), [
     }
   }),
   check('nombre').trim().notEmpty().isString().isLength({ max: 40 }),
+  check('cargo').trim().notEmpty().isString().isLength({ max: 70 }),
   check('telefono').trim().optional({ nullable: true }).isInt().isLength({ max: 11 }),
-  check('password').trim().notEmpty().withMessage('La contraseña es obligatoria'),
+  //check('password').trim().notEmpty().withMessage('La contraseña es obligatoria'),
+  check('password').trim().custom(async (password, {req}) => {
+    if(!req.token){
+      if(!password) return Promise.reject('La contraseña es obligatoria');
+    }
+  }),
   check('tipo').notEmpty().isInt({ min: 1, max: 3 }),
   check('descripcion').trim().isString().isLength({ max: 80 }).custom(async (descripcion, {req}) => {
     if(req.body.tipo != 1 && !descripcion) return Promise.reject('La descripcion de la entidad es obligatoria');
@@ -48,9 +54,6 @@ router.post("/create", multerConfig.upload.single('logo'), [
   }),
   check('idTipoNaturalezaJuridica').custom(async (tipoNaturaleza, {req}) => {
     if(req.body.tipo != 1 && !tipoNaturaleza) return Promise.reject('El tipo de naturaleza de la entidad es obligatorio');
-  }),
-  check('contactoCargo').trim().isString().isLength({ max: 70 }).custom(async (cargo, {req}) => {
-    if(req.body.tipo != 1 && !cargo) return Promise.reject('El cargo del contacto de la entidad es obligatorio');
   }),
   check('direccion').trim().isString().isLength({ max: 80 }).custom(async (direccion, {req}) => {
     if(req.body.tipo != 1 && !direccion) return Promise.reject('La direccion de la entidad es obligatoria');
