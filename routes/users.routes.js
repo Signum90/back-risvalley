@@ -27,7 +27,7 @@ router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await
 router.post("/create", multerConfig.upload.single('logo'), [
   check('email').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email) => {
     const exists = await validateFieldUnique('user', 'email', email)
-    if (exists) return res.status(400).json('El correo electronico ya se encuentra registrado');
+    if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
   }),
   check('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
   check('telefono').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
@@ -41,7 +41,7 @@ router.post("/create", multerConfig.upload.single('logo'), [
 router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), [
   check('email').trim().notEmpty().isEmail().custom(async (email) => {
     const exists = await validateFieldUnique('user', 'email', email)
-    if (exists) return res.status(400).json('El correo electronico ya se encuentra registrado');
+    if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
   }),
   check('nombreEntidad').trim().isString().isLength({ max: 120 }).custom(async (nombre, { req }) => {
     if (req.body.tipo != 1) {
