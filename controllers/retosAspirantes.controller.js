@@ -17,7 +17,7 @@ class RetosAspirantesCTR {
         },
         include: [{ model: UsersModel, as: 'aspirante', attributes: [] }],
       })
-      return res.status(200).json({ msg: 'Consultado correctamente', data: candidates });
+      return res.status(200).json({ msg: 'success', data: candidates });
     } catch (e) {
       throw e;
     }
@@ -34,7 +34,7 @@ class RetosAspirantesCTR {
           createdBy: token.id
         }, { transaction: t })
 
-        return res.status(200).json({ msg: 'Registro creado correctamente', data: model });
+        return res.status(200).json({ msg: 'success', data: model });
       })
     } catch (e) {
       throw e;
@@ -55,7 +55,7 @@ class RetosAspirantesCTR {
             if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
           })
         }
-        return res.status(200).json({ msg: 'Registro eliminado correctamente' });
+        return res.status(200).json({ msg: 'success' });
       })
     } catch (e) {
       throw e

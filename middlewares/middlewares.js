@@ -30,12 +30,12 @@ class Middlewares {
   validateJWTMiddleware(req, res, next) {
     try {
       const { authorization } = req.headers
-      if (!authorization) throw res.status(401).json({ msg: 'Token no proporcionado' });
+      if (!authorization) throw res.status(401).json({ type: 'error', msg: 'Token no proporcionado', status: 401 });
 
       const token = authorization.split(' ')[1]
-      if (invalidTokens.has(token)) throw res.status(401).json({ msg: 'Token inválido' });
+      if (invalidTokens.has(token)) throw res.status(401).json({ type: 'error', msg: 'Token inválido', status: 401 });
       const tokenData = verifyToken(token);
-      if (!tokenData) throw res.status(401).json({ msg: 'Token inválido' });
+      if (!tokenData) throw res.status(401).json({ type: 'error', msg: 'Token inválido', status: 401 });
       req.token = tokenData;
 
       next();
@@ -48,27 +48,27 @@ class Middlewares {
   validateAdminMiddleware(req, res, next) {
     try {
       const { authorization } = req.headers
-      if (!authorization ){
+      if (!authorization) {
         req.token = false;
         return next();
       }
       const token = authorization.split(' ')[1]
-      if (invalidTokens.has(token)){
+      if (invalidTokens.has(token)) {
         req.token = false;
         return next();
       }
       const tokenData = verifyToken(token);
-      if(!tokenData || !tokenData?.superadmin){
+      if (!tokenData || !tokenData?.superadmin) {
         req.token = false;
         return next();
-      } 
+      }
       req.token = tokenData;
       next();
 
     } catch (error) {
       console.log("🚀 ~ Middlewares ~ validateJWT ~ error:", error)
       next(error)
-      
+
     }
   }
 

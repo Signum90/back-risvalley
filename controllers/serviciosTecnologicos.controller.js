@@ -36,7 +36,7 @@ class ServiciosTecnologicosCTR {
         include: [{ model: UsersModel, as: 'contacto', attributes: [] }],
       })
 
-      return res.status(200).json({ msg: 'Consultado correctamente', data: services });
+      return res.status(200).json({ msg: 'success', data: services });
     } catch (error) {
       throw error;
     }
@@ -57,7 +57,7 @@ class ServiciosTecnologicosCTR {
         };
         const model = await ServiciosTecnologicosModel.create(postData, { transaction: t });
 
-        res.status(200).json({ msg: 'Servicio creado correctamente', data: model });
+        return res.status(200).json({ msg: 'success', data: model });
       })
     } catch (error) {
       throw error;
@@ -79,7 +79,7 @@ class ServiciosTecnologicosCTR {
         };
         await ServiciosTecnologicosModel.update(editData, { where: { id } }, { transaction: t });
 
-        res.status(200).json({ msg: 'Servicio editada correctamente' });
+        return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {
       throw (error);
@@ -103,7 +103,7 @@ class ServiciosTecnologicosCTR {
             if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
           })
         }
-        return res.status(200).json({ msg: 'imagen editado correctamente', data: service });
+        return res.status(200).json({ msg: 'success', data: service });
       })
     } catch (error) {
       throw error;
@@ -125,11 +125,11 @@ class ServiciosTecnologicosCTR {
             if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
           })
         }
-        return res.status(200).json({ msg: 'Servicio eliminado correctamente' });
+        return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {
       console.log("🚀 ~ EventosCTR ~ updateEvent ~ error:", error)
-      return res.status(400).json({ error })
+      return res.status(400).json(error)
     }
   }
 

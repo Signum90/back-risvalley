@@ -52,14 +52,14 @@ class Helpers {
     const keyRamdon = await crypto.randomBytes(16).toString('hex');
     return keyRamdon
   }
-  async generatePasswordTemporal(){
+  async generatePasswordTemporal() {
     var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    var string_length = 12;
+    var stringLength = 12;
     var randomstring = '';
-    for (var i=0; i<string_length; i++) {
-        var rnum = Math.floor(Math.random() * chars.length);
-        randomstring += chars.substring(rnum,rnum+1);
-      }
+    for (var i = 0; i < stringLength; i++) {
+      var rnum = Math.floor(Math.random() * chars.length);
+      randomstring += chars.substring(rnum, rnum + 1);
+    }
     return randomstring;
   }
   async registerKeyData(idRegistroAsociado, word, keydata, letter) {

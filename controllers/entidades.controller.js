@@ -35,7 +35,7 @@ class EntidadesCTR {
         ],
       })
 
-      res.status(200).json({ msg: 'Consultado correctamente', data: entidades });
+      res.status(200).json({ msg: 'success', data: entidades });
     } catch (error) {
       console.log("🚀 ~ TypesCTR ~ saveTypes ~ error:", error)
     }
@@ -68,7 +68,7 @@ class EntidadesCTR {
 
         const model = await EntidadesModel.create(postData, { transaction: t });
 
-        res.status(200).json({ msg: 'Entidad creada correctamente', data: model });
+        res.status(200).json({ msg: 'success', data: model });
       })
     } catch (error) {
       throw (error);
@@ -83,7 +83,7 @@ class EntidadesCTR {
         const id = req.params.idEntidad
         if (campo == 'nombre') {
           const exists = await validateFieldUnique('entidad', 'nombre', value, id)
-          if (exists) return res.status(400).json({ msg: 'Ya existe una entidad con ese nombre' });
+          if (exists) return res.status(400).json({ type: 'error', msg: 'Ya existe una entidad con ese nombre', status: 400 });
         }
         const updateData = {
           [campo]: value,
@@ -91,7 +91,7 @@ class EntidadesCTR {
         }
         await EntidadesModel.update(updateData, { where: { id } }, { transaction: t });
 
-        res.status(200).json({ msg: 'Entidad editada correctamente' });
+        res.status(200).json({ msg: 'success' });
       })
     } catch (error) {
       throw (error);
@@ -115,7 +115,7 @@ class EntidadesCTR {
             if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
           })
         }
-        res.status(200).json({ msg: 'Logo editado correctamente', data: entidad });
+        res.status(200).json({ msg: 'success', data: entidad });
       })
     } catch (error) {
       console.log("🚀 ~ EventosCTR ~ updateLogoEvent ~ error:", error)
@@ -138,7 +138,7 @@ class EntidadesCTR {
             if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
           })
         }
-        res.status(200).json({ msg: 'Entidad eliminado correctamente' });
+        return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {
       console.log("🚀 ~ EventosCTR ~ updateEvent ~ error:", error)

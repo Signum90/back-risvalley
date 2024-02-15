@@ -46,9 +46,9 @@ class UsersCTR {
       const { nombre, telefono, email, password, tipo, cargo, superadmin } = body;
       let passHash
       let passTemp
-      if(!token){
+      if (!token) {
         passHash = await bcrypt.hash(password, 10);
-      }else {
+      } else {
         passTemp = await generatePasswordTemporal()
         passHash = await bcrypt.hash(passTemp, 10);
       }
@@ -56,7 +56,7 @@ class UsersCTR {
 
       const model = await sequelize.transaction(async (t) => {
         return await UsersModel.create({
-          nombre, telefono, email, keydata, tipo, cargo, 
+          nombre, telefono, email, keydata, tipo, cargo,
           superadmin: token ? superadmin : 0,
           logo: file ? file?.filename : null,
           password: passHash
@@ -76,17 +76,17 @@ class UsersCTR {
         registroValidado: 0
       }
 
-      if(tipo != 1){
+      if (tipo != 1) {
         const entidad = await UsersCTR.saveEntidad(body, model.id, model.logo);
         data.entidad = entidad;
       }
 
-        const codeTemp = await generateCodeTemporal();
-        if( token ) await UsersCTR.sendEmailValidate(model.email, model.nombre, passTemp, model.id);
-        await UsersCTR.sendEmailValidate(model.email, model.nombre, codeTemp, model.id);
-        await registerUserValidate(model.id, codeTemp);
+      const codeTemp = await generateCodeTemporal();
+      if (token) await UsersCTR.sendEmailValidate(model.email, model.nombre, passTemp, model.id);
+      await UsersCTR.sendEmailValidate(model.email, model.nombre, codeTemp, model.id);
+      await registerUserValidate(model.id, codeTemp);
 
-      return res.status(200).json({ msg: "Usuario creado correctamente", data });
+      return res.status(200).json({ msg: "success", data });
     } catch (error) {
       throw error
     }
@@ -97,7 +97,7 @@ class UsersCTR {
       attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo']
     })
 
-    return res.status(200).json({ msg: "Usuario creado correctamente", data: users });
+    return res.status(200).json({ msg: "success", data: users });
   }
 
   static async saveEntidad(body, id, logo = null) {

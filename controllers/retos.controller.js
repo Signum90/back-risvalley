@@ -38,7 +38,7 @@ class RetosCTR {
           },
           order: [['fechaInicioConvocatoria', 'DESC']]
         })
-        return res.status(200).json({ msg: 'Consultado correctamente', data: challenges });
+        return res.status(200).json({ msg: 'success', data: challenges });
       })
     } catch (error) {
       throw error;
@@ -53,7 +53,7 @@ class RetosCTR {
         const { nombre, descripcion, fechaInicioConvocatoria, fechaFinConvocatoria } = body;
         const fichaTecnica = files['fichaTecnica'][0];
         const multimedia = files['recursoMultimedia'][0];
-        if (!multimedia) return res.status(400).json({ msg: 'El recurso multimedia es requerido' });
+        if (!multimedia) return res.status(400).json({ type: 'error', msg: 'El recurso multimedia es requerido', status: 400 });
 
         const recursoMultimediaRegistro = await saveResourceMultimedia(multimedia, token?.id);
         const model = await RetosTecnologicosModel.create({
@@ -66,7 +66,7 @@ class RetosCTR {
           createdBy: token.id
         }, { transaction: t })
 
-        return res.status(200).json({ msg: 'Reto creado correctamente', data: model });
+        return res.status(200).json({ msg: 'success', data: model });
       })
     } catch (e) {
       throw e;
@@ -97,7 +97,7 @@ class RetosCTR {
             if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
           })
         }
-        return res.status(200).json({ msg: 'Reto editado correctamente', data: reto });
+        return res.status(200).json({ msg: 'success', data: reto });
       })
     } catch (error) {
       throw error;
@@ -118,7 +118,7 @@ class RetosCTR {
               fechaInicioConvocatoria: { [Op.lt]: new Date(value) }
             }
           })
-          if (!dateValidate) return res.status(400).json({ msg: 'La fecha de cierre de la convocatoria debe ser mayor a la de inicio' });
+          if (!dateValidate) return res.status(400).json({ type: 'error', msg: 'La fecha de cierre de la convocatoria debe ser mayor a la de inicio', status: 400 });
         }
         const updateData = {
           [campo]: value,
@@ -126,7 +126,7 @@ class RetosCTR {
         }
         await RetosTecnologicosModel.update(updateData, { where: { id } }, { transaction: t });
 
-        return res.status(200).json({ msg: 'Reto editado correctamente' });
+        return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {
       throw error;
@@ -150,7 +150,7 @@ class RetosCTR {
         deleteFile(multimediaFile, (err) => {
           if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
         })
-        res.status(200).json({ msg: 'Reto eliminado correctamente' });
+        return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {
       throw error

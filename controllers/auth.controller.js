@@ -15,7 +15,7 @@ class AuthController {
     return await sequelize.transaction(async (t) => {
       const { correo, password } = req.body
       const user = await UsersModel.findByEmail(correo);
-      if (!user) return res.status(400).json({ errors: { username: ['Usuario no existe'] } })
+      if (!user) return res.status(401).json({ type: 'error', msg: 'Usuario no existe', status: 401 })
 
       if (bcrypt.compareSync(password, user.password)) {
         if (!user.registroValidado) return res.status(200).json({ data: { token: false, user: { id: user.id, registroValidado: false } } });
@@ -31,9 +31,9 @@ class AuthController {
           keydata: user.keyData,
           registroValidado: user.registroValidado
         }
-        res.status(200).json({ data: { token, user: data } });
+        return res.status(200).json({ data: { token, user: data } });
       } else {
-        res.status(400).json({ errors: { password: ['Contraseña incorrecta'] } })
+        return res.status(401).json({ type: 'error', msg: 'Contraseña incorrecta', status: 401 })
       }
     })
   }
@@ -60,20 +60,20 @@ class AuthController {
       })
       const user = await UsersModel.findByPk(idUser, { where: { registroValidado: 0 } });
       if (!userCode) {
-        if (!user) return res.status(400).json({ msg: 'el usuario se encuentra validado' });
+        if (!user) return res.status(400).json({ type: 'error', msg: 'el usuario se encuentra validado', status: 400 });
         const codeTemp = await generateCodeTemporal();
         await AuthController.sendEmailValidate(user.email, user.nombre, codeTemp, user.id);
         await registerUserValidate(user.id, codeTemp);
         return res.status(200).json({ data: true, msg: 'el código ingresado ya expiró, codigo reenviado correctamente' });
       }
       if (userCode.codigoTemporal != codigo) {
-        return res.status(400).json({ data: true, msg: 'codigo invalido' });
+        return res.status(400).json({ type: 'error', msg: 'Codigo invalido', status: 400 });
       }
       await user.update({
         registroValidado: 1
       }, { transaction: t })
 
-      return res.status(400).json({ data: true, msg: 'Usuario registrado correctamente' });
+      return res.status(200).json({ data: true, msg: 'success' });
     })
   }
 
