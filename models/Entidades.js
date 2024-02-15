@@ -32,6 +32,16 @@ class EntidadesModel extends Model {
           allowNull: false,
           comment: "1=Privada, 2=Pública 3=Mixta"
         },
+        telefono: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          field: 'telefono',
+        },
+        email: {
+          type: DataTypes.STRING(80),
+          allowNull: false,
+          field: 'email',
+        },
         descripcion: {
           type: DataTypes.STRING(150),
           allowNull: false,
@@ -82,11 +92,6 @@ class EntidadesModel extends Model {
           allowNull: false,
           field: 'contacto_nombre',
         },
-        // contactoCargo: {
-        //   type: DataTypes.STRING(70),
-        //   allowNull: false,
-        //   field: 'contacto_cargo',
-        // },
         contactoCorreo: {
           type: DataTypes.STRING(80),
           allowNull: false,

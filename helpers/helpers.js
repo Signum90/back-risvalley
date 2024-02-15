@@ -119,6 +119,9 @@ class Helpers {
       case 'retoAspirante':
         exists = await RetosAspirantesModel.findOne({ where: condition })
         break;
+      case 'user':
+        exists = await UsersModel.findOne({ where: condition })
+        break;
       default:
         exists = false;
         break;

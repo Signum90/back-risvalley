@@ -4,7 +4,7 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 // const {request:req, response:res} = require('express')
 const { validationResult } = require('express-validator');
-const { verifyToken } = require('../helpers/helpers')
+const { verifyToken } = require('../helpers/helpers');
 
 const invalidTokens = new Set()
 
@@ -19,7 +19,8 @@ class Middlewares {
       const { type, msg, path } = err;
       return res.status(400).json({
         type,
-        msg,
+        msg: msg.replace(':field', path),
+        status: 400,
         path
       });
     }
@@ -48,20 +49,11 @@ class Middlewares {
   validateAdminMiddleware(req, res, next) {
     try {
       const { authorization } = req.headers
-      if (!authorization) {
-        req.token = false;
-        return next();
-      }
+      if (!authorization) throw res.status(401).json({ type: 'error', msg: 'Token no proporcionado', status: 401 });
       const token = authorization.split(' ')[1]
-      if (invalidTokens.has(token)) {
-        req.token = false;
-        return next();
-      }
+      if (invalidTokens.has(token)) throw res.status(401).json({ type: 'error', msg: 'Token inválido', status: 401 });
       const tokenData = verifyToken(token);
-      if (!tokenData || !tokenData?.superadmin) {
-        req.token = false;
-        return next();
-      }
+      if (!tokenData || !tokenData?.superadmin) throw res.status(401).json({ type: 'error', msg: 'Token inválido', status: 401 });
       req.token = tokenData;
       next();
 

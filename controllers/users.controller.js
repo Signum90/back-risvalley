@@ -42,7 +42,7 @@ class UsersCTR {
 
   async registerUser(req = request, res = response) {
     try {
-      const { file, body, token } = req
+      const { file, body, token } = req;
       const { nombre, telefono, email, password, tipo, cargo, superadmin } = body;
       let passHash
       let passTemp
@@ -56,7 +56,8 @@ class UsersCTR {
 
       const model = await sequelize.transaction(async (t) => {
         return await UsersModel.create({
-          nombre, telefono, email, keydata, tipo, cargo,
+          nombre, telefono, email, keydata, cargo,
+          tipo: token ? tipo : 1,
           superadmin: token ? superadmin : 0,
           logo: file ? file?.filename : null,
           password: passHash
@@ -76,15 +77,17 @@ class UsersCTR {
         registroValidado: 0
       }
 
-      if (tipo != 1) {
-        const entidad = await UsersCTR.saveEntidad(body, model.id, model.logo);
-        data.entidad = entidad;
+      if (token) {
+        if (tipo != 1) {
+          const entidad = await UsersCTR.saveEntidad(body, model.id, model.logo)
+          data.entidad = entidad;
+        };
+        await UsersCTR.sendEmailValidate(model.email, model.nombre, passTemp, model.id);
+      } else {
+        const codeTemp = await generateCodeTemporal();
+        await UsersCTR.sendEmailValidate(model.email, model.nombre, codeTemp, model.id);
+        await registerUserValidate(model.id, codeTemp);
       }
-
-      const codeTemp = await generateCodeTemporal();
-      if (token) await UsersCTR.sendEmailValidate(model.email, model.nombre, passTemp, model.id);
-      await UsersCTR.sendEmailValidate(model.email, model.nombre, codeTemp, model.id);
-      await registerUserValidate(model.id, codeTemp);
 
       return res.status(200).json({ msg: "success", data });
     } catch (error) {
@@ -121,6 +124,8 @@ class UsersCTR {
           urlFacebook: body.urlFacebook,
           urlTwitter: body.urlTwitter,
           urlLinkedin: body.urlLinkedin,
+          telefono: body.telefonoEntidad,
+          email: body.emailEntidad
           //createdBy
         }
 
