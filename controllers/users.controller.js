@@ -58,6 +58,8 @@ class UsersCTR {
         return await UsersModel.create({
           nombre, telefono, email, keydata, cargo,
           tipo: token ? tipo : 1,
+          primerIngreso: token ? 1 : 0,
+          registroValidado: token ? 1 : 0,
           superadmin: token ? superadmin : 0,
           logo: file ? file?.filename : null,
           password: passHash

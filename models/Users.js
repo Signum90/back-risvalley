@@ -71,6 +71,13 @@ class UsersModel extends Model {
           defaultValue: 0,
           comment: "1=si 0=no"
         },
+        primerIngreso: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'primer_ingreso',
+          allowNull: false,
+          defaultValue: 0,
+          comment: "1=si 0=no"
+        },
         registroValidado: {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'registro_validado',

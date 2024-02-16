@@ -7,9 +7,11 @@ const { Router } = require('express');
 const { check, body, param } = require('express-validator');
 //■► CONTROLADOR:  ◄■:
 const authCTR = require('../controllers/auth.controller');
+const CustomMessages = require('../helpers/customMessages');
 //■► Middlewares:  ◄■:
 const Middlewares = require('../middlewares/middlewares');
 const { validateExistId } = require('../helpers/helpers');
+const customMessages = CustomMessages.getValidationMessages();
 
 //■► Instancia controlador:  ◄■:
 const authController = new authCTR();
@@ -38,6 +40,11 @@ router.post("/reenviar-codigo", [
   }),
   Middlewares.scan_errors
 ], async (req, res) => await authController.reSendCodeValidate(req, res));
+
+router.post("/update-password/primer-ingreso", Middlewares.validateJWTMiddleware, [
+  check('password').trim().notEmpty().withMessage(customMessages.required),
+  Middlewares.scan_errors
+], async (req, res) => await authController.updatePasswordFirstEntry(req, res));
 
 router.get("/:idUser/validar-confirmacion", [
   param('idUser').notEmpty().isInt().custom(async (id) => {

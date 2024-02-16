@@ -31,6 +31,7 @@ class AuthController {
           telefono: user.telefono,
           email: user.email,
           sesionActiva: user.sesionActiva,
+          primerIngreso: user.primerIngreso,
           keydata: user.keyData,
           registroValidado: user.registroValidado
         }
@@ -113,6 +114,20 @@ class AuthController {
     } catch (error) {
       throw res.status(400).json({ error })
     }
+  }
+
+  async updatePasswordFirstEntry(req, res) {
+    return await sequelize.transaction(async (t) => {
+      const { password } = req.body
+      const token = req.token
+      const passHash = await bcrypt.hash(password, 10);
+
+      await UsersModel.update({
+        password: passHash,
+        primerIngreso: 0
+      }, { where: { id: token.id } }, { transaction: t });
+      return res.status(200).json({ data: true, msg: 'success' });
+    })
   }
 
   static async sendEmailValidate(email, userName, code, id) {
