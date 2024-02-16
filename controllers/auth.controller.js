@@ -4,7 +4,10 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 const bcrypt = require('bcrypt')
 const config = require('../config/config');
+const path = require('path');
+const hbs = require('hbs');
 const { generarJWT, sendEmail, generateCodeTemporal, registerUserValidate } = require('../helpers/helpers');
+const { readHTMLFile } = require('../config/email')
 const { literal } = require('sequelize');
 const { sequelize } = require('../db/connection');
 const UsersModel = require('../models/Users');
@@ -58,13 +61,14 @@ class AuthController {
         limit: 1,
         order: [['createdAt', 'Desc']],
       })
-      const user = await UsersModel.findByPk(idUser, { where: { registroValidado: 0 } });
+      const user = await UsersModel.findByPk(idUser);
+
+      if (user.registroValidado) return res.status(400).json({ type: 'error', msg: 'el usuario se encuentra validado', status: 400 });
       if (!userCode) {
-        if (!user) return res.status(400).json({ type: 'error', msg: 'el usuario se encuentra validado', status: 400 });
         const codeTemp = await generateCodeTemporal();
         await AuthController.sendEmailValidate(user.email, user.nombre, codeTemp, user.id);
         await registerUserValidate(user.id, codeTemp);
-        return res.status(200).json({ data: true, msg: 'el código ingresado ya expiró, codigo reenviado correctamente' });
+        return res.status(400).json({ type: 'error', msg: 'el código ingresado ya expiró, codigo reenviado correctamente', status: 400 });
       }
       if (userCode.codigoTemporal != codigo) {
         return res.status(400).json({ type: 'error', msg: 'Codigo invalido', status: 400 });
@@ -75,6 +79,40 @@ class AuthController {
 
       return res.status(200).json({ data: true, msg: 'success' });
     })
+  }
+
+  async reSendCodeValidate(req, res) {
+    try {
+      const idUser = req.body.idUser;
+
+      const user = await UsersModel.findByPk(idUser);
+      if (user.registroValidado) return res.status(400).json({ type: 'error', msg: 'el usuario se encuentra validado', status: 400 });
+      const codeTemp = await generateCodeTemporal();
+      await registerUserValidate(user.id, codeTemp);
+      await AuthController.sendEmailValidate(user?.email, user?.nombre, codeTemp, user?.id);
+
+      return res.status(200).json({ data: true, msg: 'success' });
+    } catch (error) {
+      throw res.status(400).json({ error })
+    }
+  }
+
+  async validateUserConfirm(req, res) {
+    try {
+      const id = req.params.idUser;
+
+      const user = UsersModel.findOne({
+        where: {
+          id,
+          registroValidado: 0
+        }
+      })
+      if (user) return res.status(400).json({ type: 'error', msg: 'el usuario se encuentra validado', status: 400 });
+
+      return res.status(200).json({ data: true, msg: 'success' });
+    } catch (error) {
+      throw res.status(400).json({ error })
+    }
   }
 
   static async sendEmailValidate(email, userName, code, id) {

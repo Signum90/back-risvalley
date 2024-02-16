@@ -23,7 +23,6 @@ const router = Router();
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getUsers(req, res));
-
 router.post("/create", multerConfig.upload.single('logo'), [
   check('email').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email) => {
     const exists = await validateFieldUnique('user', 'email', email)
@@ -36,9 +35,11 @@ router.post("/create", multerConfig.upload.single('logo'), [
   check('tipo').notEmpty().isInt({ min: 1, max: 1 }),
   Middlewares.scan_errors
 ], usersController.registerUser);
-
-
 router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), [
+  body('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
+  check('cargo').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
+  check('telefono').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
+  check('tipo').notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 4 }).withMessage(customMessages.int),
   check('email').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email) => {
     const exists = await validateFieldUnique('user', 'email', email)
     if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
@@ -49,10 +50,6 @@ router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConf
       if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
     }
   }),
-  body('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
-  check('cargo').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
-  check('telefono').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
-  check('tipo').notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 4 }).withMessage(customMessages.int),
   check('descripcion').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length).custom(async (descripcion, { req }) => {
     if (req.body.tipo != 1 && !descripcion) return Promise.reject('La descripcion de la entidad es obligatoria');
   }),

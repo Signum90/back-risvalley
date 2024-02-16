@@ -4,7 +4,7 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 const { Router } = require('express');
 // ■► Express Validator ◄■:
-const { check, body } = require('express-validator');
+const { check, body, param } = require('express-validator');
 //■► CONTROLADOR:  ◄■:
 const authCTR = require('../controllers/auth.controller');
 //■► Middlewares:  ◄■:
@@ -30,6 +30,22 @@ router.post("/validar-usuario", [
   check('codigo').trim().notEmpty().isString(),
   Middlewares.scan_errors
 ], async (req, res) => await authController.validateUser(req, res));
+
+router.post("/reenviar-codigo", [
+  body('idUser').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('user', id)
+    if (!exists) return Promise.reject('Id user no válido');
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await authController.reSendCodeValidate(req, res));
+
+router.get("/:idUser/validar-confirmacion", [
+  param('idUser').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('user', id)
+    if (!exists) return Promise.reject('Id user no válido');
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await authController.validateUserConfirm(req, res));
 
 router.post("/logout", Middlewares.validateJWTMiddleware, Middlewares.logoutMiddleware, async (req, res) => await authController.logout(req, res));
 
