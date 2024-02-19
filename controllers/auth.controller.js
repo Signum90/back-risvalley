@@ -102,13 +102,13 @@ class AuthController {
     try {
       const id = req.params.idUser;
 
-      const user = UsersModel.findOne({
+      const user = await UsersModel.findOne({
         where: {
           id,
-          registroValidado: 0
+          registroValidado: 1
         }
       })
-      if (user) return res.status(400).json({ type: 'error', msg: 'el usuario se encuentra validado', status: 400 });
+      if (!user) return res.status(400).json({ type: 'error', msg: 'el usuario no se encuentra validado', status: 400 });
 
       return res.status(200).json({ data: true, msg: 'success' });
     } catch (error) {
