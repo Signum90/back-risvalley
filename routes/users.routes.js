@@ -23,6 +23,7 @@ const router = Router();
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getUsers(req, res));
+
 router.post("/create", multerConfig.upload.single('logo'), [
   check('email').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email) => {
     const exists = await validateFieldUnique('user', 'email', email)
@@ -35,6 +36,7 @@ router.post("/create", multerConfig.upload.single('logo'), [
   check('tipo').notEmpty().isInt({ min: 1, max: 1 }),
   Middlewares.scan_errors
 ], usersController.registerUser);
+
 router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), [
   body('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
   check('cargo').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
@@ -46,6 +48,7 @@ router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConf
   }),
   check('nombreEntidad').trim().isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage(customMessages.length).custom(async (nombre, { req }) => {
     if (req.body.tipo != 1) {
+      if (!nombre) return Promise.reject('El nombre de la entidad es obligatorio');
       const exists = await validateFieldUnique('entidad', 'nombre', nombre)
       if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
     }

@@ -3,7 +3,7 @@ const { body, param, check, validationResult } = require('express-validator');
 const entidadesCTR = require('../controllers/entidades.controller');
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
-const { validateExistId } = require('../helpers/helpers');
+const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
 
 //■► Instancia controlador:  ◄■:
 const entidadesController = new entidadesCTR();
@@ -30,7 +30,24 @@ const validations = {
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getEntidades(req, res));
 
-router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), entidadesController.saveEntidad);
+router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
+  check('nombre').trim().notEmpty().isString().isLength({ max: 120 }).custom(async (nombre) => {
+    const exists = await validateFieldUnique('entidad', 'nombre', nombre)
+    if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
+  }),
+  check('descripcion').trim().notEmpty().isString().isLength({ max: 80 }),
+  check('sigla').trim().notEmpty().isString().isLength({ max: 10 }),
+  check('tipo').notEmpty().isInt({ min: 1, max: 3 }),
+  check('idTipoNaturalezaJuridica').notEmpty().isInt(),
+  check('email').trim().notEmpty().isString().isLength({ max: 80 }),
+  check('telefono').trim().notEmpty().isInt().isLength({ max: 11 }),
+  check('direccion').trim().notEmpty().isString().isLength({ max: 80 }),
+  check('urlDominio').trim().isString().isLength({ max: 80 }),
+  check('urlFacebook').trim().isString().isLength({ max: 80 }),
+  check('urlTwitter').trim().isString().isLength({ max: 80 }),
+  check('urlLinkedin').trim().isString().isLength({ max: 80 }),
+  Middlewares.scan_errors
+], entidadesController.saveEntidad);
 
 router.put("/:idEntidad/update", Middlewares.validateJWTMiddleware, [
   param('idEntidad').notEmpty().isInt().custom(async (id) => {

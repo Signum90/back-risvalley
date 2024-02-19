@@ -7,6 +7,7 @@ const EntidadesModel = require('../models/Entidades');
 const { sequelize } = require('../db/connection');
 const { literal } = require('sequelize');
 const { deleteFile, validateFieldUnique } = require('../helpers/helpers');
+const UsersModel = require('../models/Users');
 
 class EntidadesCTR {
   async getEntidades(req = request, res = response) {
@@ -46,6 +47,8 @@ class EntidadesCTR {
       return await sequelize.transaction(async (t) => {
         const { body, file, token } = req;
 
+        const contact = await UsersModel.findByPk(token?.id);
+
         const postData = {
           nombre: body.nombre,
           sigla: body.sigla,
@@ -54,12 +57,13 @@ class EntidadesCTR {
           idTipoNaturalezaJuridica: body.idTipoNaturalezaJuridica,
           logo: file ? file?.filename : null,
           idUserResponsable: token.id,
-          contactoNombre: body.contactoNombre,
-          //contactoCargo: body.contactoCargo,
-          contactoCorreo: body.contactoCorreo,
-          contactoTelefono: body.contactoTelefono,
+          email: body.email,
+          contactoNombre: contact?.nombre,
+          contactoCorreo: contact?.email,
+          contactoTelefono: contact?.telefono,
           direccion: body.direccion,
           urlDominio: body.urlDominio,
+          telefono: body.telefono,
           urlFacebook: body.urlFacebook,
           urlTwitter: body.urlTwitter,
           urlLinkedin: body.urlLinkedin,

@@ -20,8 +20,7 @@ class Middlewares {
       return res.status(400).json({
         type,
         msg: msg.replace(':field', path),
-        status: 400,
-        path
+        status: 400
       });
     }
     // ■► next ◄■:
