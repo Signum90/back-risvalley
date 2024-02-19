@@ -99,6 +99,9 @@ class UsersCTR {
   }
 
   async getUsers(req = request, res = response) {
+    const page = Number(req.query.page);
+    const pageSize = 10;
+
     const users = await UsersModel.findAll({
       attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo'],
       include: [{
@@ -123,6 +126,8 @@ class UsersCTR {
           [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = entidad.id_tipo_naturaleza_juridica)`), 'tipoNaturalezaJuridica'],
         ]
       }],
+      offset: (page - 1) * pageSize,
+      limit: pageSize
     })
 
     return res.status(200).json({ msg: "success", data: users });
@@ -155,11 +160,27 @@ class UsersCTR {
         }
 
         return await EntidadesModel.create(postData, { transaction: t });
-
-        //return true;
       })
     } catch (error) {
       throw (error);
+    }
+  }
+
+  async getSelectUsers(req = request, res = response) {
+    try {
+      const users = await UsersModel.findAll({
+        attributes: ['id', 'nombre'],
+        include: [{
+          model: EntidadesModel,
+          as: 'entidad',
+          attributes: ['id'],
+          required: false
+        }],
+      })
+
+      return res.status(200).json({ msg: "success", data: users.filter((e) => !e.entidad) });
+    } catch (error) {
+      throw error;
     }
   }
 

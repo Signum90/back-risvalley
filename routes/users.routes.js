@@ -24,6 +24,8 @@ const router = Router();
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getUsers(req, res));
 
+router.get("/select", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getSelectUsers(req, res));
+
 router.post("/create", multerConfig.upload.single('logo'), [
   check('email').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email) => {
     const exists = await validateFieldUnique('user', 'email', email)
