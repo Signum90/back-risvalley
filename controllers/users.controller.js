@@ -75,7 +75,7 @@ class UsersCTR {
         nombre: model.nombre,
         telefono: model.telefono,
         email: model.email,
-        //keydata: model.keydata,
+        keydata: model.keydata,
         superadmin: model.superadmin,
         urlLogo: model.urlLogo,
         tipo: model.tipo,
