@@ -12,7 +12,8 @@ const path = require('path');
 const config = require('../config/config');
 const UsersModel = require("../models/Users");
 const EntidadesModel = require('../models/Entidades');
-const { literal } = require('sequelize');
+const { literal, Op } = require('sequelize');
+const KeyWordsModel = require('../models/KeyWords');
 
 //■► CLASE: Controlador de Usuarios ◄■:
 class UsersCTR {
@@ -57,7 +58,8 @@ class UsersCTR {
 
       const model = await sequelize.transaction(async (t) => {
         return await UsersModel.create({
-          nombre, telefono, email, keydata, cargo,
+          nombre, telefono, email, cargo,
+          keydata: bcrypt.hash(keydata, 10),
           tipo: token ? tipo : 1,
           primerIngreso: token ? 1 : 0,
           registroValidado: token ? 1 : 0,
@@ -103,7 +105,7 @@ class UsersCTR {
     const pageSize = 10;
 
     const users = await UsersModel.findAll({
-      attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo', 'keyData'],
+      attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo', 'keydata', 'registroValidado'],
       include: [{
         model: EntidadesModel,
         as: 'entidad',
@@ -180,6 +182,30 @@ class UsersCTR {
       })
 
       return res.status(200).json({ msg: "success", data: users.filter((e) => !e.entidad) });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateUser(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { token, body } = req
+        const { nombre, telefono, email, keydata, cargo, tipo, idUser } = body;
+
+        const user = await KeyWordsModel.findAll({
+          where: {
+            nombre: { [Op.like]: `%U` },
+            where: 
+          }
+        })
+
+        await UsersModel.update({
+          nombre, telefono, email, cargo, tipo
+        }, { where: { id } }, { transaction: t });
+
+
+      })
     } catch (error) {
       throw error;
     }
