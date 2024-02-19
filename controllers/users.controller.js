@@ -59,7 +59,7 @@ class UsersCTR {
       const model = await sequelize.transaction(async (t) => {
         return await UsersModel.create({
           nombre, telefono, email, cargo,
-          keydata: bcrypt.hash(keydata, 10),
+          keydata: await bcrypt.hash(keydata, 10),
           tipo: token ? tipo : 1,
           primerIngreso: token ? 1 : 0,
           registroValidado: token ? 1 : 0,
@@ -200,9 +200,10 @@ class UsersCTR {
           }
         })
 
-        await UsersModel.update({
-          nombre, telefono, email, cargo, tipo
-        }, { where: { id } }, { transaction: t });
+        await user.update({
+          nombre, telefono, email, cargo, tipo,
+          updateBy: token?.id
+        }, { transaction: t });
 
 
       })
