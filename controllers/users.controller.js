@@ -12,6 +12,7 @@ const path = require('path');
 const config = require('../config/config');
 const UsersModel = require("../models/Users");
 const EntidadesModel = require('../models/Entidades');
+const { literal } = require('sequelize');
 
 //■► CLASE: Controlador de Usuarios ◄■:
 class UsersCTR {
@@ -99,7 +100,29 @@ class UsersCTR {
 
   async getUsers(req = request, res = response) {
     const users = await UsersModel.findAll({
-      attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo']
+      attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo'],
+      include: [{
+        model: EntidadesModel,
+        as: 'entidad',
+        attributes: [
+          'id',
+          'nombre',
+          'sigla',
+          'tipo',
+          'tipoEntidad',
+          'descripcion',
+          'logo',
+          'urlLogo',
+          'direccion',
+          'urlDominio',
+          'urlFacebook',
+          'urlTwitter',
+          'urlLinkedin',
+          'telefono',
+          'email',
+          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = entidad.id_tipo_naturaleza_juridica)`), 'tipoNaturalezaJuridica'],
+        ]
+      }],
     })
 
     return res.status(200).json({ msg: "success", data: users });

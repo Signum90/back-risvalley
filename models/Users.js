@@ -4,12 +4,12 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 const { DataTypes, Model } = require('sequelize');
 const { urlFiles } = require('../config/config');
-// Add branch
+const EntidadesModel = require('./Entidades');
 
 //■► CLASE: Modelo Usuarios ◄■:
 class UsersModel extends Model {
   static initialize(sequelizeInstace) {
-    return super.init(
+    const User = super.init(
       {
         id: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
@@ -107,8 +107,9 @@ class UsersModel extends Model {
         modelName: 'Users',
         tableName: 'users'
       },
-
     )
+    User.hasOne(EntidadesModel.initialize(sequelizeInstace), { foreignKey: 'id_user_responsable', as: 'entidad' });
+    return User
   }
   static async findByEmail(email) {
     return await this.findOne({
