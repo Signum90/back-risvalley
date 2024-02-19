@@ -22,7 +22,6 @@ class EntidadesCTR {
           'tipo',
           'tipoEntidad',
           'contactoNombre',
-          //'contactoCargo',
           'contactoCorreo',
           'contactoTelefono',
           'idTipoNaturalezaJuridica',
@@ -36,7 +35,7 @@ class EntidadesCTR {
         ],
       })
 
-      res.status(200).json({ msg: 'success', data: entidades });
+      return res.status(200).json({ msg: 'success', data: entidades });
     } catch (error) {
       console.log("🚀 ~ TypesCTR ~ saveTypes ~ error:", error)
     }
@@ -47,7 +46,8 @@ class EntidadesCTR {
       return await sequelize.transaction(async (t) => {
         const { body, file, token } = req;
 
-        const contact = await UsersModel.findByPk(token?.id);
+        const idContacto = body.idUser && token?.superadmin ? body.idUser : token?.id;
+        const contact = await UsersModel.findByPk(idContacto);
 
         const postData = {
           nombre: body.nombre,
@@ -56,7 +56,7 @@ class EntidadesCTR {
           descripcion: body.descripcion,
           idTipoNaturalezaJuridica: body.idTipoNaturalezaJuridica,
           logo: file ? file?.filename : null,
-          idUserResponsable: token.id,
+          idUserResponsable: contact?.id,
           email: body.email,
           contactoNombre: contact?.nombre,
           contactoCorreo: contact?.email,
@@ -72,7 +72,7 @@ class EntidadesCTR {
 
         const model = await EntidadesModel.create(postData, { transaction: t });
 
-        res.status(200).json({ msg: 'success', data: model });
+        return res.status(200).json({ msg: 'success', data: model });
       })
     } catch (error) {
       throw (error);
@@ -95,7 +95,7 @@ class EntidadesCTR {
         }
         await EntidadesModel.update(updateData, { where: { id } }, { transaction: t });
 
-        res.status(200).json({ msg: 'success' });
+        return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {
       throw (error);
@@ -119,7 +119,7 @@ class EntidadesCTR {
             if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
           })
         }
-        res.status(200).json({ msg: 'success', data: entidad });
+        return res.status(200).json({ msg: 'success', data: entidad });
       })
     } catch (error) {
       console.log("🚀 ~ EventosCTR ~ updateLogoEvent ~ error:", error)

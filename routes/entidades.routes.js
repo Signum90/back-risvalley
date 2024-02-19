@@ -49,6 +49,29 @@ router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.si
   Middlewares.scan_errors
 ], entidadesController.saveEntidad);
 
+router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), [
+  check('nombre').trim().notEmpty().isString().isLength({ max: 120 }).custom(async (nombre) => {
+    const exists = await validateFieldUnique('entidad', 'nombre', nombre)
+    if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
+  }),
+  check('idUser').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('user', id)
+    if (!exists) return Promise.reject('Id user no válido');
+  }),
+  check('descripcion').trim().notEmpty().isString().isLength({ max: 80 }),
+  check('sigla').trim().notEmpty().isString().isLength({ max: 10 }),
+  check('tipo').notEmpty().isInt({ min: 1, max: 3 }),
+  check('idTipoNaturalezaJuridica').notEmpty().isInt(),
+  check('email').trim().notEmpty().isString().isLength({ max: 80 }),
+  check('telefono').trim().notEmpty().isInt().isLength({ max: 11 }),
+  check('direccion').trim().notEmpty().isString().isLength({ max: 80 }),
+  check('urlDominio').trim().isString().isLength({ max: 80 }),
+  check('urlFacebook').trim().isString().isLength({ max: 80 }),
+  check('urlTwitter').trim().isString().isLength({ max: 80 }),
+  check('urlLinkedin').trim().isString().isLength({ max: 80 }),
+  Middlewares.scan_errors
+], entidadesController.saveEntidad);
+
 router.put("/:idEntidad/update", Middlewares.validateJWTMiddleware, [
   param('idEntidad').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('entidad', id)
