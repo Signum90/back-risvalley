@@ -62,7 +62,7 @@ class UsersCTR {
           keydata: await bcrypt.hash(keydata, 10),
           tipo: token ? tipo : 1,
           primerIngreso: token ? 1 : 0,
-          registroValidado: token ? 1 : 0,
+          registroValidado: 0,
           superadmin: token ? superadmin : 0,
           logo: file ? file?.filename : null,
           password: passHash
@@ -204,7 +204,6 @@ class UsersCTR {
           nombre, telefono, email, cargo, tipo,
           updateBy: token?.id
         }, { transaction: t });
-
 
       })
     } catch (error) {

@@ -21,7 +21,7 @@ class AuthController {
       if (!user) return res.status(401).json({ type: 'error', msg: 'Usuario no existe', status: 401 })
 
       if (bcrypt.compareSync(password, user.password)) {
-        if (!user.registroValidado) return res.status(200).json({ data: { token: false, user: { id: user.id, registroValidado: false } } });
+        if (!user.registroValidado && !user.primerIngreso) return res.status(200).json({ data: { token: false, user: { id: user.id, registroValidado: false } } });
         await user.update({ sesionActiva: 1 }, { transaction: t })
         const token = await generarJWT({ id: user.id, keyData: user.keydata, superadmin: user.superadmin })
         const data = {
@@ -124,7 +124,8 @@ class AuthController {
 
       await UsersModel.update({
         password: passHash,
-        primerIngreso: 0
+        primerIngreso: 0,
+        registroValidado: 1,
       }, { where: { id: token.id } }, { transaction: t });
       return res.status(200).json({ data: true, msg: 'success' });
     })
