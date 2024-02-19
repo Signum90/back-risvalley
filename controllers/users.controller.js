@@ -196,7 +196,7 @@ class UsersCTR {
         const user = await KeyWordsModel.findAll({
           where: {
             nombre: { [Op.like]: `%U` },
-            where: 
+            idRegistroAsociado: idUser
           }
         })
 
