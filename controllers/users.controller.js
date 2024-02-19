@@ -103,7 +103,7 @@ class UsersCTR {
     const pageSize = 10;
 
     const users = await UsersModel.findAll({
-      attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo'],
+      attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo', 'keyData'],
       include: [{
         model: EntidadesModel,
         as: 'entidad',
@@ -130,7 +130,8 @@ class UsersCTR {
       limit: pageSize
     })
 
-    return res.status(200).json({ msg: "success", data: users });
+    const total = await UsersModel.count();
+    return res.status(200).json({ msg: "success", total, data: users });
   }
 
   static async saveEntidad(body, id, logo = null) {
