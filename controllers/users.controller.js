@@ -55,11 +55,11 @@ class UsersCTR {
         passHash = await bcrypt.hash(passTemp, 10);
       }
       const keydata = await generateKeyWord(email.split('@')[0], 'U')
-
+      const keydataEncrypted = await bcrypt.hash(keydata, 10)
       const model = await sequelize.transaction(async (t) => {
         return await UsersModel.create({
           nombre, telefono, email, cargo,
-          keydata: await bcrypt.hash(keydata, 10),
+          keydata: keydataEncrypted,
           tipo: token ? tipo : 1,
           primerIngreso: token ? 1 : 0,
           registroValidado: 0,
@@ -187,23 +187,30 @@ class UsersCTR {
     }
   }
 
-  async updateUser(req, res) {
+  async updateUser(req = request, res = response) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { token, body } = req
-        const { nombre, telefono, email, keydata, cargo, tipo, idUser } = body;
+        const { token, body, params } = req
+        const { nombre, telefono, email, keydata, cargo, tipo } = body;
+        const id = params.idUser
 
-        const user = await KeyWordsModel.findAll({
+        const keyword = await KeyWordsModel.findOne({
           where: {
-            nombre: { [Op.like]: `%U` },
-            idRegistroAsociado: idUser
+            word: { [Op.like]: `U%` },
+            idRegistroAsociado: id
           }
         })
 
-        await user.update({
+        console.log("🚀 ~ UsersCTR ~ returnawaitsequelize.transaction ~ bcrypt.compareSync(keyword.key, keydata):", keyword, bcrypt.compareSync(keyword.key, keydata))
+        if (!bcrypt.compareSync(keyword.key, keydata)) {
+          return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
+        }
+        return res.status(200).json({ msg: "success", data: keyword });
+
+        await UsersModel.update({
           nombre, telefono, email, cargo, tipo,
           updateBy: token?.id
-        }, { transaction: t });
+        }, { where: { id } }, { transaction: t });
 
       })
     } catch (error) {

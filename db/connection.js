@@ -16,6 +16,7 @@ const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const RetosAspirantesModel = require('../models/RetosAspirantes');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const UsersValidacionesModel = require('../models/UsersValidaciones');
+const PqrsModel = require('../models/Pqrs')
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -36,6 +37,7 @@ class DataBase {
     this.RetosAspirantesModel = RetosAspirantesModel.initialize(this.sequelize);
     this.ServiciosTecnologicosModel = ServiciosTecnologicosModel.initialize(this.sequelize);
     this.usersValidacionesModel = UsersValidacionesModel.initialize(this.sequelize);
+    this.PqrsModel = PqrsModel.initialize(this.sequelize);
   }
   //■► MET: Autenticación de la DB ◄■:
   async authenticateDB() {

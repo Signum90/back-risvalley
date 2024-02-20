@@ -23,7 +23,7 @@ class AuthController {
       if (bcrypt.compareSync(password, user.password)) {
         if (!user.registroValidado && !user.primerIngreso) return res.status(200).json({ data: { token: false, user: { id: user.id, registroValidado: false } } });
         await user.update({ sesionActiva: 1 }, { transaction: t })
-        const token = await generarJWT({ id: user.id, keyData: user.keydata, superadmin: user.superadmin })
+        const token = await generarJWT({ id: user.id, keyData: user.keydata, superadmin: user.superadmin, primerIngreso: user.primerIngreso })
         const data = {
           id: user.id,
           superadmin: user.superadmin,
@@ -122,12 +122,28 @@ class AuthController {
       const token = req.token
       const passHash = await bcrypt.hash(password, 10);
 
-      await UsersModel.update({
+      const user = await UsersModel.findByPk(token.id)
+
+      await user.update({
         password: passHash,
         primerIngreso: 0,
         registroValidado: 1,
-      }, { where: { id: token.id } }, { transaction: t });
-      return res.status(200).json({ data: true, msg: 'success' });
+      }, { transaction: t });
+
+      const newToken = await generarJWT({ id: user.id, keyData: user.keydata, superadmin: user.superadmin, primerIngreso: user.primerIngreso })
+      const data = {
+        id: user.id,
+        superadmin: user.superadmin,
+        nombre: user.nombre,
+        telefono: user.telefono,
+        email: user.email,
+        sesionActiva: user.sesionActiva,
+        primerIngreso: user.primerIngreso,
+        keydata: user.keyData,
+        registroValidado: user.registroValidado
+      }
+
+      return res.status(200).json({ data: { token: newToken, user: data }, msg: 'success' });
     })
   }
 

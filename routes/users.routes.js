@@ -6,13 +6,13 @@ const { Router } = require('express');
 // ■► Multer / formData object parser ◄■:
 const multerConfig = require('../config/MulterConfig');
 // ■► Express Validator ◄■:
-const { check, body } = require('express-validator');
+const { check, body, param } = require('express-validator');
 const CustomMessages = require('../helpers/customMessages');
 //■► CONTROLADOR:  ◄■:
 const UsersCTR = require('../controllers/users.controller');
 //■► Middlewares:  ◄■:
 const Middlewares = require('../middlewares/middlewares');
-const { validateFieldUnique } = require('../helpers/helpers');
+const { validateFieldUnique, validateExistId } = require('../helpers/helpers');
 
 //■► Instancia controlador:  ◄■:
 const usersController = new UsersCTR();
@@ -38,6 +38,22 @@ router.post("/create", multerConfig.upload.single('logo'), [
   check('tipo').notEmpty().isInt({ min: 1, max: 1 }),
   Middlewares.scan_errors
 ], usersController.registerUser);
+
+router.put("/:idUser/update", [
+  param('idUser').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('user', id);
+    if (!exists) return Promise.reject('Id user no válido');
+  }),
+  body('email').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email, { req }) => {
+    const exists = await validateFieldUnique('user', 'email', email, req.params.idUser)
+    if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
+  }),
+  body('keydata').trim().notEmpty().withMessage(customMessages.required),
+  body('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
+  body('telefono').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
+  body('cargo').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
+  Middlewares.scan_errors
+], usersController.updateUser);
 
 router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), [
   body('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),

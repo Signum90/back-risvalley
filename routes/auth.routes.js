@@ -41,7 +41,7 @@ router.post("/reenviar-codigo", [
   Middlewares.scan_errors
 ], async (req, res) => await authController.reSendCodeValidate(req, res));
 
-router.post("/update-password/primer-ingreso", Middlewares.validateJWTMiddleware, [
+router.post("/update-password/primer-ingreso", Middlewares.firstEntryMiddleware, [
   check('password').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await authController.updatePasswordFirstEntry(req, res));

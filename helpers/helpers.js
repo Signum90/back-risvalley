@@ -62,9 +62,9 @@ class Helpers {
     }
     return randomstring;
   }
-  async registerKeyData(idRegistroAsociado, word, keydata, letter) {
+  async registerKeyData(idRegistroAsociado, word, key, letter) {
     return await sequelize.transaction(async (t) => {
-      const key = await bcrypt.hash(keydata, 10);
+      //const key = await bcrypt.hash(keydata, 10);
       await KeyWordsModel.create({
         key, idRegistroAsociado,
         word: letter + word

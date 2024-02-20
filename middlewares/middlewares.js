@@ -36,7 +36,7 @@ class Middlewares {
       const token = authorization.split(' ')[1]
       if (invalidTokens.has(token)) throw res.status(401).json({ type: 'error', msg: 'Token inválido', status: 401 });
       const tokenData = verifyToken(token);
-      if (!tokenData) throw res.status(401).json({ type: 'error', msg: 'Token inválido', status: 401 });
+      if (!tokenData || tokenData?.primerIngreso) throw res.status(401).json({ type: 'error', msg: 'Token inválido', status: 401 });
       req.token = tokenData;
 
       next();
@@ -60,7 +60,24 @@ class Middlewares {
     } catch (error) {
       console.log("🚀 ~ Middlewares ~ validateJWT ~ error:", error)
       next(error)
+    }
+  }
 
+  firstEntryMiddleware(req, res, next) {
+    try {
+      const { authorization } = req.headers
+      if (!authorization) throw res.status(401).json({ type: 'error', msg: 'Token no proporcionado', status: 401 });
+
+      const token = authorization.split(' ')[1]
+      if (invalidTokens.has(token)) throw res.status(401).json({ type: 'error', msg: 'Token inválido', status: 401 });
+      const tokenData = verifyToken(token);
+      if (!tokenData) throw res.status(401).json({ type: 'error', msg: 'Token inválido', status: 401 });
+      req.token = tokenData;
+
+      next();
+    } catch (error) {
+      console.log("🚀 ~ Middlewares ~ validateJWT ~ error:", error)
+      next(error)
     }
   }
 
