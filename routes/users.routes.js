@@ -6,7 +6,7 @@ const { Router } = require('express');
 // ■► Multer / formData object parser ◄■:
 const multerConfig = require('../config/MulterConfig');
 // ■► Express Validator ◄■:
-const { check, body, param } = require('express-validator');
+const { check, body, param, validationResult } = require('express-validator');
 const CustomMessages = require('../helpers/customMessages');
 //■► CONTROLADOR:  ◄■:
 const UsersCTR = require('../controllers/users.controller');
@@ -20,6 +20,17 @@ const usersController = new UsersCTR();
 const customMessages = CustomMessages.getValidationMessages();
 //■► Router:  ◄■:
 const router = Router();
+
+
+const validations = {
+  'email': body('value').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email, { req }) => {
+    const exists = await validateFieldUnique('user', 'email', email, req.params.idUser)
+    if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
+  }),
+  'nombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
+  'telefono': body('value').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
+  'cargo': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
+}
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await usersController.getUsers(req, res));
@@ -44,14 +55,14 @@ router.put("/:idUser/update", [
     const exists = await validateExistId('user', id);
     if (!exists) return Promise.reject('Id user no válido');
   }),
-  body('email').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email, { req }) => {
-    const exists = await validateFieldUnique('user', 'email', email, req.params.idUser)
-    if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
-  }),
   body('keydata').trim().notEmpty().withMessage(customMessages.required),
-  body('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
-  body('telefono').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
-  body('cargo').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
+  body('value').notEmpty().custom(async (value, { req }) => {
+    const validate = validations[req.body.campo]
+    if (!validate) return Promise.reject('Campo no válido');
+    await validate.run(req);
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return Promise.reject('error');
+  }),
   Middlewares.scan_errors
 ], usersController.updateUser);
 

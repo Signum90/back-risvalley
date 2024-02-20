@@ -1,12 +1,14 @@
 const { Router } = require('express');
-const { body, param, check, validationResult } = require('express-validator');
+const { body, param, check, validationResult, query } = require('express-validator');
 const entidadesCTR = require('../controllers/entidades.controller');
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
 const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
+const CustomMessages = require('../helpers/customMessages');
 
 //■► Instancia controlador:  ◄■:
 const entidadesController = new entidadesCTR();
+const customMessages = CustomMessages.getValidationMessages();
 //■► Router:  ◄■:
 const router = Router();
 
@@ -77,6 +79,7 @@ router.put("/:idEntidad/update", Middlewares.validateJWTMiddleware, [
     const exists = await validateExistId('entidad', id)
     if (!exists) return Promise.reject('Id entidad no válido');
   }),
+  body('keydata').trim().notEmpty().withMessage(customMessages.required),
   //validacion dinamica dependiendo del campo que se va a editar
   body('value').notEmpty().custom(async (id, { req }) => {
     const validate = validations[req.body.campo]
@@ -95,6 +98,7 @@ router.put("/:idEntidad/update-logo", Middlewares.validateJWTMiddleware, multerC
     const exists = await validateExistId('entidad', id)
     if (!exists) return Promise.reject('Id entidad no válido');
   }),
+  check('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await entidadesController.updateLogoEntidad(req, res));
 
@@ -103,6 +107,7 @@ router.delete("/:idEntidad/delete", Middlewares.validateJWTMiddleware, [
     const exists = await validateExistId('entidad', id)
     if (!exists) return Promise.reject('Id entidad no válido');
   }),
+  query('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await entidadesController.deleteEntidad(req, res))
 

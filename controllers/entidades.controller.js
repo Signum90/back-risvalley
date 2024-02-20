@@ -6,8 +6,9 @@ const { response, request } = require('express');
 const EntidadesModel = require('../models/Entidades');
 const { sequelize } = require('../db/connection');
 const { literal } = require('sequelize');
-const { deleteFile, validateFieldUnique } = require('../helpers/helpers');
+const { deleteFile, validateFieldUnique, validateKeyWord, generateKeyWord, registerKeyData } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
+const bcrypt = require('bcrypt')
 
 class EntidadesCTR {
   async getEntidades(req = request, res = response) {
@@ -25,6 +26,7 @@ class EntidadesCTR {
           'contactoCorreo',
           'contactoTelefono',
           'idTipoNaturalezaJuridica',
+          'keydata',
           'direccion',
           'urlDominio',
           'urlFacebook',
@@ -48,6 +50,7 @@ class EntidadesCTR {
 
         const idContacto = body.idUser && token?.superadmin ? body.idUser : token?.id;
         const contact = await UsersModel.findByPk(idContacto);
+        const keydata = await generateKeyWord();
 
         const postData = {
           nombre: body.nombre,
@@ -63,6 +66,7 @@ class EntidadesCTR {
           contactoTelefono: contact?.telefono,
           direccion: body.direccion,
           urlDominio: body.urlDominio,
+          keydata: await bcrypt.hash(keydata, 10),
           telefono: body.telefono,
           urlFacebook: body.urlFacebook,
           urlTwitter: body.urlTwitter,
@@ -71,6 +75,7 @@ class EntidadesCTR {
         }
 
         const model = await EntidadesModel.create(postData, { transaction: t });
+        await registerKeyData(model.id, body.email.split('@')[0], keydata, 'E');
 
         return res.status(200).json({ msg: 'success', data: model });
       })
@@ -85,6 +90,10 @@ class EntidadesCTR {
         const { body, token } = req;
         const { campo, value } = body;
         const id = req.params.idEntidad
+
+        const validateKeyData = await validateKeyWord(id, 'E', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
+
         if (campo == 'nombre') {
           const exists = await validateFieldUnique('entidad', 'nombre', value, id)
           if (exists) return res.status(400).json({ type: 'error', msg: 'Ya existe una entidad con ese nombre', status: 400 });
@@ -105,9 +114,13 @@ class EntidadesCTR {
   async updateLogoEntidad(req = request, res = response) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { file, token } = req
+        const { file, token, body } = req
 
         const entidad = await EntidadesModel.findByPk(req.params.idEntidad);
+
+        const validateKeyData = await validateKeyWord(req.params.idEntidad, 'E', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
+
         const fileToDelete = entidad?.logo;
         await entidad.update({
           logo: file ? file?.filename : null,
@@ -131,6 +144,9 @@ class EntidadesCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idEntidad
+
+        const validateKeyData = await validateKeyWord(req.params.idEntidad, 'E', req.query.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
         const entidad = await EntidadesModel.findByPk(id);
         const fileToDelete = entidad?.logo;

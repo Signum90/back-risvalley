@@ -4,7 +4,7 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 const { response, request } = require('express');
 const { sequelize } = require('../db/connection');
-const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate, generatePasswordTemporal } = require('../helpers/helpers');
+const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate, generatePasswordTemporal, validateKeyWord } = require('../helpers/helpers');
 const { readHTMLFile } = require('../config/email')
 const hbs = require('hbs');
 const bcrypt = require('bcrypt')
@@ -54,12 +54,11 @@ class UsersCTR {
         passTemp = await generatePasswordTemporal()
         passHash = await bcrypt.hash(passTemp, 10);
       }
-      const keydata = await generateKeyWord(email.split('@')[0], 'U')
-      const keydataEncrypted = await bcrypt.hash(keydata, 10)
+      const keydata = await generateKeyWord()
       const model = await sequelize.transaction(async (t) => {
         return await UsersModel.create({
           nombre, telefono, email, cargo,
-          keydata: keydataEncrypted,
+          keydata: await bcrypt.hash(keydata, 10),
           tipo: token ? tipo : 1,
           primerIngreso: token ? 1 : 0,
           registroValidado: 0,
@@ -128,6 +127,7 @@ class UsersCTR {
           [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = entidad.id_tipo_naturaleza_juridica)`), 'tipoNaturalezaJuridica'],
         ]
       }],
+      order: [['createdAt', 'Desc']],
       offset: (page - 1) * pageSize,
       limit: pageSize
     })
@@ -140,6 +140,7 @@ class UsersCTR {
     try {
       return await sequelize.transaction(async (t) => {
 
+        const keydata = await generateKeyWord()
         const postData = {
           nombre: body.nombreEntidad,
           sigla: body.sigla,
@@ -149,7 +150,6 @@ class UsersCTR {
           logo,
           idUserResponsable: id,
           contactoNombre: body.nombre,
-          //contactoCargo: body.cargo,
           contactoCorreo: body.email,
           contactoTelefono: body.telefono,
           direccion: body.direccion,
@@ -157,12 +157,13 @@ class UsersCTR {
           urlFacebook: body.urlFacebook,
           urlTwitter: body.urlTwitter,
           urlLinkedin: body.urlLinkedin,
+          keydata: await bcrypt.hash(keydata, 10),
           telefono: body.telefonoEntidad,
           email: body.emailEntidad
-          //createdBy
         }
 
-        return await EntidadesModel.create(postData, { transaction: t });
+        const entidad = await EntidadesModel.create(postData, { transaction: t });
+        await registerKeyData(entidad.id, body.email.split('@')[0], keydata, 'E')
       })
     } catch (error) {
       throw (error);
@@ -191,27 +192,26 @@ class UsersCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const { token, body, params } = req
-        const { nombre, telefono, email, keydata, cargo, tipo } = body;
+        const { campo, keydata, value } = body;
         const id = params.idUser
 
-        const keyword = await KeyWordsModel.findOne({
-          where: {
-            word: { [Op.like]: `U%` },
-            idRegistroAsociado: id
-          }
-        })
+        const validateKeyData = await validateKeyWord(id, 'U', keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
-        console.log("🚀 ~ UsersCTR ~ returnawaitsequelize.transaction ~ bcrypt.compareSync(keyword.key, keydata):", keyword, bcrypt.compareSync(keyword.key, keydata))
-        if (!bcrypt.compareSync(keyword.key, keydata)) {
-          return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
-        }
-        return res.status(200).json({ msg: "success", data: keyword });
-
-        await UsersModel.update({
-          nombre, telefono, email, cargo, tipo,
+        const updateData = {
+          [campo]: value,
           updateBy: token?.id
-        }, { where: { id } }, { transaction: t });
+        }
+        if (campo == 'email') {
+          updateData['registroValidado'] = 0;
+          const codeTemp = await generateCodeTemporal();
+          await UsersCTR.sendEmailValidate(model.email, model.nombre, codeTemp, model.id);
+          await registerUserValidate(model.id, codeTemp);
+        }
 
+        await UsersModel.update(updateData, { where: { id } }, { transaction: t });
+
+        return res.status(200).json({ msg: "success", data: true });
       })
     } catch (error) {
       throw error;

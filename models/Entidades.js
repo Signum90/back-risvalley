@@ -127,6 +127,10 @@ class EntidadesModel extends Model {
           allowNull: true,
           field: 'url_linkedin',
         },
+        keydata: {
+          type: DataTypes.STRING,
+          allowNull: false
+        },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: true,

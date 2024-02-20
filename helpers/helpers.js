@@ -196,6 +196,23 @@ class Helpers {
       throw error;
     }
   }
+
+  async validateKeyWord(id, letter, keydata) {
+    try {
+      const keyword = await KeyWordsModel.findOne({
+        where: {
+          word: { [Op.like]: `${letter}%` },
+          idRegistroAsociado: id
+        }
+      })
+      if (!bcrypt.compareSync(keyword.key, keydata)) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
   response_handlers() {
 
   }
