@@ -25,7 +25,8 @@ class ServiciosTecnologicosCTR {
           [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.email'), 'correoContacto'],
-          [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio']
+          [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
         ],
         where: {
           estado: 1,
@@ -63,6 +64,29 @@ class ServiciosTecnologicosCTR {
       throw error;
     }
   }
+
+  async postTechnologicalServiceFromDashboard(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { body, file, token } = req;
+
+        const postData = {
+          nombre: body.nombre,
+          descripcion: body.descripcion,
+          idTipoServicio: body.idTipoServicio,
+          idTipoClienteServicio: body.idTipoClienteServicio,
+          imagen: file ? file?.filename : null,
+          createdBy: body.idUserContacto
+        };
+        const model = await ServiciosTecnologicosModel.create(postData, { transaction: t });
+
+        return res.status(200).json({ msg: 'success', data: model });
+      })
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
   async updateTechnologicalService(req, res) {
     try {
