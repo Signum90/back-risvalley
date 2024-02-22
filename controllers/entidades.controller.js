@@ -5,7 +5,7 @@
 const { response, request } = require('express');
 const EntidadesModel = require('../models/Entidades');
 const { sequelize } = require('../db/connection');
-const { literal } = require('sequelize');
+const { literal, Op } = require('sequelize');
 const { deleteFile, validateFieldUnique, validateKeyWord, generateKeyWord, registerKeyData } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
 const bcrypt = require('bcrypt')
@@ -13,6 +13,9 @@ const bcrypt = require('bcrypt')
 class EntidadesCTR {
   async getEntidades(req = request, res = response) {
     try {
+      const { tipo, idTipoNaturalezaJuridica, nombre, page } = req.query;
+      const pageSize = 10;
+
       const entidades = await EntidadesModel.findAll({
         attributes: [
           'id',
@@ -35,6 +38,13 @@ class EntidadesCTR {
           'urlLogo',
           [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = entidades.id_tipo_naturaleza_juridica)`), 'tipoNaturalezaJuridica'],
         ],
+        where: {
+          ...(tipo ? { tipo } : {}),
+          ...(idTipoNaturalezaJuridica ? { idTipoNaturalezaJuridica } : {}),
+          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+        },
+        offset: (page - 1) * pageSize,
+        limit: pageSize
       })
 
       return res.status(200).json({ msg: 'success', data: entidades });
