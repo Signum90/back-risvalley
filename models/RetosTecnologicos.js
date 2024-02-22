@@ -63,6 +63,17 @@ class RetosTecnologicosModel extends Model {
           allowNull: false,
           field: 'id_recurso_multimedia',
         },
+        idUserEntidad: {
+          type: DataTypes.MEDIUMINT.UNSIGNED,
+          allowNull: false,
+          comment: "User",
+          references: {
+            model: 'users',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
+          field: 'id_user_entidad'
+        },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: true,

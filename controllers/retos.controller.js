@@ -1,8 +1,10 @@
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const { sequelize } = require('../db/connection');
-const { literal, Op } = require('sequelize');
+const { literal, Op, where } = require('sequelize');
 const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia } = require('../helpers/helpers');
 const { urlFiles } = require('../config/config');
+const UsersModel = require('../models/Users');
+const EntidadesModel = require('../models/Entidades');
 
 class RetosCTR {
   async getTechnologicalChallenges(req, res) {
@@ -27,9 +29,11 @@ class RetosCTR {
             'fechaInicioConvocatoria',
             'fechaFinConvocatoria',
             'fichaTecnica',
+            'idUserEntidad',
             'urlFichaTecnica',
             [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
             [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
+            [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
           ],
           where: {
             estado: {
@@ -45,7 +49,6 @@ class RetosCTR {
     }
   }
 
-
   async saveTechnologicalChallenge(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
@@ -54,6 +57,9 @@ class RetosCTR {
         const fichaTecnica = files['fichaTecnica'][0];
         const multimedia = files['recursoMultimedia'][0];
         if (!multimedia) return res.status(400).json({ type: 'error', msg: 'El recurso multimedia es requerido', status: 400 });
+        const entidad = await EntidadesModel.findOne({ where: { idUserResponsable: token.id } });
+        console.log("🚀 ~ RetosCTR ~ returnawaitsequelize.transaction ~ entidad:", entidad)
+        if (!entidad) return res.status(400).json({ type: 'error', msg: 'Por favor cree una entidad unipersonal para crear eventos', status: 400 });
 
         const recursoMultimediaRegistro = await saveResourceMultimedia(multimedia, token?.id);
         const model = await RetosTecnologicosModel.create({
@@ -63,7 +69,38 @@ class RetosCTR {
           fechaFinConvocatoria,
           idRecursoMultimedia: recursoMultimediaRegistro?.id,
           fichaTecnica: fichaTecnica ? fichaTecnica?.filename : null,
-          createdBy: token.id
+          idUserEntidad: token.id,
+          createdBy: token.id,
+        }, { transaction: t })
+
+        return res.status(200).json({ msg: 'success', data: model });
+      })
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async saveTechnologicalChallengeFromDashboard(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { body, token, files } = req;
+        const { nombre, descripcion, fechaInicioConvocatoria, fechaFinConvocatoria, idUserEntidad } = body;
+        const fichaTecnica = files['fichaTecnica'][0];
+        const multimedia = files['recursoMultimedia'][0];
+        if (!multimedia) return res.status(400).json({ type: 'error', msg: 'El recurso multimedia es requerido', status: 400 });
+        const entidad = await EntidadesModel.findOne({ where: { idUserResponsable: idUserEntidad } });
+        if (!entidad) return res.status(400).json({ type: 'error', msg: 'El usuario debe tener una entidad', status: 400 });
+
+        const recursoMultimediaRegistro = await saveResourceMultimedia(multimedia, token?.id);
+        const model = await RetosTecnologicosModel.create({
+          nombre,
+          descripcion,
+          fechaInicioConvocatoria,
+          fechaFinConvocatoria,
+          idRecursoMultimedia: recursoMultimediaRegistro?.id,
+          fichaTecnica: fichaTecnica ? fichaTecnica?.filename : null,
+          idUserEntidad,
+          createdBy: token.id,
         }, { transaction: t })
 
         return res.status(200).json({ msg: 'success', data: model });

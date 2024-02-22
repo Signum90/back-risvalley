@@ -13,24 +13,24 @@ const customMessages = CustomMessages.getValidationMessages();
 const router = Router();
 
 const validations = {
-  'nombre': body('value').trim().notEmpty().isString().isLength({ max: 120 }),
-  'descripcion': body('value').trim().notEmpty().isString().isLength({ max: 150 }),
-  'sigla': body('value').trim().notEmpty().isString().isLength({ max: 10 }),
-  'tipo': body('value').notEmpty().isInt({ min: 1, max: 3 }),
-  'idTipoNaturalezaJuridica': body('value').notEmpty().isInt(),
-  'contactoNombre': body('value').trim().notEmpty().isString().isLength({ max: 70 }),
-  'contactoCargo': body('value').trim().notEmpty().isString().isLength({ max: 70 }),
-  'contactoCorreo': body('value').trim().notEmpty().isString().isLength({ max: 80 }),
-  'contactoTelefono': body('value').trim().notEmpty().isInt().isLength({ max: 11 }),
-  'direccion': body('value').trim().notEmpty().isString().isLength({ max: 80 }),
-  'urlDominio': body('value').trim().isString().isLength({ max: 80 }),
-  'urlFacebook': body('value').trim().isString().isLength({ max: 80 }),
-  'urlTwitter': body('value').trim().isString().isLength({ max: 80 }),
-  'urlLinkedin': body('value').trim().isString().isLength({ max: 80 }),
+  'nombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage(customMessages.length),
+  'descripcion': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage(customMessages.length),
+  'sigla': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 10 }).withMessage(customMessages.length),
+  'tipo': body('value').notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }),
+  'idTipoNaturalezaJuridica': body('value').notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int),
+  'contactoNombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
+  'contactoCargo': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
+  'contactoCorreo': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
+  'contactoTelefono': body('value').trim().notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
+  'direccion': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
+  'urlDominio': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
+  'urlFacebook': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
+  'urlTwitter': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
+  'urlLinkedin': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
 }
 
 //■► RUTEO: ===================================== ◄■:
-router.get("/list", async (req, res) => await entidadesController.getEntidades(req, res));
+router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getEntidades(req, res));
 
 router.get("/select", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getSelectEntidades(req, res));
 
@@ -39,10 +39,13 @@ router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.si
     const exists = await validateFieldUnique('entidad', 'nombre', nombre)
     if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
   }),
-  check('descripcion').trim().notEmpty().isString().isLength({ max: 80 }),
-  check('sigla').trim().notEmpty().isString().isLength({ max: 10 }),
-  check('tipo').notEmpty().isInt({ min: 1, max: 3 }),
-  check('idTipoNaturalezaJuridica').notEmpty().isInt(),
+  check('descripcion').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
+  check('sigla').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 10 }).withMessage(customMessages.length),
+  check('tipo').notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }).withMessage(customMessages.int),
+  check('idTipoNaturalezaJuridica').notEmpty().isInt().custom(async (tipo) => {
+    const exists = await validateExistId('tipo', tipo)
+    if (!exists) return Promise.reject('Id user no válido');
+  }),
   check('email').trim().notEmpty().isString().isLength({ max: 80 }),
   check('telefono').trim().notEmpty().isInt().isLength({ max: 11 }),
   check('direccion').trim().notEmpty().isString().isLength({ max: 80 }),
@@ -65,7 +68,10 @@ router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConf
   check('descripcion').trim().notEmpty().isString().isLength({ max: 80 }),
   check('sigla').trim().notEmpty().isString().isLength({ max: 10 }),
   check('tipo').notEmpty().isInt({ min: 1, max: 3 }),
-  check('idTipoNaturalezaJuridica').notEmpty().isInt(),
+  check('idTipoNaturalezaJuridica').notEmpty().isInt().custom(async (tipo) => {
+    const exists = await validateExistId('tipo', tipo)
+    if (!exists) return Promise.reject('Id user no válido');
+  }),
   check('email').trim().notEmpty().isString().isLength({ max: 80 }),
   check('telefono').trim().notEmpty().isInt().isLength({ max: 11 }),
   check('direccion').trim().notEmpty().isString().isLength({ max: 80 }),
