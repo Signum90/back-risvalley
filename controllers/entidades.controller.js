@@ -38,13 +38,13 @@ class EntidadesCTR {
           'urlLogo',
           [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = entidades.id_tipo_naturaleza_juridica)`), 'tipoNaturalezaJuridica'],
         ],
-        where: {
-          ...(tipo ? { tipo } : {}),
-          ...(idTipoNaturalezaJuridica ? { idTipoNaturalezaJuridica } : {}),
-          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
-        },
-        offset: (page - 1) * pageSize,
-        limit: pageSize
+        //where: {
+        //  ...(tipo ? { tipo } : {}),
+        //  ...(idTipoNaturalezaJuridica ? { idTipoNaturalezaJuridica } : {}),
+        //  ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+        //},
+        //offset: (page - 1) * pageSize,
+        //limit: pageSize
       })
 
       return res.status(200).json({ msg: 'success', data: entidades });

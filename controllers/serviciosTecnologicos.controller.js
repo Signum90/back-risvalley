@@ -7,7 +7,8 @@ const UsersModel = require('../models/Users');
 class ServiciosTecnologicosCTR {
   async getTechnologicalService(req, res) {
     try {
-      const { nombre, idTipoServicio, idTipoClienteServicio } = req.query
+      const { nombre, idTipoServicio, idTipoClienteServicio, page } = req.query
+      const pageSize = 10;
 
       const services = await ServiciosTecnologicosModel.findAll({
         attributes: [
@@ -35,6 +36,8 @@ class ServiciosTecnologicosCTR {
           ...(idTipoClienteServicio ? { idTipoClienteServicio } : {}),
         },
         include: [{ model: UsersModel, as: 'contacto', attributes: [] }],
+        offset: (page - 1) * pageSize,
+        limit: pageSize
       })
 
       return res.status(200).json({ msg: 'success', data: services });
