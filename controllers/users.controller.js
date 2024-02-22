@@ -101,7 +101,7 @@ class UsersCTR {
 
   async getUsers(req = request, res = response) {
     const page = Number(req.query.page);
-    const pageSize = 10;
+    const pageSize = 5;
 
     const users = await UsersModel.findAll({
       attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo', 'keydata', 'registroValidado'],

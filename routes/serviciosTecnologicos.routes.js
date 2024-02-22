@@ -29,6 +29,30 @@ router.post("/", Middlewares.validateJWTMiddleware, multerConfig.upload.single('
   Middlewares.scan_errors
 ], async (req, res) => await serviciosTecnologicosController.postTechnologicalService(req, res));
 
+router.post("/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('imagen'), [
+  check('idUserContacto').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('user', id)
+    if (!exists) return Promise.reject('Id user no válido');
+  }),
+  check('nombre').trim().notEmpty().isString().isLength({ max: 120 }),
+  check('descripcion').trim().notEmpty().isString().isLength({ max: 150 }),
+  check('idTipoServicio').notEmpty().isInt().custom(async (id) => {
+    const tipo = await validateExistId('tipo', id);
+    if (!tipo) return Promise.reject('Id tipo no válido');
+  }),
+  check('idTipoClienteServicio').notEmpty().isInt().custom(async (id) => {
+    const tipo = await validateExistId('tipo', id);
+    if (!tipo) return Promise.reject('Id tipo no válido');
+  }),
+  check('imagen').custom(async (imagen, { req }) => {
+    const imageFormat = ['image/jpeg', 'image/png'];
+    if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Por favor ingrese una imagen valida');
+    if (!req.file) return Promise.reject('El campo imagen es obligatorio');
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await serviciosTecnologicosController.postTechnologicalServiceFromDashboard(req, res));
+
+
 router.put("/:idServicio/update", Middlewares.validateJWTMiddleware, [
   param('idServicio').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('servicio', id)

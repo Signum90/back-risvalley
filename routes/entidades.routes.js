@@ -32,6 +32,8 @@ const validations = {
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getEntidades(req, res));
 
+router.get("/select", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getSelectEntidades(req, res));
+
 router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
   check('nombre').trim().notEmpty().isString().isLength({ max: 120 }).custom(async (nombre) => {
     const exists = await validateFieldUnique('entidad', 'nombre', nombre)

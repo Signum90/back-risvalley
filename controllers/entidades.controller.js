@@ -175,6 +175,18 @@ class EntidadesCTR {
       return res.status(400).json({ error })
     }
   }
+
+  async getSelectEntidades(req, res) {
+    try {
+      const entidades = await EntidadesModel.findAll({
+        attributes: ['id', 'nombre', 'idUserResponsable']
+      })
+
+      return res.status(200).json({ msg: "success", data: entidades });
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 //■► EXPORTAR:  ◄■:
