@@ -30,7 +30,7 @@ const validations = {
 }
 
 //■► RUTEO: ===================================== ◄■:
-router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getEntidades(req, res));
+router.get("/list", async (req, res) => await entidadesController.getEntidades(req, res));
 
 router.get("/select", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getSelectEntidades(req, res));
 
