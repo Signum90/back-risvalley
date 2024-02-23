@@ -8,7 +8,7 @@ const { validateExistId } = require('../helpers/helpers');
 
 const serviciosTecnologicosController = new ServiciosTecnologicosCTR();
 
-router.get("/", Middlewares.validateJWTMiddleware, async (req, res) => await serviciosTecnologicosController.getTechnologicalService(req, res));
+router.get("/", async (req, res) => await serviciosTecnologicosController.getTechnologicalService(req, res));
 
 router.post("/", Middlewares.validateJWTMiddleware, multerConfig.upload.single('imagen'), [
   check('nombre').trim().notEmpty().isString().isLength({ max: 120 }),
