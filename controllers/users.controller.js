@@ -101,7 +101,7 @@ class UsersCTR {
   }
 
   async getUsers(req = request, res = response) {
-    const page = Number(req.query.page);
+    const page = req?.query?.page ?? 1;
     const pageSize = 5;
 
     const users = await UsersModel.findAll({
