@@ -8,6 +8,7 @@ class ServiciosTecnologicosCTR {
   async getTechnologicalService(req, res) {
     try {
       const { nombre, idTipoServicio, idTipoClienteServicio, page } = req.query
+      const paginate = page ?? 1;
       const pageSize = 10;
 
       const services = await ServiciosTecnologicosModel.findAll({
@@ -36,7 +37,7 @@ class ServiciosTecnologicosCTR {
           ...(idTipoClienteServicio ? { idTipoClienteServicio } : {}),
         },
         include: [{ model: UsersModel, as: 'contacto', attributes: [] }],
-        offset: (page ?? 1 - 1) * pageSize,
+        offset: (paginate - 1) * pageSize,
         limit: pageSize
       })
 
