@@ -57,7 +57,8 @@ class UsersCTR {
       const keydata = await generateKeyWord()
       const model = await sequelize.transaction(async (t) => {
         return await UsersModel.create({
-          nombre, telefono, email, cargo,
+          nombre, telefono, email,
+          cargo: token ? cargo : 'Sin registro',
           keydata: await bcrypt.hash(keydata, 10),
           tipo: token ? tipo : 1,
           primerIngreso: token ? 1 : 0,

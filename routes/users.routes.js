@@ -45,8 +45,8 @@ router.post("/create", multerConfig.upload.single('logo'), [
   check('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
   check('telefono').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
   check('password').trim().notEmpty().withMessage(customMessages.required),
-  check('cargo').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
-  check('tipo').notEmpty().isInt({ min: 1, max: 1 }),
+  //check('cargo').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
+  //check('tipo').notEmpty().isInt({ min: 1, max: 1 }),
   Middlewares.scan_errors
 ], usersController.registerUser);
 
