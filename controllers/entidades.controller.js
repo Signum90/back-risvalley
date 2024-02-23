@@ -59,6 +59,9 @@ class EntidadesCTR {
         const { body, file, token } = req;
 
         const idContacto = body.idUser && token?.superadmin ? body.idUser : token?.id;
+        const existResponsible = await EntidadesModel.findOne({ where: { idUserResponsable: idContacto } });
+        if (existResponsible) return res.status(400).json({ type: 'error', msg: 'El usuario ya tiene una entidad a su cargo', status: 400 });
+
         const contact = await UsersModel.findByPk(idContacto);
         const keydata = await generateKeyWord();
 

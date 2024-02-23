@@ -85,7 +85,8 @@ class EntidadesModel extends Model {
             model: 'users',
             key: 'id',
           },
-          field: 'id_user_responsable'
+          field: 'id_user_responsable',
+          unique: 'id_user_responsable'
         },
         contactoNombre: {
           type: DataTypes.STRING(70),

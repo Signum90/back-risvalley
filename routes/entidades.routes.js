@@ -64,6 +64,8 @@ router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConf
   check('idUser').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('user', id)
     if (!exists) return Promise.reject('Id user no válido');
+    const existResponsible = await validateFieldUnique('entidad', 'idUserResponsable', id)
+    if (existResponsible) return Promise.reject('El usuario ya tiene una entidad a su cargo');
   }),
   check('descripcion').trim().notEmpty().isString().isLength({ max: 80 }),
   check('sigla').trim().notEmpty().isString().isLength({ max: 10 }),
