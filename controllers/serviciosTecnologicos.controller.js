@@ -41,7 +41,16 @@ class ServiciosTecnologicosCTR {
         limit: pageSize
       })
 
-      return res.status(200).json({ msg: 'success', data: services });
+      const total = await ServiciosTecnologicosModel.count({
+        where: {
+          estado: 1,
+          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+          ...(idTipoServicio ? { idTipoServicio } : {}),
+          ...(idTipoClienteServicio ? { idTipoClienteServicio } : {}),
+        },
+      });
+
+      return res.status(200).json({ msg: 'success', data: services, total });
     } catch (error) {
       throw error;
     }
