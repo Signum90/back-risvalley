@@ -52,8 +52,9 @@ class UsersModel extends Model {
           }
         },
         telefono: {
-          type: DataTypes.INTEGER,
-          allowNull: true
+          type: DataTypes.BIGINT,
+          allowNull: true,
+          field: 'telefono'
         },
         email: {
           type: DataTypes.STRING(30),
