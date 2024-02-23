@@ -2,11 +2,11 @@
 // ############### CONFIG #################
 // #########################################
 const config_db = {
-  host: "localhost" ?? process.env.HOST,
-  username: "root" ?? process.env.USERDB,
-  password: "" ?? process.env.PASSDB,
-  database: "rispark" ?? process.env.DATABASE,
-  dialect: "mysql" ?? process.env.DIALECT,
+  host: process.env.HOST ?? 'localhost',
+  username: process.env.USERDB ?? "root",
+  password: process.env.PASSDB ?? "",
+  database: process.env.DATABASE ?? "rispark",
+  dialect: process.env.DIALECT ?? "mysql",
   secret: process.env.SECRETKEYJWT ?? '',
   urlFiles: `http://${process.env.HOST}:${process.env.PORT}/api/archivos/`,
   email: {
