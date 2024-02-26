@@ -61,7 +61,7 @@ class EventosModel extends Model {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'tipo_responsable',
           allowNull: false,
-          comment: "1=Entidad, 2=Entidades educativas 3=Persona natural"
+          comment: "1=Socieda civil, 2=Empresa 3=Estado 4=Educativo"
         },
         urlLogo: {
           type: DataTypes.VIRTUAL,

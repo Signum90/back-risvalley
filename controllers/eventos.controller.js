@@ -3,6 +3,7 @@ const { sequelize } = require('../db/connection');
 const EventosModel = require('../models/Eventos');
 const { Op, literal } = require('sequelize');
 const { deleteFile } = require('../helpers/helpers');
+const UsersModel = require('../models/Users');
 
 class EventosCTR {
   async getEvents(req = request, res = response) {
@@ -40,14 +41,16 @@ class EventosCTR {
     try {
       return await sequelize.transaction(async (t) => {
 
-        const { nombre, descripcion, fechaInicio, urlRegistro, precio, tipoResponsable, idCiudad } = req.body;
-        const { file } = req
-        const token = req.token;
+        const { nombre, descripcion, fechaInicio, urlRegistro, precio, idCiudad, idUserResponsable } = req.body;
+        const { file, token } = req
+        const idContact = token.superadmin && idUserResponsable ? idUserResponsable : token.id;
+        const contact = await UsersModel.findByPk(idContact);
 
         const model = await EventosModel.create({
-          nombre, descripcion, urlRegistro, precio, tipoResponsable, idCiudad,
+          nombre, descripcion, urlRegistro, precio, idCiudad,
+          tipoResponsable: contact.tipo,
           logo: file ? file?.filename : null,
-          createdBy: token.id,
+          createdBy: contact.id,
           fechaInicio: new Date(fechaInicio)
         }, { transaction: t })
 
