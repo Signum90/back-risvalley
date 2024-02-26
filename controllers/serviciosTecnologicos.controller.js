@@ -3,6 +3,7 @@ const { literal, col, Op } = require('sequelize');
 const { deleteFile } = require('../helpers/helpers');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const UsersModel = require('../models/Users');
+const { urlFiles } = require('../config/config');
 
 class ServiciosTecnologicosCTR {
   async getTechnologicalService(req, res) {
@@ -19,8 +20,8 @@ class ServiciosTecnologicosCTR {
           'estado',
           'idTipoServicio',
           'idTipoClienteServicio',
-          'imagen',
-          'urlImagen',
+          //'imagen',
+          //'urlImagen',
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoServicio)'), 'tipoServicio'],
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoClienteServicio)'), 'tipoClienteServicio'],
           [col('contacto.nombre'), 'nombreContacto'],
@@ -29,6 +30,7 @@ class ServiciosTecnologicosCTR {
           [col('contacto.email'), 'correoContacto'],
           [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
+          [literal(`(SELECT CONCAT('${urlFiles}', e.logo) FROM entidades AS e WHERE e.id_user_responsable = contacto.id)`), 'urlLogo'],
         ],
         where: {
           estado: 1,
@@ -192,6 +194,7 @@ class ServiciosTecnologicosCTR {
           [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.email'), 'correoContacto'],
+          [literal(`(SELECT CONCAT('${urlFiles}', e.logo) FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlLogo'],
         ],
         where: { id },
         include: [{ model: UsersModel, as: 'contacto', attributes: [] }],
