@@ -62,8 +62,8 @@ class RetosCTR {
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
         ],
         order: [['fechaInicioConvocatoria', 'DESC']],
-        offset: (paginate - 1) * 5,
-        limit: 5
+        offset: (paginate - 1) * 10,
+        limit: 10
       })
       const total = await RetosTecnologicosModel.count();
 
