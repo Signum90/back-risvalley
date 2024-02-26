@@ -10,6 +10,14 @@ const serviciosTecnologicosController = new ServiciosTecnologicosCTR();
 
 router.get("/", async (req, res) => await serviciosTecnologicosController.getTechnologicalService(req, res));
 
+router.get("/:idServicio/detalle", [
+  param('idServicio').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('servicio', id)
+    if (!exists) return Promise.reject('Id servicio no válido');
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await serviciosTecnologicosController.getDetailService(req, res));
+
 router.post("/", Middlewares.validateJWTMiddleware, multerConfig.upload.single('imagen'), [
   check('nombre').trim().notEmpty().isString().isLength({ max: 120 }),
   check('descripcion').trim().notEmpty().isString().isLength({ max: 150 }),

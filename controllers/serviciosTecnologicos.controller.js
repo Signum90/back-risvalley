@@ -170,6 +170,39 @@ class ServiciosTecnologicosCTR {
     }
   }
 
+  async getDetailService(req, res) {
+    try {
+      const id = req.params.idServicio;
+
+      const service = await ServiciosTecnologicosModel.findOne({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'estado',
+          'idTipoServicio',
+          'idTipoClienteServicio',
+          'imagen',
+          'urlImagen',
+          [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoServicio)'), 'tipoServicio'],
+          [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoClienteServicio)'), 'tipoClienteServicio'],
+          [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
+          [col('contacto.nombre'), 'nombreContacto'],
+          [col('contacto.telefono'), 'telefonoContacto'],
+          [col('contacto.telefono'), 'telefonoContacto'],
+          [col('contacto.email'), 'correoContacto'],
+        ],
+        where: { id },
+        include: [{ model: UsersModel, as: 'contacto', attributes: [] }],
+      })
+
+      return res.status(200).json({ msg: 'success', data: service });
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }
 
 module.exports = ServiciosTecnologicosCTR;
