@@ -59,13 +59,13 @@ class RetosTecnologicosModel extends Model {
           }
         },
         idRecursoMultimedia: {
-          type: DataTypes.MEDIUMINT.UNSIGNED,
+          type: DataTypes.MEDIUMINT,
           allowNull: false,
           field: 'id_recurso_multimedia',
-          //references: {
-          //  model: 'RecursosMultimedia',
-          //  key: 'id',
-          //},
+          references: {
+            model: 'recursos_multimedia',
+            key: 'id',
+          },
           onDelete: 'CASCADE',
         },
         idUserEntidad: {

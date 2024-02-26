@@ -1,11 +1,6 @@
-// ###################################################
-// ######### MODELO: ENTIDADES ###################
-// ###################################################
-//■► PAQUETES EXTERNOS:  ◄■:
 const { DataTypes, Model } = require('sequelize');
 const { urlFiles } = require('../config/config');
 
-//■► CLASE: Modelo Usuarios ◄■:
 class FormatosAfiliacionModelModel extends Model {
   static initialize(sequelizeInstace) {
     const Formatos = super.init(
@@ -16,13 +11,13 @@ class FormatosAfiliacionModelModel extends Model {
           autoIncrement: true
         },
         idRecursoMultimedia: {
-          type: DataTypes.MEDIUMINT.UNSIGNED,
+          type: DataTypes.MEDIUMINT,
           allowNull: false,
           field: 'id_recurso_multimedia',
-          // references: {
-          //   model: 'RecursosMultimedia',
-          //   key: 'id',
-          // },
+          references: {
+            model: 'recursos_multimedia',
+            key: 'id',
+          },
           onDelete: 'CASCADE',
         },
         estado: {

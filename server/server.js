@@ -30,7 +30,8 @@ class Server {
       archivos: `${this.endpoint_base}/archivos`,
       retos: `${this.endpoint_base}/retos-tecnologicos`,
       servicios: `${this.endpoint_base}/servicios-tecnologicos`,
-      ciudadesDepartamentos: `${this.endpoint_base}/departamentos`
+      ciudadesDepartamentos: `${this.endpoint_base}/departamentos`,
+      pqrs: `${this.endpoint_base}/pqrs`
     }
     //■► lista blanca:
     this.whitelist = ['http://localhost:80',
@@ -87,6 +88,7 @@ class Server {
     this.app.use(this.endpoints.retos, require('../routes/retosAspirantes.routes'));
     this.app.use(this.endpoints.servicios, require('../routes/serviciosTecnologicos.routes'));
     this.app.use(this.endpoints.ciudadesDepartamentos, require('../routes/ciudadesDepartamentos.routes'));
+    this.app.use(this.endpoints.pqrs, require('../routes/pqrs.routes'));
   }
 
   //■► MET: listen ◄■
