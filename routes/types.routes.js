@@ -17,6 +17,7 @@ const router = Router();
 
 //■► RUTEO: ===================================== ◄■:
 router.post("/create", Middlewares.validateJWTMiddleware, async (req, res) => await typesController.saveTypes(req, res));
+router.post("/create/ciudad", Middlewares.validateJWTMiddleware, async (req, res) => await typesController.departamentosYCiudades(req, res));
 router.get("/list", [
   query('tipo')
     .trim()
