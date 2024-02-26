@@ -56,4 +56,9 @@ router.get("/:idUser/validar-confirmacion", [
 
 router.post("/logout", Middlewares.validateJWTMiddleware, Middlewares.logoutMiddleware, async (req, res) => await authController.logout(req, res));
 
+router.get("/validar-admin", Middlewares.validateAdminMiddleware, async (req, res) => {
+  res.status(200).json({ data: true, msg: 'success' });
+});
+
+
 module.exports = router;
