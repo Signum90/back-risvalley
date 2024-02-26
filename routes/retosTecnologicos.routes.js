@@ -11,6 +11,7 @@ const retosController = new retosCTR();
 const router = Router();
 
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await retosController.getTechnologicalChallenges(req, res));
+router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await retosController.getAllTechnologicalChallenges(req, res));
 
 router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.fields([{ name: 'fichaTecnica', maxCount: 1 }, { name: 'recursoMultimedia', maxCount: 1 }]), [
   check('nombre').trim().notEmpty().isString().isLength({ max: 120 }),

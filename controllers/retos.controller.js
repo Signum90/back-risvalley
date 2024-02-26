@@ -9,44 +9,81 @@ const EntidadesModel = require('../models/Entidades');
 class RetosCTR {
   async getTechnologicalChallenges(req, res) {
     try {
-      return await sequelize.transaction(async (t) => {
-        const now = new Date();
-        await RetosTecnologicosModel.update({ estado: 3 }, { where: { fechaFinConvocatoria: { [Op.lt]: now } } }, { transaction: t })
-        await RetosTecnologicosModel.update({ estado: 2 }, {
-          where: {
-            fechaInicioConvocatoria: { [Op.lte]: now },
-            fechaFinConvocatoria: { [Op.gte]: now }
+      await RetosCTR.updateStatesTechnologicalChallenge();
+      const challenges = await RetosTecnologicosModel.findAll({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'estado',
+          'estadoLabel',
+          'fechaInicioConvocatoria',
+          'fechaFinConvocatoria',
+          'fichaTecnica',
+          'idUserEntidad',
+          'urlFichaTecnica',
+          [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
+          [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
+        ],
+        where: {
+          estado: {
+            [Op.in]: [1, 2]
           }
-        }, { transaction: t })
-
-        const challenges = await RetosTecnologicosModel.findAll({
-          attributes: [
-            'id',
-            'nombre',
-            'descripcion',
-            'estado',
-            'estadoLabel',
-            'fechaInicioConvocatoria',
-            'fechaFinConvocatoria',
-            'fichaTecnica',
-            'idUserEntidad',
-            'urlFichaTecnica',
-            [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
-            [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
-            [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
-          ],
-          where: {
-            estado: {
-              [Op.in]: [1, 2]
-            }
-          },
-          order: [['fechaInicioConvocatoria', 'DESC']]
-        })
-        return res.status(200).json({ msg: 'success', data: challenges });
+        },
+        order: [['fechaInicioConvocatoria', 'DESC']]
       })
+      return res.status(200).json({ msg: 'success', data: challenges });
     } catch (error) {
       throw error;
     }
+  }
+
+  async getAllTechnologicalChallenges(req, res) {
+    try {
+      const { page } = req.query
+      const paginate = page ?? 1;
+
+      await RetosCTR.updateStatesTechnologicalChallenge();
+      const challenges = await RetosTecnologicosModel.findAll({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'estado',
+          'estadoLabel',
+          'fechaInicioConvocatoria',
+          'fechaFinConvocatoria',
+          'fichaTecnica',
+          'idUserEntidad',
+          'urlFichaTecnica',
+          [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
+          [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
+        ],
+        order: [['fechaInicioConvocatoria', 'DESC']],
+        offset: (paginate - 1) * 5,
+        limit: 5
+      })
+      const total = await RetosTecnologicosModel.count();
+
+      return res.status(200).json({ msg: 'success', data: challenges, total });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async updateStatesTechnologicalChallenge() {
+    return await sequelize.transaction(async (t) => {
+      const now = new Date();
+      await RetosTecnologicosModel.update({ estado: 3 }, { where: { fechaFinConvocatoria: { [Op.lt]: now } } }, { transaction: t })
+      await RetosTecnologicosModel.update({ estado: 2 }, {
+        where: {
+          fechaInicioConvocatoria: { [Op.lte]: now },
+          fechaFinConvocatoria: { [Op.gte]: now }
+        }
+      }, { transaction: t })
+    })
   }
 
   async saveTechnologicalChallenge(req, res) {
@@ -58,7 +95,6 @@ class RetosCTR {
         const multimedia = files['recursoMultimedia'][0];
         if (!multimedia) return res.status(400).json({ type: 'error', msg: 'El recurso multimedia es requerido', status: 400 });
         const entidad = await EntidadesModel.findOne({ where: { idUserResponsable: token.id } });
-        console.log("🚀 ~ RetosCTR ~ returnawaitsequelize.transaction ~ entidad:", entidad)
         if (!entidad) return res.status(400).json({ type: 'error', msg: 'Por favor cree una entidad unipersonal para crear eventos', status: 400 });
 
         const recursoMultimediaRegistro = await saveResourceMultimedia(multimedia, token?.id);
