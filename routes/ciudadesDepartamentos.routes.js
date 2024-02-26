@@ -16,5 +16,4 @@ router.get("/:idDepartamento/ciudades", [
   }),
   middlewares.scan_errors
 ], async (req, res) => await ciudadesDepartamentosController.selectCiudades(req, res));
-
 module.exports = router;

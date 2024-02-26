@@ -16,8 +16,8 @@ router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) =
 router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.fields([{ name: 'fichaTecnica', maxCount: 1 }, { name: 'recursoMultimedia', maxCount: 1 }]), [
   check('nombre').trim().notEmpty().isString().isLength({ max: 120 }),
   check('descripcion').trim().notEmpty().isString().isLength({ max: 150 }),
-  check('fechaInicioConvocatoria').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a hoy'),
-  check('fechaFinConvocatoria').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de fin debe ser mayor a hoy').custom(async (fechaFin, { req }) => {
+  check('fechaInicioConvocatoria').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a la actual'),
+  check('fechaFinConvocatoria').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de fin debe ser mayor a la actual').custom(async (fechaFin, { req }) => {
     if (new Date(req.body.fechaInicioConvocatoria) > new Date(fechaFin)) return Promise.reject('La fecha de cierre de la convocatoria debe ser mayor a la de inicio');
   }),
   check('fichaTecnica').custom(async (ficha, { req }) => {
@@ -32,8 +32,8 @@ router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.fi
 router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.fields([{ name: 'fichaTecnica', maxCount: 1 }, { name: 'recursoMultimedia', maxCount: 1 }]), [
   check('nombre').trim().notEmpty().isString().isLength({ max: 120 }),
   check('descripcion').trim().notEmpty().isString().isLength({ max: 150 }),
-  check('fechaInicioConvocatoria').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a hoy'),
-  check('fechaFinConvocatoria').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de fin debe ser mayor a hoy').custom(async (fechaFin, { req }) => {
+  check('fechaInicioConvocatoria').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a la actual'),
+  check('fechaFinConvocatoria').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de fin debe ser mayor a la actual').custom(async (fechaFin, { req }) => {
     if (new Date(req.body.fechaInicioConvocatoria) > new Date(fechaFin)) return Promise.reject('La fecha de cierre de la convocatoria debe ser mayor a la de inicio');
   }),
   check('fichaTecnica').custom(async (ficha, { req }) => {
@@ -79,6 +79,9 @@ router.put("/:idReto/update", Middlewares.validateJWTMiddleware, [
         break;
       case 'fechaFinConvocatoria':
         validate = check('value').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de fin debe ser mayor a hoy')
+        break;
+      case 'estado':
+        validate = check('value').notEmpty().isInt({ min: 3, max: 3 })
         break;
       default:
         return Promise.reject('Campo no válido');
