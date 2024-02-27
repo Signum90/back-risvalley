@@ -3,12 +3,15 @@ const { sequelize } = require('../db/connection');
 const { literal, Op, where } = require('sequelize');
 const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia } = require('../helpers/helpers');
 const { urlFiles } = require('../config/config');
-const UsersModel = require('../models/Users');
 const EntidadesModel = require('../models/Entidades');
 
 class RetosCTR {
   async getTechnologicalChallenges(req, res) {
     try {
+      const { nombre, idUserEntidad, estado, page } = req.query;
+      const paginate = page ?? 1;
+      const pageSize = 12;
+
       await RetosCTR.updateStatesTechnologicalChallenge();
       const challenges = await RetosTecnologicosModel.findAll({
         attributes: [
@@ -27,13 +30,24 @@ class RetosCTR {
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
         ],
         where: {
-          estado: {
-            [Op.in]: [1, 2]
-          }
+          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+          ...(idUserEntidad ? { idUserEntidad } : {}),
+          ...(estado ? { estado } : { estado: { [Op.in]: [1, 2] } }),
         },
-        order: [['fechaInicioConvocatoria', 'DESC']]
+        order: [['fechaInicioConvocatoria', 'DESC']],
+        offset: (paginate - 1) * pageSize,
+        limit: pageSize
       })
-      return res.status(200).json({ msg: 'success', data: challenges });
+
+      const total = await RetosTecnologicosModel.count({
+        where: {
+          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+          ...(idUserEntidad ? { idUserEntidad } : {}),
+          ...(estado ? { estado } : { estado: { [Op.in]: [1, 2] } }),
+        }
+      })
+
+      return res.status(200).json({ msg: 'success', data: challenges, total });
     } catch (error) {
       throw error;
     }
