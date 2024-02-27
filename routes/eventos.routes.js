@@ -4,7 +4,7 @@ const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
 const EventosCTR = require('../controllers/eventos.controller');
-const { validateExistId } = require('../helpers/helpers');
+const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
 
 const eventosController = new EventosCTR();
 
@@ -37,8 +37,6 @@ router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConf
   check('idUserResponsable').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('user', id)
     if (!exists) return Promise.reject('Id user no válido');
-    const existResponsible = await validateFieldUnique('entidad', 'idUserResponsable', id)
-    if (existResponsible) return Promise.reject('El usuario ya tiene una entidad a su cargo');
   }),
   Middlewares.scan_errors
 ], eventosController.saveEvent);
