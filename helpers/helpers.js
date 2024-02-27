@@ -24,6 +24,7 @@ const UsersValidacionesModel = require('../models/UsersValidaciones');
 const XTipoModel = require('../models/XTipos');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const DepartamentosModel = require('../models/Departamentos');
+const FormatosAfiliacionModel = require('../models/FormatosAfiliacion');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -95,7 +96,8 @@ class Helpers {
         'user': UsersModel,
         'tipo': XTipoModel,
         'servicio': ServiciosTecnologicosModel,
-        'departamento': DepartamentosModel
+        'departamento': DepartamentosModel,
+        'formato': FormatosAfiliacionModel
       }
       if (!models[model]) return false;
       const register = await models[model].findByPk(id);

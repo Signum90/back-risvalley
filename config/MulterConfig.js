@@ -18,7 +18,15 @@ class MulterConfig {
       storage: this.storage,
       //limits: { fileSize: 5 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
-        const allowedMimes = ['image/jpeg', 'image/png', 'video/mp4', 'video/mpeg', 'application/pdf'];
+        const allowedMimes = [
+          'image/jpeg',
+          'image/png',
+          'video/mp4',
+          'video/mpeg',
+          'application/pdf',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ];
 
         if (allowedMimes.includes(file.mimetype)) {
           cb(null, true);

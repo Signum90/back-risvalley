@@ -19,7 +19,7 @@ class RecursosMultimediaModel extends Model {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'tipo',
           allowNull: false,
-          comment: "1=imagen, 2=video 3=pdf 4=word 5=pdf"
+          comment: "1=imagen, 2=video 3=pdf 4=word 5=excell"
         },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
