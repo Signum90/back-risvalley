@@ -67,7 +67,9 @@ class EventosCTR {
         offset: (paginate - 1) * pageSize,
         limit: pageSize
       })
-      return res.status(200).json({ msg: 'success', data: events });
+      const total = await EventosModel.count();
+
+      return res.status(200).json({ msg: 'success', data: events, total });
     } catch (error) {
       return res.status(400).json({ data: error });
     }
