@@ -8,6 +8,7 @@ const UsersModel = require('../models/Users');
 class EventosCTR {
   async getEvents(req = request, res = response) {
     try {
+      const { preview } = req.query
       const now = new Date();
       await EventosModel.update({ estado: 3 }, {
         where: { fechaInicio: { [Op.lt]: now } }
@@ -22,14 +23,18 @@ class EventosCTR {
           'fechaInicio',
           'urlRegistro',
           'precio',
+          'estado',
           'tipoResponsable',
           'createdBy',
+          'estadoLabel',
           'urlLogo',
           [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = eventos.id_ciudad)'), 'ciudad'],
-          [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = eventos.id_ciudad)'), 'departamento']
+          [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = eventos.id_ciudad)'), 'departamento'],
+          [literal(`COALESCE((SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy), (SELECT nombre FROM users AS u WHERE u.id = createdBy))`), 'nombreResponsable']
         ],
         where: { estado: { [Op.in]: [1, 2] } },
         order: [['fechaInicio', 'ASC']],
+        limit: preview ? 6 : null
       })
       return res.status(200).json({ msg: 'success', data: events });
     } catch (error) {
@@ -58,10 +63,13 @@ class EventosCTR {
           'urlRegistro',
           'precio',
           'tipoResponsable',
+          'estado',
+          'estadoLabel',
           'createdBy',
           'urlLogo',
           [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = eventos.id_ciudad)'), 'ciudad'],
-          [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = eventos.id_ciudad)'), 'departamento']
+          [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = eventos.id_ciudad)'), 'departamento'],
+          [literal(`COALESCE((SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy), (SELECT nombre FROM users AS u WHERE u.id = createdBy))`), 'nombreResponsable']
         ],
         order: [['estado', 'ASC']],
         offset: (paginate - 1) * pageSize,

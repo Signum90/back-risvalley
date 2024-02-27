@@ -57,6 +57,14 @@ class EventosModel extends Model {
           defaultValue: 1,
           comment: "1=Pendiente, 2=Cancelado 3=Finalizado"
         },
+        estadoLabel: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const states = { 1: 'Pendiente', 2: 'Cancelado', 3: 'Finalizado' }
+            const state = this.getDataValue('estado');
+            return states[state] ?? '';
+          }
+        },
         tipoResponsable: {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'tipo_responsable',
