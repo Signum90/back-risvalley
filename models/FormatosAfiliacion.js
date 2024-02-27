@@ -1,7 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
-const { urlFiles } = require('../config/config');
 
-class FormatosAfiliacionModelModel extends Model {
+class FormatosAfiliacionModel extends Model {
   static initialize(sequelizeInstace) {
     const Formatos = super.init(
       {
@@ -71,4 +70,4 @@ class FormatosAfiliacionModelModel extends Model {
   }
 }
 
-module.exports = FormatosAfiliacionModelModel;
+module.exports = FormatosAfiliacionModel;

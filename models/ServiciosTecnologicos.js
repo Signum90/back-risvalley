@@ -12,7 +12,7 @@ class ServiciosTecnologicosModel extends Model {
           autoIncrement: true
         },
         nombre: {
-          type: DataTypes.STRING(30),
+          type: DataTypes.STRING(120),
           allowNull: false,
           field: 'nombre',
         },
