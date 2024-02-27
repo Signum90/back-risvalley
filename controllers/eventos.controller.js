@@ -29,7 +29,43 @@ class EventosCTR {
           [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = eventos.id_ciudad)'), 'departamento']
         ],
         where: { estado: { [Op.in]: [1, 2] } },
-        order: [['fechaInicio', 'ASC']]
+        order: [['fechaInicio', 'ASC']],
+      })
+      return res.status(200).json({ msg: 'success', data: events });
+    } catch (error) {
+      return res.status(400).json({ data: error });
+    }
+  }
+
+  async getEventsDashboard(req, res) {
+    try {
+      const now = new Date();
+      const { page } = req.query
+      const paginate = page ?? 1;
+      const pageSize = 10;
+
+      await EventosModel.update({ estado: 3 }, {
+        where: { fechaInicio: { [Op.lt]: now } }
+      })
+
+      const events = await EventosModel.findAll({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'logo',
+          'fechaInicio',
+          'urlRegistro',
+          'precio',
+          'tipoResponsable',
+          'createdBy',
+          'urlLogo',
+          [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = eventos.id_ciudad)'), 'ciudad'],
+          [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = eventos.id_ciudad)'), 'departamento']
+        ],
+        order: [['estado', 'ASC']],
+        offset: (paginate - 1) * pageSize,
+        limit: pageSize
       })
       return res.status(200).json({ msg: 'success', data: events });
     } catch (error) {
