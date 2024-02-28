@@ -25,7 +25,7 @@ class RetosTecnologicosModel extends Model {
           field: 'estado',
           allowNull: false,
           defaultValue: 1,
-          comment: "1=Pendiente, 2=Convocatoria abierta 3=finalizado"
+          comment: "1=Pendiente, 2=Convocatoria abierta 3=finalizado 4=Pendiente aprobacion"
         },
         fechaInicioConvocatoria: {
           type: DataTypes.DATEONLY,
@@ -53,7 +53,7 @@ class RetosTecnologicosModel extends Model {
         estadoLabel: {
           type: DataTypes.VIRTUAL,
           get() {
-            const types = { 1: 'Pendiente', 2: 'Convocatoria abierta', 3: 'Finalizado' }
+            const types = { 1: 'Pendiente', 2: 'Convocatoria abierta', 3: 'Finalizado', 4:'pendiente aprobaciòn' }
             const type = this.getDataValue('estado');
             return types[type] ?? '';
           }

@@ -48,7 +48,7 @@ class EventosModel extends Model {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           field: 'precio',
           allowNull: true,
-          comment: "NULL = gratuito"
+          defaultValue: 0
         },
         estado: {
           type: DataTypes.TINYINT.UNSIGNED,

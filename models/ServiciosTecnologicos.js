@@ -26,7 +26,15 @@ class ServiciosTecnologicosModel extends Model {
           field: 'estado',
           allowNull: false,
           defaultValue: 1,
-          comment: "0=no 1=Si"
+          comment: "0=inactivo 1=activo 2=pendiente aprobacion"
+        },
+        estadoLabel: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const types = { 0:'inactivo', 1: 'activo', 2: 'Pendiente aprobacion' }
+            const type = this.getDataValue('estado');
+            return types[type] ?? '';
+          }
         },
         idTipoServicio: {
           type: DataTypes.MEDIUMINT.UNSIGNED,

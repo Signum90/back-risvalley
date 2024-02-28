@@ -31,8 +31,8 @@ class RetosCTR {
         ],
         where: {
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
-          ...(idUserEntidad ? { idUserEntidad } : {}),
-          ...(estado ? { estado } : { estado: { [Op.in]: [1, 2] } }),
+          //...(idUserEntidad ? { idUserEntidad } : {}),
+          //...(estado ? { estado } : { estado: { [Op.in]: [1, 2] } }),
         },
         order: [['fechaInicioConvocatoria', 'DESC']],
         offset: (paginate - 1) * pageSize,
@@ -42,8 +42,8 @@ class RetosCTR {
       const total = await RetosTecnologicosModel.count({
         where: {
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
-          ...(idUserEntidad ? { idUserEntidad } : {}),
-          ...(estado ? { estado } : { estado: { [Op.in]: [1, 2] } }),
+          //...(idUserEntidad ? { idUserEntidad } : {}),
+          //...(estado ? { estado } : { estado: { [Op.in]: [1, 2] } }),
         }
       })
 
@@ -82,6 +82,39 @@ class RetosCTR {
       const total = await RetosTecnologicosModel.count();
 
       return res.status(200).json({ msg: 'success', data: challenges, total });
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  async getUserTechnologicalChallenges(req, res) {
+    try {
+      const token= req.token;
+
+      await RetosCTR.updateStatesTechnologicalChallenge();
+      const challenges = await RetosTecnologicosModel.findAll({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'estado',
+          'estadoLabel',
+          'fechaInicioConvocatoria',
+          'fechaFinConvocatoria',
+          'fichaTecnica',
+          'idUserEntidad',
+          'urlFichaTecnica',
+          [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
+          [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
+        ],
+        where: {
+          idUserEntidad: token.id
+        },
+        order: [['fechaInicioConvocatoria', 'DESC']],
+      })
+
+      return res.status(200).json({ msg: 'success', data: challenges });
     } catch (error) {
       throw error;
     }
