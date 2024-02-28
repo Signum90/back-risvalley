@@ -54,6 +54,8 @@ class EntidadesCTR {
           'descripcion',
           'sigla',
           'tipo',
+          'telefono',
+          'email',
           'tipoEntidad',
           'contactoNombre',
           'contactoCorreo',
