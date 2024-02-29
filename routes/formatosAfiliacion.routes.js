@@ -4,7 +4,7 @@ const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
 const FormatosAfilicacionCTR = require('../controllers/formatosAfiliacion.controller');
-const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
+const { validateExistId } = require('../helpers/helpers');
 
 const formatosAfiliacionController = new FormatosAfilicacionCTR();
 
@@ -16,8 +16,13 @@ router.post("/", Middlewares.validateAdminMiddleware, multerConfig.upload.single
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ];
-    if (!req.file) return Promise.reject('La ficha tecnica es obligatoria');
+    if (!req.file) return Promise.reject('El formato de afiliación es obligatorio');
+    console.log("🚀 ~ check ~ req.file:", req.file)
     if (!fileFormat.includes(req.file.mimetype)) return Promise.reject('Por favor ingrese una imagen valida');
+  }),
+  check('fechaInicioFormato').notEmpty(),
+  check('fechaFinFormato').notEmpty().custom(async (fechaFin, { req }) => {
+    if (new Date(req.body.fechaInicioFormato) > new Date(fechaFin)) return Promise.reject('La fecha de cierre debe ser mayor a la de inicio');
   }),
   Middlewares.scan_errors
 ], async (req, res) => await formatosAfiliacionController.postFormat(req, res));

@@ -142,7 +142,9 @@ class Helpers {
           'image/jpeg': 1,
           'video/mp4': 2,
           'video/mpeg': 2,
-          'application/pdf': 3
+          'application/pdf': 3,
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 4,
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 5
         }
         const model = await RecursosMultimediaModel.create(
           {

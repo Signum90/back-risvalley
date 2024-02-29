@@ -25,6 +25,16 @@ class FormatosAfiliacionModel extends Model {
           allowNull: false,
           comment: "0=inactivo 1=activo"
         },
+        fechaInicioFormato: {
+          type: DataTypes.DATEONLY,
+          allowNull: false,
+          field: 'fecha_inicio_formato'
+        },
+        fechaFinFormato: {
+          type: DataTypes.DATEONLY,
+          allowNull: false,
+          field: 'fecha_fin_formato'
+        },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: true,

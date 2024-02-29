@@ -8,13 +8,15 @@ class FormatosAfilicacionCTR {
   async postFormat(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { file, token } = req;
+        const { file, token, body } = req;
         const recursoMultimediaRegistro = await saveResourceMultimedia(file, token?.id);
         await FormatosAfilicacionCTR.inactiveAllFormats();
 
         const model = await FormatosAfiliacionModel.create({
           idRecursoMultimedia: recursoMultimediaRegistro.id,
           estado: 1,
+          fechaInicioFormato: body.fechaInicioFormato,
+          fechaFinFormato: body.fechaFinFormato,
           createdBy: token.id
         }, { transaction: t });
 
