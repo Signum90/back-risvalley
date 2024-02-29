@@ -216,7 +216,17 @@ class Helpers {
       if (!bcrypt.compareSync(keyword.key, keydata)) {
         return false;
       }
-      return true;
+      return keyword;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteKeyWord(id) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        await KeyWordsModel.destroy({ where: { id } }, { transaction: t })
+      })
     } catch (error) {
       throw error;
     }

@@ -6,7 +6,7 @@ const { response, request } = require('express');
 const EntidadesModel = require('../models/Entidades');
 const { sequelize } = require('../db/connection');
 const { literal, Op } = require('sequelize');
-const { deleteFile, validateFieldUnique, validateKeyWord, generateKeyWord, registerKeyData } = require('../helpers/helpers');
+const { deleteFile, validateFieldUnique, validateKeyWord, generateKeyWord, registerKeyData, deleteKeyWord } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
 const bcrypt = require('bcrypt')
 
@@ -70,9 +70,9 @@ class EntidadesCTR {
           'urlLogo',
           [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = idTipoNaturalezaJuridica)`), 'tipoNaturalezaJuridica'],
         ],
-        where:{ idUserResponsable: token.id }
+        where: { idUserResponsable: token.id }
       })
-      if(!entidad) return res.status(400).json({ type: 'error', msg: 'El usuario no cuenta con una entidad creada', status: 400 });
+      if (!entidad) return res.status(400).json({ type: 'error', msg: 'El usuario no cuenta con una entidad creada', status: 400 });
 
       return res.status(200).json({ msg: 'success', data: entidad });
     } catch (error) {
@@ -192,7 +192,7 @@ class EntidadesCTR {
         const fileToDelete = entidad?.logo;
 
         await entidad.destroy({ transaction: t });
-
+        await deleteKeyWord(validateKeyData.id);
         if (fileToDelete) {
           deleteFile(fileToDelete, (err) => {
             if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
