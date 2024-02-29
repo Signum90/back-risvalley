@@ -117,6 +117,7 @@ class UsersCTR {
           'tipo',
           'tipoEntidad',
           'descripcion',
+          'idTipoNaturalezaJuridica',
           'logo',
           'urlLogo',
           'direccion',
