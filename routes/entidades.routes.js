@@ -33,6 +33,7 @@ const validations = {
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getEntidades(req, res));
+router.get("/usuario", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getUserEntidad(req, res));
 router.get("/select", Middlewares.validateJWTMiddleware, async (req, res) => await entidadesController.getSelectEntidades(req, res));
 
 router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [

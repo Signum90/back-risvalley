@@ -13,9 +13,6 @@ const bcrypt = require('bcrypt')
 class EntidadesCTR {
   async getEntidades(req = request, res = response) {
     try {
-      const { tipo, idTipoNaturalezaJuridica, nombre, page } = req.query;
-      const pageSize = 10;
-
       const entidades = await EntidadesModel.findAll({
         attributes: [
           'id',
@@ -36,20 +33,50 @@ class EntidadesCTR {
           'urlTwitter',
           'urlLinkedin',
           'urlLogo',
-          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = entidades.id_tipo_naturaleza_juridica)`), 'tipoNaturalezaJuridica'],
+          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = idTipoNaturalezaJuridica)`), 'tipoNaturalezaJuridica'],
         ],
-        //where: {
-        //  ...(tipo ? { tipo } : {}),
-        //  ...(idTipoNaturalezaJuridica ? { idTipoNaturalezaJuridica } : {}),
-        //  ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
-        //},
-        //offset: (page - 1) * pageSize,
-        //limit: pageSize
       })
 
       return res.status(200).json({ msg: 'success', data: entidades });
     } catch (error) {
       console.log("🚀 ~ TypesCTR ~ saveTypes ~ error:", error)
+    }
+  }
+
+  async getUserEntidad(req, res) {
+    try {
+      const { token } = req;
+      const entidad = await EntidadesModel.findOne({
+        attributes: [
+          'id',
+          'nombre',
+          'logo',
+          'descripcion',
+          'sigla',
+          'tipo',
+          'telefono',
+          'email',
+          'tipoEntidad',
+          'contactoNombre',
+          'contactoCorreo',
+          'contactoTelefono',
+          'idTipoNaturalezaJuridica',
+          'keydata',
+          'direccion',
+          'urlDominio',
+          'urlFacebook',
+          'urlTwitter',
+          'urlLinkedin',
+          'urlLogo',
+          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = idTipoNaturalezaJuridica)`), 'tipoNaturalezaJuridica'],
+        ],
+        where:{ idUserResponsable: token.id }
+      })
+      if(!entidad) return res.status(400).json({ type: 'error', msg: 'El usuario no cuenta con una entidad creada', status: 400 });
+
+      return res.status(200).json({ msg: 'success', data: entidad });
+    } catch (error) {
+      throw error;
     }
   }
 

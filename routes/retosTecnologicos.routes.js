@@ -10,7 +10,8 @@ const retosController = new retosCTR();
 //■► Router:  ◄■:
 const router = Router();
 
-router.get("/list", Middlewares.validateJWTMiddleware, async (req, res) => await retosController.getTechnologicalChallenges(req, res));
+router.get("/list", async (req, res) => await retosController.getTechnologicalChallenges(req, res));
+router.get("/usuario", Middlewares.validateJWTMiddleware,async (req, res) => retosController.getUserTechnologicalChallenges(req, res))
 router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await retosController.getAllTechnologicalChallenges(req, res));
 
 router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.fields([{ name: 'fichaTecnica', maxCount: 1 }, { name: 'recursoMultimedia', maxCount: 1 }]), [

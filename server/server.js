@@ -32,7 +32,8 @@ class Server {
       servicios: `${this.endpoint_base}/servicios-tecnologicos`,
       ciudadesDepartamentos: `${this.endpoint_base}/departamentos`,
       pqrs: `${this.endpoint_base}/pqrs`,
-      formatos: `${this.endpoint_base}/formatos-afiliacion`
+      formatos: `${this.endpoint_base}/formatos-afiliacion`,
+      generales: `${this.endpoint_base}/rispark`
     }
     //■► lista blanca:
     this.whitelist = ['http://localhost:80',
@@ -91,6 +92,7 @@ class Server {
     this.app.use(this.endpoints.ciudadesDepartamentos, require('../routes/ciudadesDepartamentos.routes'));
     this.app.use(this.endpoints.pqrs, require('../routes/pqrs.routes'));
     this.app.use(this.endpoints.formatos, require('../routes/formatosAfiliacion.routes'));
+    this.app.use(this.endpoints.generales, require('../routes/generales.routes'));
   }
 
   //■► MET: listen ◄■

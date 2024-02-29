@@ -105,7 +105,7 @@ class UsersCTR {
     const pageSize = 10;
 
     const users = await UsersModel.findAll({
-      attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo', 'keydata', 'registroValidado'],
+      attributes: ['id', 'nombre', 'telefono', 'email', 'urlLogo', 'superadmin', 'tipo', 'keydata', 'registroValidado', 'cargo'],
       include: [{
         model: EntidadesModel,
         as: 'entidad',
@@ -113,6 +113,7 @@ class UsersCTR {
           'id',
           'nombre',
           'sigla',
+          'keydata',
           'tipo',
           'tipoEntidad',
           'descripcion',

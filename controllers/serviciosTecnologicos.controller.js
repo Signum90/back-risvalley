@@ -11,6 +11,8 @@ class ServiciosTecnologicosCTR {
       const { nombre, idTipoServicio, idTipoClienteServicio, page } = req.query
       const paginate = page ?? 1;
       const pageSize = 10;
+      const token = req?.token ;
+      const estados = token && token.superadmin ? [1,2,3] : [1];
 
       const services = await ServiciosTecnologicosModel.findAll({
         attributes: [
@@ -18,6 +20,7 @@ class ServiciosTecnologicosCTR {
           'nombre',
           'descripcion',
           'estado',
+          'estadoLabel',
           'idTipoServicio',
           'idTipoClienteServicio',
           //'imagen',
@@ -33,7 +36,7 @@ class ServiciosTecnologicosCTR {
           [literal(`(SELECT CONCAT('${urlFiles}', e.logo) FROM entidades AS e WHERE e.id_user_responsable = contacto.id)`), 'urlLogo'],
         ],
         where: {
-          estado: 1,
+          estado: { [Op.in]: estados },
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
           ...(idTipoServicio ? { idTipoServicio } : {}),
           ...(idTipoClienteServicio ? { idTipoClienteServicio } : {}),
@@ -45,7 +48,7 @@ class ServiciosTecnologicosCTR {
 
       const total = await ServiciosTecnologicosModel.count({
         where: {
-          estado: 1,
+          estado: { [Op.in]: estados },
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
           ...(idTipoServicio ? { idTipoServicio } : {}),
           ...(idTipoClienteServicio ? { idTipoClienteServicio } : {}),
@@ -65,6 +68,7 @@ class ServiciosTecnologicosCTR {
 
         const postData = {
           nombre: body.nombre,
+          estado: 2,
           descripcion: body.descripcion,
           idTipoServicio: body.idTipoServicio,
           idTipoClienteServicio: body.idTipoClienteServicio,
@@ -122,6 +126,19 @@ class ServiciosTecnologicosCTR {
       })
     } catch (error) {
       throw (error);
+    }
+  }
+
+  async aprobeTechnologicalService(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const id = req.params.idServicio;
+
+        await ServiciosTecnologicosModel.update({estado: 1}, { where: { id } }, { transaction: t });
+        return res.status(200).json({ msg: 'success' });
+      })
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -201,6 +218,43 @@ class ServiciosTecnologicosCTR {
       })
 
       return res.status(200).json({ msg: 'success', data: service });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getMyServices(req, res){
+    try {
+      const token = req.token;
+
+      const services = await ServiciosTecnologicosModel.findAll({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'estado',
+          'estadoLabel',
+          'idTipoServicio',
+          'idTipoClienteServicio',
+          //'imagen',
+          //'urlImagen',
+          [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoServicio)'), 'tipoServicio'],
+          [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoClienteServicio)'), 'tipoClienteServicio'],
+          [col('contacto.nombre'), 'nombreContacto'],
+          [col('contacto.telefono'), 'telefonoContacto'],
+          [col('contacto.telefono'), 'telefonoContacto'],
+          [col('contacto.email'), 'correoContacto'],
+          [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
+          [literal(`(SELECT CONCAT('${urlFiles}', e.logo) FROM entidades AS e WHERE e.id_user_responsable = contacto.id)`), 'urlLogo'],
+        ],
+        where: {
+          createdBy: token.id
+        },
+        include: [{ model: UsersModel, as: 'contacto', attributes: [] }],
+      })
+      
+      return res.status(200).json({ msg: 'success', data: services });
     } catch (error) {
       throw error;
     }

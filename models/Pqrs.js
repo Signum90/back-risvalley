@@ -20,6 +20,44 @@ class PqrsModel extends Model {
           allowNull: false,
           field: 'pqr',
         },
+        userActivo: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'user_activo',
+          allowNull: false,
+          comment: "0=no 1=si"
+        },
+        estado: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'estado',
+          allowNull: false,
+          defaultValue: 1,
+          comment: "1=Pendiente, 2=En proceso 3=Finalizado"
+        },
+        contactoNombre: {
+          type: DataTypes.STRING(70),
+          allowNull: false,
+          field: 'contacto_nombre',
+        },
+        contactoCorreo: {
+          type: DataTypes.STRING(80),
+          allowNull: false,
+          field: 'contacto_correo',
+        },
+        contactoTelefono: {
+          type: DataTypes.BIGINT,
+          allowNull: false,
+          field: 'contacto_telefono',
+        },
+        imagenSoporte: {
+          type: DataTypes.STRING(120),
+          allowNull: true,
+          field: 'imagen_soporte',
+        },
+        soporte: {
+          type: DataTypes.STRING(150),
+          allowNull: true,
+          field: 'soporte',
+        },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: true,
