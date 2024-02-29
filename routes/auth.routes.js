@@ -20,9 +20,11 @@ const router = Router();
 
 //■► RUTEO: ===================================== ◄■:
 router.post("/login", [
-  check(["correo", "password"], "empty").not().isEmpty(),
+  check(["correo", "password"], "empty").not().isEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await authController.login(req, res));
+
+router.post("/logout", Middlewares.validateJWTMiddleware, Middlewares.logoutMiddleware, async (req, res) => await authController.logout(req, res));
 
 router.post("/validar-usuario", [
   body('idUser').notEmpty().isInt().custom(async (id) => {
@@ -53,8 +55,6 @@ router.get("/:idUser/validar-confirmacion", [
   }),
   Middlewares.scan_errors
 ], async (req, res) => await authController.validateUserConfirm(req, res));
-
-router.post("/logout", Middlewares.validateJWTMiddleware, Middlewares.logoutMiddleware, async (req, res) => await authController.logout(req, res));
 
 router.get("/validar-admin", Middlewares.validateAdminMiddleware, async (req, res) => {
   res.status(200).json({ data: true, msg: 'success' });

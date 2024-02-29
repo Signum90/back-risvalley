@@ -12,7 +12,7 @@ const path = require('path');
 const config = require('../config/config');
 const UsersModel = require("../models/Users");
 const EntidadesModel = require('../models/Entidades');
-const { literal, Op } = require('sequelize');
+const { literal } = require('sequelize');
 
 //■► CLASE: Controlador de Usuarios ◄■:
 class UsersCTR {
