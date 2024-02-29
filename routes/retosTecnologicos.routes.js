@@ -11,7 +11,7 @@ const retosController = new retosCTR();
 const router = Router();
 
 router.get("/list", async (req, res) => await retosController.getTechnologicalChallenges(req, res));
-router.get("/usuario", Middlewares.validateJWTMiddleware,async (req, res) => retosController.getUserTechnologicalChallenges(req, res))
+router.get("/usuario", Middlewares.validateJWTMiddleware, async (req, res) => retosController.getUserTechnologicalChallenges(req, res))
 router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await retosController.getAllTechnologicalChallenges(req, res));
 
 router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.fields([{ name: 'fichaTecnica', maxCount: 1 }, { name: 'recursoMultimedia', maxCount: 1 }]), [
@@ -103,6 +103,15 @@ router.delete("/:idReto/delete", Middlewares.validateJWTMiddleware, [
   }),
   Middlewares.scan_errors
 ], async (req, res) => await retosController.deleteReto(req, res))
+
+router.put("/:idReto/aprobar", Middlewares.validateAdminMiddleware, [
+  param('idReto').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('reto', id)
+    if (!exists) return Promise.reject('Id reto no válido');
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await retosController.aprobeTechnologicalChallenge(req, res))
+
 
 
 module.exports = router;

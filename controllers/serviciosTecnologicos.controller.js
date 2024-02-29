@@ -11,8 +11,8 @@ class ServiciosTecnologicosCTR {
       const { nombre, idTipoServicio, idTipoClienteServicio, page } = req.query
       const paginate = page ?? 1;
       const pageSize = 10;
-      const token = req?.token ;
-      const estados = token && token.superadmin ? [1,2,3] : [1];
+      const token = req?.token;
+      const estados = token && token.superadmin ? [1, 2, 3] : [1];
 
       const services = await ServiciosTecnologicosModel.findAll({
         attributes: [
@@ -134,7 +134,7 @@ class ServiciosTecnologicosCTR {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idServicio;
 
-        await ServiciosTecnologicosModel.update({estado: 1}, { where: { id } }, { transaction: t });
+        await ServiciosTecnologicosModel.update({ estado: 1 }, { where: { id } }, { transaction: t });
         return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {
@@ -223,7 +223,7 @@ class ServiciosTecnologicosCTR {
     }
   }
 
-  async getMyServices(req, res){
+  async getMyServices(req, res) {
     try {
       const token = req.token;
 
@@ -253,7 +253,7 @@ class ServiciosTecnologicosCTR {
         },
         include: [{ model: UsersModel, as: 'contacto', attributes: [] }],
       })
-      
+
       return res.status(200).json({ msg: 'success', data: services });
     } catch (error) {
       throw error;

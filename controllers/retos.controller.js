@@ -8,7 +8,7 @@ const EntidadesModel = require('../models/Entidades');
 class RetosCTR {
   async getTechnologicalChallenges(req, res) {
     try {
-      const { nombre, idUserEntidad, estado, page } = req.query;
+      const { nombre, page } = req.query;
       const paginate = page ?? 1;
       const pageSize = 12;
 
@@ -30,9 +30,8 @@ class RetosCTR {
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
         ],
         where: {
+          estado: { [Op.in]: [1, 2] },
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
-          //...(idUserEntidad ? { idUserEntidad } : {}),
-          //...(estado ? { estado } : { estado: { [Op.in]: [1, 2] } }),
         },
         order: [['fechaInicioConvocatoria', 'DESC']],
         offset: (paginate - 1) * pageSize,
@@ -41,9 +40,8 @@ class RetosCTR {
 
       const total = await RetosTecnologicosModel.count({
         where: {
+          estado: { [Op.in]: [1, 2] },
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
-          //...(idUserEntidad ? { idUserEntidad } : {}),
-          //...(estado ? { estado } : { estado: { [Op.in]: [1, 2] } }),
         }
       })
 
@@ -86,10 +84,10 @@ class RetosCTR {
       throw error;
     }
   }
-  
+
   async getUserTechnologicalChallenges(req, res) {
     try {
-      const token= req.token;
+      const token = req.token;
 
       await RetosCTR.updateStatesTechnologicalChallenge();
       const challenges = await RetosTecnologicosModel.findAll({
@@ -123,9 +121,10 @@ class RetosCTR {
   static async updateStatesTechnologicalChallenge() {
     return await sequelize.transaction(async (t) => {
       const now = new Date();
-      await RetosTecnologicosModel.update({ estado: 3 }, { where: { fechaFinConvocatoria: { [Op.lt]: now } } }, { transaction: t })
+      await RetosTecnologicosModel.update({ estado: 3 }, { where: { estado: { [Op.ne]: 4 }, fechaFinConvocatoria: { [Op.lt]: now } } }, { transaction: t })
       await RetosTecnologicosModel.update({ estado: 2 }, {
         where: {
+          estado: { [Op.ne]: 4 },
           fechaInicioConvocatoria: { [Op.lte]: now },
           fechaFinConvocatoria: { [Op.gte]: now }
         }
@@ -148,6 +147,7 @@ class RetosCTR {
         const model = await RetosTecnologicosModel.create({
           nombre,
           descripcion,
+          estado: 4,
           fechaInicioConvocatoria,
           fechaFinConvocatoria,
           idRecursoMultimedia: recursoMultimediaRegistro?.id,
@@ -276,6 +276,20 @@ class RetosCTR {
       throw error
     }
   }
+
+  async aprobeTechnologicalChallenge(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const id = req.params.idReto;
+
+        await RetosTecnologicosModel.update({ estado: 1 }, { where: { id } }, { transaction: t });
+        return res.status(200).json({ msg: 'success' });
+      })
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }
 
 //■► EXPORTAR:  ◄■:
