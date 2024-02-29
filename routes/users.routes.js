@@ -5,122 +5,23 @@
 const { Router } = require('express');
 // ■► Multer / formData object parser ◄■:
 const multerConfig = require('../config/MulterConfig');
-// ■► Express Validator ◄■:
-const { check, body, param, validationResult } = require('express-validator');
-const CustomMessages = require('../helpers/customMessages');
 //■► CONTROLADOR:  ◄■:
 const UsersCTR = require('../controllers/users.controller');
 //■► Middlewares:  ◄■:
 const Middlewares = require('../middlewares/middlewares');
-const { validateFieldUnique, validateExistId } = require('../helpers/helpers');
+const UsersValidator = require('../validators/usersValidaciones');
 
 //■► Instancia controlador:  ◄■:
 const usersController = new UsersCTR();
-//■► Instancia Mensajes Validador:  ◄■:
-const customMessages = CustomMessages.getValidationMessages();
 //■► Router:  ◄■:
 const router = Router();
 
-
-const validations = {
-  'email': body('value').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email, { req }) => {
-    const exists = await validateFieldUnique('user', 'email', email, req.params.idUser)
-    if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
-  }),
-  'nombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
-  'telefono': body('value').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
-  'cargo': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
-}
-
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", Middlewares.validateAdminMiddleware, async (req, res) => await usersController.getUsers(req, res));
-
 router.get("/select", Middlewares.validateAdminMiddleware, async (req, res) => await usersController.getSelectUsers(req, res));
-
-router.post("/create", multerConfig.upload.single('logo'), [
-  check('email').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email) => {
-    const exists = await validateFieldUnique('user', 'email', email)
-    if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
-  }),
-  check('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
-  check('telefono').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
-  check('password').trim().notEmpty().withMessage(customMessages.required),
-  Middlewares.scan_errors
-], usersController.registerUser);
-
-router.put("/:idUser/update", [
-  param('idUser').notEmpty().isInt().custom(async (id) => {
-    const exists = await validateExistId('user', id);
-    if (!exists) return Promise.reject('Id user no válido');
-  }),
-  body('keydata').trim().notEmpty().withMessage(customMessages.required),
-  body('value').notEmpty().custom(async (value, { req }) => {
-    const validate = validations[req.body.campo]
-    if (!validate) return Promise.reject('Campo no válido');
-    await validate.run(req);
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return Promise.reject('error');
-  }),
-  Middlewares.scan_errors
-], usersController.updateUser);
-
-router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), [
-  body('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
-  check('cargo').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
-  check('telefono').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
-  check('tipo').notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 4 }).withMessage(customMessages.int),
-  check('email').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).custom(async (email) => {
-    const exists = await validateFieldUnique('user', 'email', email)
-    if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
-  }),
-  check('nombreEntidad').trim().isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage(customMessages.length).custom(async (nombre, { req }) => {
-    if (req.body.tipo != 1) {
-      if (!nombre) return Promise.reject('El nombre de la entidad es obligatorio');
-      const exists = await validateFieldUnique('entidad', 'nombre', nombre)
-      if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
-    }
-  }),
-  check('descripcion').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length).custom(async (descripcion, { req }) => {
-    if (req.body.tipo != 1 && !descripcion) return Promise.reject('La descripcion de la entidad es obligatoria');
-  }),
-  check('sigla').trim().isString().withMessage(customMessages.string).isLength({ max: 10 }).withMessage(customMessages.length).custom(async (sigla, { req }) => {
-    if (req.body.tipo != 1 && !sigla) return Promise.reject('Las siglas de la entidad son obligatoria');
-  }),
-  check('tipoEntidad').custom(async (tipoEntidad, { req }) => {
-    if (req.body.tipo != 1 && !tipoEntidad) return Promise.reject('El tipo de la entidad es obligatorio');
-  }),
-  check('idTipoNaturalezaJuridica').custom(async (tipoNaturaleza, { req }) => {
-    if (req.body.tipo != 1 && !tipoNaturaleza) return Promise.reject('El tipo de naturaleza de la entidad es obligatorio');
-  }),
-  check('direccion').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length).custom(async (direccion, { req }) => {
-    if (req.body.tipo != 1 && !direccion) return Promise.reject('La direccion de la entidad es obligatoria');
-  }),
-  check('telefonoEntidad').trim().isLength({ max: 11 }).withMessage(customMessages.length).custom(async (telefono, { req }) => {
-    if (req.body.tipo != 1 && !telefono) return Promise.reject('El telefono de la entidad es obligatorio');
-  }),
-  check('emailEntidad').trim().custom(async (email, { req }) => {
-    if (req.body.tipo != 1 && !email) return Promise.reject('El email de la entidad es obligatorio');
-  }),
-  check('urlDominio').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
-  check('urlFacebook').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
-  check('urlTwitter').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
-  check('urlLinkedin').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
-  Middlewares.scan_errors
-], usersController.registerUser);
-
-router.put("/:idUser/update-logo", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
-  param('idUser').notEmpty().isInt().custom(async (id) => {
-    const exists = await validateExistId('user', id);
-    if (!exists) return Promise.reject('Id user no válido');
-  }),
-  check('keydata').trim().notEmpty().withMessage(customMessages.required),
-  check('logo').custom(async (imagen, { req }) => {
-    const imageFormat = ['image/jpeg', 'image/png'];
-    if (req?.file) {
-      if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Por favor ingrese una imagen valida');
-    }
-  }),
-  Middlewares.scan_errors
-], async (req, res) => await usersController.updateLogoUser(req, res));
+router.post("/create", multerConfig.upload.single('logo'), UsersValidator.userValidator, usersController.registerUser);
+router.put("/:idUser/update", Middlewares.validateJWTMiddleware, UsersValidator.userUpdateValidate, usersController.updateUser);
+router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), UsersValidator.userDashboardValidate, usersController.registerUser);
+router.put("/:idUser/update-logo", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), UsersValidator.updateLogoValidator, async (req, res) => await usersController.updateLogoUser(req, res));
 
 module.exports = router;

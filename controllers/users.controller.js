@@ -13,7 +13,6 @@ const config = require('../config/config');
 const UsersModel = require("../models/Users");
 const EntidadesModel = require('../models/Entidades');
 const { literal, Op } = require('sequelize');
-const KeyWordsModel = require('../models/KeyWords');
 
 //■► CLASE: Controlador de Usuarios ◄■:
 class UsersCTR {
@@ -206,10 +205,11 @@ class UsersCTR {
           updateBy: token?.id
         }
         if (campo == 'email') {
+          const user = await UsersModel.findByPk(id)
           updateData['registroValidado'] = 0;
           const codeTemp = await generateCodeTemporal();
-          await UsersCTR.sendEmailValidate(model.email, model.nombre, codeTemp, model.id);
-          await registerUserValidate(model.id, codeTemp);
+          await UsersCTR.sendEmailValidate(value, user.nombre, codeTemp, user.id);
+          await registerUserValidate(user.id, codeTemp);
         }
 
         await UsersModel.update(updateData, { where: { id } }, { transaction: t });
