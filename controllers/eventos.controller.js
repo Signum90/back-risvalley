@@ -34,7 +34,7 @@ class EventosCTR {
         ],
         where: { estado: { [Op.in]: [1, 2] } },
         order: [['fechaInicio', 'ASC']],
-        limit: preview ? 6 : null
+        limit: preview ? 4 : null
       })
       return res.status(200).json({ msg: 'success', data: events });
     } catch (error) {
