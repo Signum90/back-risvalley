@@ -17,7 +17,6 @@ router.post("/", Middlewares.validateAdminMiddleware, multerConfig.upload.single
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ];
     if (!req.file) return Promise.reject('El formato de afiliación es obligatorio');
-    console.log("🚀 ~ check ~ req.file:", req.file)
     if (!fileFormat.includes(req.file.mimetype)) return Promise.reject('Por favor ingrese una imagen valida');
   }),
   check('fechaInicioFormato').notEmpty(),
