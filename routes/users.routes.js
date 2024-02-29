@@ -45,8 +45,6 @@ router.post("/create", multerConfig.upload.single('logo'), [
   check('nombre').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 40 }).withMessage(customMessages.length),
   check('telefono').trim().optional({ nullable: true }).isInt().withMessage(customMessages.int).isLength({ max: 11 }).withMessage(customMessages.length),
   check('password').trim().notEmpty().withMessage(customMessages.required),
-  //check('cargo').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
-  //check('tipo').notEmpty().isInt({ min: 1, max: 1 }),
   Middlewares.scan_errors
 ], usersController.registerUser);
 
@@ -109,5 +107,20 @@ router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConf
   check('urlLinkedin').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
   Middlewares.scan_errors
 ], usersController.registerUser);
+
+router.put("/:idUser/update-logo", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
+  param('idUser').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('user', id);
+    if (!exists) return Promise.reject('Id user no válido');
+  }),
+  check('keydata').trim().notEmpty().withMessage(customMessages.required),
+  check('logo').custom(async (imagen, { req }) => {
+    const imageFormat = ['image/jpeg', 'image/png'];
+    if (req?.file) {
+      if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Por favor ingrese una imagen valida');
+    }
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await usersController.updateLogoUser(req, res));
 
 module.exports = router;

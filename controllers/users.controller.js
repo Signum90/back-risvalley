@@ -4,7 +4,7 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 const { response, request } = require('express');
 const { sequelize } = require('../db/connection');
-const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate, generatePasswordTemporal, validateKeyWord } = require('../helpers/helpers');
+const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate, generatePasswordTemporal, validateKeyWord, deleteFile } = require('../helpers/helpers');
 const { readHTMLFile } = require('../config/email')
 const hbs = require('hbs');
 const bcrypt = require('bcrypt')
@@ -220,6 +220,36 @@ class UsersCTR {
       throw error;
     }
   }
+
+  async updateLogoUser(req = request, res = response) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { file, token, body } = req
+        const id = req.params.idUser
+        const user = await UsersModel.findByPk(id);
+
+        const validateKeyData = await validateKeyWord(id, 'U', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
+
+        const fileToDelete = user?.logo;
+        await user.update({
+          logo: file ? file?.filename : null,
+          updatedBy: token.id
+        }, { transaction: t });
+
+        if (fileToDelete) {
+          deleteFile(fileToDelete, (err) => {
+            if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
+          })
+        }
+        return res.status(200).json({ msg: 'success', data: user });
+      })
+    } catch (error) {
+      console.log("🚀 ~ EventosCTR ~ updateLogoEvent ~ error:", error)
+      return res.status(400).json({ error })
+    }
+  }
+
 
 }
 
