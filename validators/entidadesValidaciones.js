@@ -122,7 +122,7 @@ class EntidadesValidator {
       'nombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage(customMessages.length),
       'descripcion': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage(customMessages.length),
       'sigla': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 10 }).withMessage(customMessages.length),
-      'tipo': body('value').notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }),
+      'tipo': body('value').notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }).withMessage('El campo tipo debe ser un número entre 1 y 3'),
       'idTipoNaturalezaJuridica': body('value').notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int),
       'contactoNombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
       'contactoCargo': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
@@ -133,6 +133,8 @@ class EntidadesValidator {
       'urlFacebook': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
       'urlTwitter': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
       'urlLinkedin': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage(customMessages.length),
+      'email': body('value').trim().notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email).isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage('El campo email debe tener como máximo 80 caracteres'),
+      'telefono': check('value').trim().notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int)
     }
     return [
       param('idEntidad').notEmpty().isInt().custom(EntidadesValidator.validateEntidadId),
