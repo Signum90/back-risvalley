@@ -1,6 +1,6 @@
 const { sequelize } = require('../db/connection');
 const { literal, col, Op } = require('sequelize');
-const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord } = require('../helpers/helpers');
+const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord } = require('../helpers/helpers');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const UsersModel = require('../models/Users');
 const { urlFiles } = require('../config/config');
@@ -192,6 +192,7 @@ class ServiciosTecnologicosCTR {
         const fileToDelete = service?.imagen;
 
         await service.destroy({ transaction: t });
+        await deleteKeyWord(validateKeyData.id);
 
         if (fileToDelete) {
           deleteFile(fileToDelete, (err) => {
@@ -215,6 +216,7 @@ class ServiciosTecnologicosCTR {
           'id',
           'nombre',
           'descripcion',
+          'keydata',
           'estado',
           'idTipoServicio',
           'idTipoClienteServicio',
@@ -251,6 +253,7 @@ class ServiciosTecnologicosCTR {
           'descripcion',
           'estado',
           'estadoLabel',
+          'keydata',
           'idTipoServicio',
           'idTipoClienteServicio',
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoServicio)'), 'tipoServicio'],

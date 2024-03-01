@@ -79,6 +79,11 @@ class RetosTecnologicosModel extends Model {
           onDelete: 'CASCADE',
           field: 'id_user_entidad'
         },
+        keydata: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          field: 'keydata'
+        },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: true,

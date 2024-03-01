@@ -1,9 +1,10 @@
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const { sequelize } = require('../db/connection');
 const { literal, Op, where } = require('sequelize');
-const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia } = require('../helpers/helpers');
+const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord } = require('../helpers/helpers');
 const { urlFiles } = require('../config/config');
 const EntidadesModel = require('../models/Entidades');
+const bcrypt = require('bcrypt');
 
 class RetosCTR {
   async getTechnologicalChallenges(req, res) {
@@ -19,6 +20,7 @@ class RetosCTR {
           'nombre',
           'descripcion',
           'estado',
+          'keydata',
           'estadoLabel',
           'fechaInicioConvocatoria',
           'fechaFinConvocatoria',
@@ -69,6 +71,7 @@ class RetosCTR {
           'fichaTecnica',
           'idUserEntidad',
           'urlFichaTecnica',
+          'keydata',
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
           [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
@@ -101,6 +104,7 @@ class RetosCTR {
           'fechaFinConvocatoria',
           'fichaTecnica',
           'idUserEntidad',
+          'keydata',
           'urlFichaTecnica',
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
           [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
@@ -141,8 +145,10 @@ class RetosCTR {
         const multimedia = files['recursoMultimedia'][0];
         if (!multimedia) return res.status(400).json({ type: 'error', msg: 'El recurso multimedia es requerido', status: 400 });
         const entidad = await EntidadesModel.findOne({ where: { idUserResponsable: token.id } });
+        console.log("🚀 ~ RetosCTR ~ returnawaitsequelize.transaction ~ token.id:", token.id)
         if (!entidad) return res.status(400).json({ type: 'error', msg: 'Por favor cree una entidad unipersonal para crear eventos', status: 400 });
 
+        const keydata = await generateKeyWord();
         const recursoMultimediaRegistro = await saveResourceMultimedia(multimedia, token?.id);
         const model = await RetosTecnologicosModel.create({
           nombre,
@@ -150,11 +156,13 @@ class RetosCTR {
           estado: 4,
           fechaInicioConvocatoria,
           fechaFinConvocatoria,
+          keydata: await bcrypt.hash(keydata, 10),
           idRecursoMultimedia: recursoMultimediaRegistro?.id,
           fichaTecnica: fichaTecnica ? fichaTecnica?.filename : null,
           idUserEntidad: token.id,
           createdBy: token.id,
         }, { transaction: t })
+        await registerKeyData(model.id, body.nombre, keydata, 'RE');
 
         return res.status(200).json({ msg: 'success', data: model });
       })
@@ -173,6 +181,7 @@ class RetosCTR {
         if (!multimedia) return res.status(400).json({ type: 'error', msg: 'El recurso multimedia es requerido', status: 400 });
         const entidad = await EntidadesModel.findOne({ where: { idUserResponsable: idUserEntidad } });
         if (!entidad) return res.status(400).json({ type: 'error', msg: 'El usuario debe tener una entidad', status: 400 });
+        const keydata = await generateKeyWord();
 
         const recursoMultimediaRegistro = await saveResourceMultimedia(multimedia, token?.id);
         const model = await RetosTecnologicosModel.create({
@@ -180,11 +189,13 @@ class RetosCTR {
           descripcion,
           fechaInicioConvocatoria,
           fechaFinConvocatoria,
+          keydata: await bcrypt.hash(keydata, 10),
           idRecursoMultimedia: recursoMultimediaRegistro?.id,
           fichaTecnica: fichaTecnica ? fichaTecnica?.filename : null,
           idUserEntidad,
           createdBy: token.id,
         }, { transaction: t })
+        await registerKeyData(model.id, body.nombre, keydata, 'RE');
 
         return res.status(200).json({ msg: 'success', data: model });
       })
@@ -197,8 +208,11 @@ class RetosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const { body, token, file } = req;
+        const id = req.params.idReto;
+        const validateKeyData = await validateKeyWord(id, 'RE', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún reto', status: 400 });
 
-        const reto = await RetosTecnologicosModel.findByPk(req.params.idReto);
+        const reto = await RetosTecnologicosModel.findByPk(id);
         let fileToDelete;
         let updateData = { updatedBy: token.id };
 
@@ -230,6 +244,8 @@ class RetosCTR {
         const { body, token } = req;
         const { campo, value } = body;
         const id = req.params.idReto;
+        const validateKeyData = await validateKeyWord(id, 'RE', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún reto', status: 400 });
 
         if (campo == 'fechaFinConvocatoria') {
           const dateValidate = await RetosTecnologicosModel.findOne({
@@ -256,14 +272,16 @@ class RetosCTR {
   async deleteReto(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const id = req.params.idReto
-
+        const id = req.params.idReto;
+        const { keydata } = req.query;
+        const validateKeyData = await validateKeyWord(id, 'RE', keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún reto', status: 400 });
         const reto = await RetosTecnologicosModel.findByPk(id);
         const fileToDelete = reto?.fichaTecnica;
 
-        await reto.destroy({ transaction: t });
         const multimediaFile = await deleteResourceMultimedia(reto.idRecursoMultimedia)
-
+        await reto.destroy({ transaction: t });
+        await deleteKeyWord(validateKeyData.id);
         deleteFile(fileToDelete, (err) => {
           if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
         })
@@ -281,8 +299,12 @@ class RetosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idReto;
+        const { body } = req;
+        const validateKeyData = await validateKeyWord(id, 'RE', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún reto', status: 400 });
 
         await RetosTecnologicosModel.update({ estado: 1 }, { where: { id } }, { transaction: t });
+        await deleteKeyWord(validateKeyData.id);
         return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {

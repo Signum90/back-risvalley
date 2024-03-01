@@ -164,10 +164,10 @@ class Helpers {
   //■► MET: Elimina un registro de la tabla recursos multimedia y retorna el nombre del archivo eliminado ◄■:
   async deleteResourceMultimedia(id) {
     try {
-      return await sequelize.transaction(async (t) => {
+      return await sequelize.transaction(async (tr) => {
         const resource = await RecursosMultimediaModel.findByPk(id);
         const fileToDelete = resource?.recurso
-        await resource.destroy({ transaction: t })
+        await resource.destroy({ transaction: tr })
         return fileToDelete;
       })
     } catch (error) {

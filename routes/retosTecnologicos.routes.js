@@ -1,11 +1,14 @@
 const { Router } = require('express');
-const { body, param, check, validationResult } = require('express-validator');
+const { body, param, check, validationResult, query } = require('express-validator');
 const retosCTR = require('../controllers/retos.controller')
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
 const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
+const CustomMessages = require('../helpers/customMessages');
+
 
 //■► Instancia controlador:  ◄■:
+const customMessages = CustomMessages.getValidationMessages();
 const retosController = new retosCTR();
 //■► Router:  ◄■:
 const router = Router();
@@ -58,6 +61,7 @@ router.put("/:idReto/update-files", Middlewares.validateJWTMiddleware, multerCon
   check('file').custom(async (ficha, { req }) => {
     if (!req.file) return Promise.reject('El campo file es obligatorio');
   }),
+  check('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await retosController.updateFilesChallenge(req, res));
 
@@ -93,6 +97,7 @@ router.put("/:idReto/update", Middlewares.validateJWTMiddleware, [
     //comprueba si hay errores y los retorna
     if (!errors.isEmpty()) return Promise.reject('error');
   }),
+  body('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await retosController.updateFieldChallenge(req, res));
 
@@ -101,6 +106,7 @@ router.delete("/:idReto/delete", Middlewares.validateJWTMiddleware, [
     const exists = await validateExistId('reto', id)
     if (!exists) return Promise.reject('Id reto no válido');
   }),
+  query('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await retosController.deleteReto(req, res))
 
@@ -109,6 +115,7 @@ router.put("/:idReto/aprobar", Middlewares.validateAdminMiddleware, [
     const exists = await validateExistId('reto', id)
     if (!exists) return Promise.reject('Id reto no válido');
   }),
+  body('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await retosController.aprobeTechnologicalChallenge(req, res))
 
