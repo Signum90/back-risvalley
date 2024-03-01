@@ -31,7 +31,7 @@ class ServiciosTecnologicosModel extends Model {
         estadoLabel: {
           type: DataTypes.VIRTUAL,
           get() {
-            const types = { 0:'inactivo', 1: 'activo', 2: 'Pendiente aprobacion' }
+            const types = { 0: 'inactivo', 1: 'activo', 2: 'Pendiente aprobacion' }
             const type = this.getDataValue('estado');
             return types[type] ?? '';
           }
@@ -68,6 +68,10 @@ class ServiciosTecnologicosModel extends Model {
           },
           comment: "Tipo 3",
           field: 'id_tipo_cliente_servicio'
+        },
+        keydata: {
+          type: DataTypes.STRING,
+          allowNull: false
         },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,

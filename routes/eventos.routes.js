@@ -49,6 +49,7 @@ router.put("/:idEvento/update-logo", Middlewares.validateJWTMiddleware, multerCo
     const exists = await validateExistId('evento', id)
     if (!exists) return Promise.reject('Id evento no válido');
   }),
+  check('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await eventosController.updateLogoEvent(req, res));
 

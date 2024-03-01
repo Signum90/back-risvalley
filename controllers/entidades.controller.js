@@ -5,7 +5,7 @@
 const { response, request } = require('express');
 const EntidadesModel = require('../models/Entidades');
 const { sequelize } = require('../db/connection');
-const { literal, Op } = require('sequelize');
+const { literal } = require('sequelize');
 const { deleteFile, validateFieldUnique, validateKeyWord, generateKeyWord, registerKeyData, deleteKeyWord } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
 const bcrypt = require('bcrypt')

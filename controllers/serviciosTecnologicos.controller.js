@@ -1,10 +1,10 @@
 const { sequelize } = require('../db/connection');
 const { literal, col, Op } = require('sequelize');
-const { deleteFile } = require('../helpers/helpers');
+const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord } = require('../helpers/helpers');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const UsersModel = require('../models/Users');
 const { urlFiles } = require('../config/config');
-
+const bcrypt = require('bcrypt')
 class ServiciosTecnologicosCTR {
   async getTechnologicalService(req, res) {
     try {
@@ -23,8 +23,7 @@ class ServiciosTecnologicosCTR {
           'estadoLabel',
           'idTipoServicio',
           'idTipoClienteServicio',
-          //'imagen',
-          //'urlImagen',
+          'keydata',
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoServicio)'), 'tipoServicio'],
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoClienteServicio)'), 'tipoClienteServicio'],
           [col('contacto.nombre'), 'nombreContacto'],
@@ -65,17 +64,20 @@ class ServiciosTecnologicosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const { body, file, token } = req;
+        const keydata = await generateKeyWord();
 
         const postData = {
           nombre: body.nombre,
           estado: 2,
           descripcion: body.descripcion,
+          keydata: await bcrypt.hash(keydata, 10),
           idTipoServicio: body.idTipoServicio,
           idTipoClienteServicio: body.idTipoClienteServicio,
           imagen: file ? file?.filename : null,
           createdBy: token.id
         };
         const model = await ServiciosTecnologicosModel.create(postData, { transaction: t });
+        await registerKeyData(model.id, body.nombre, keydata, 'SE');
 
         return res.status(200).json({ msg: 'success', data: model });
       })
@@ -88,16 +90,19 @@ class ServiciosTecnologicosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const { body, file, token } = req;
+        const keydata = await generateKeyWord();
 
         const postData = {
           nombre: body.nombre,
           descripcion: body.descripcion,
+          keydata: await bcrypt.hash(keydata, 10),
           idTipoServicio: body.idTipoServicio,
           idTipoClienteServicio: body.idTipoClienteServicio,
           imagen: file ? file?.filename : null,
           createdBy: body.idUserContacto
         };
         const model = await ServiciosTecnologicosModel.create(postData, { transaction: t });
+        await registerKeyData(model.id, body.nombre, keydata, 'SE');
 
         return res.status(200).json({ msg: 'success', data: model });
       })
@@ -106,12 +111,14 @@ class ServiciosTecnologicosCTR {
     }
   }
 
-
   async updateTechnologicalService(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
         const { body, token } = req;
         const id = req.params.idServicio;
+
+        const validateKeyData = await validateKeyWord(id, 'SE', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
 
         const editData = {
           nombre: body.nombre,
@@ -132,7 +139,10 @@ class ServiciosTecnologicosCTR {
   async aprobeTechnologicalService(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
+        const { body } = req;
         const id = req.params.idServicio;
+        const validateKeyData = await validateKeyWord(id, 'SE', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún servicio', status: 400 });
 
         await ServiciosTecnologicosModel.update({ estado: 1 }, { where: { id } }, { transaction: t });
         return res.status(200).json({ msg: 'success' });
@@ -145,9 +155,12 @@ class ServiciosTecnologicosCTR {
   async updateLogoService(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { file, token } = req
+        const { file, token, body } = req;
+        const id = req.params.idServicio;
+        const validateKeyData = await validateKeyWord(id, 'SE', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún servicio', status: 400 });
 
-        const service = await ServiciosTecnologicosModel.findByPk(req.params.idServicio);
+        const service = await ServiciosTecnologicosModel.findByPk(id);
         const fileToDelete = service?.imagen;
         await service.update({
           imagen: file ? file?.filename : null,
@@ -170,6 +183,10 @@ class ServiciosTecnologicosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idServicio
+        const { keydata } = req.query
+
+        const validateKeyData = await validateKeyWord(id, 'SE', keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún servicio', status: 400 });
 
         const service = await ServiciosTecnologicosModel.findByPk(id);
         const fileToDelete = service?.imagen;
@@ -236,8 +253,6 @@ class ServiciosTecnologicosCTR {
           'estadoLabel',
           'idTipoServicio',
           'idTipoClienteServicio',
-          //'imagen',
-          //'urlImagen',
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoServicio)'), 'tipoServicio'],
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoClienteServicio)'), 'tipoClienteServicio'],
           [col('contacto.nombre'), 'nombreContacto'],
