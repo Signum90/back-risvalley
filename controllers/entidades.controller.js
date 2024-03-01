@@ -115,7 +115,7 @@ class EntidadesCTR {
         }
 
         const model = await EntidadesModel.create(postData, { transaction: t });
-        await registerKeyData(model.id, body.email.split('@')[0], keydata, 'E');
+        await registerKeyData(model.id, body.email.split('@')[0], keydata, 'EN');
 
         return res.status(200).json({ msg: 'success', data: model });
       })
@@ -131,7 +131,7 @@ class EntidadesCTR {
         const { campo, value } = body;
         const id = req.params.idEntidad
 
-        const validateKeyData = await validateKeyWord(id, 'E', body.keydata);
+        const validateKeyData = await validateKeyWord(id, 'EN', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
         if (campo == 'nombre') {
@@ -158,7 +158,7 @@ class EntidadesCTR {
 
         const entidad = await EntidadesModel.findByPk(req.params.idEntidad);
 
-        const validateKeyData = await validateKeyWord(req.params.idEntidad, 'E', body.keydata);
+        const validateKeyData = await validateKeyWord(req.params.idEntidad, 'EN', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
         const fileToDelete = entidad?.logo;
@@ -185,7 +185,7 @@ class EntidadesCTR {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idEntidad
 
-        const validateKeyData = await validateKeyWord(req.params.idEntidad, 'E', req.query.keydata);
+        const validateKeyData = await validateKeyWord(req.params.idEntidad, 'EN', req.query.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
         const entidad = await EntidadesModel.findByPk(id);

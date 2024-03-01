@@ -78,6 +78,10 @@ class EventosModel extends Model {
             return logo ? `${urlFiles}${logo}` : null
           }
         },
+        keydata: {
+          type: DataTypes.STRING,
+          allowNull: false
+        },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: true,

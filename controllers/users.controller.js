@@ -165,7 +165,7 @@ class UsersCTR {
         }
 
         const entidad = await EntidadesModel.create(postData, { transaction: t });
-        await registerKeyData(entidad.id, body.email.split('@')[0], keydata, 'E')
+        await registerKeyData(entidad.id, body.email.split('@')[0], keydata, 'EN');
       })
     } catch (error) {
       throw (error);

@@ -1,12 +1,14 @@
 const { Router } = require('express');
-const { param, check } = require('express-validator');
+const { param, check, query } = require('express-validator');
 const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
 const EventosCTR = require('../controllers/eventos.controller');
 const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
+const CustomMessages = require('../helpers/customMessages');
 
 const eventosController = new EventosCTR();
+const customMessages = CustomMessages.getValidationMessages();
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", async (req, res) => await eventosController.getEvents(req, res));
@@ -60,14 +62,16 @@ router.put("/:idEvento/update", Middlewares.validateJWTMiddleware, [
   check('urlRegistro').trim().notEmpty().isString().isLength({ max: 80 }),
   check('precio').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
   check('descripcion').trim().notEmpty().isString().isLength({ max: 250 }),
+  check('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await eventosController.updateEvent(req, res));
 
 router.delete("/:idEvento/delete", Middlewares.validateJWTMiddleware, [
-  param('idEvento').notEmpty().isInt().custom(async (id) => {
+  param('idEvento').notEmpty().withMessage(customMessages.required).isInt().custom(async (id) => {
     const exists = await validateExistId('evento', id)
     if (!exists) return Promise.reject('Id evento no válido');
   }),
+  query('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await eventosController.deleteEvent(req, res))
 module.exports = router;

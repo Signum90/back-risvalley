@@ -70,7 +70,7 @@ class Helpers {
       //const key = await bcrypt.hash(keydata, 10);
       await KeyWordsModel.create({
         key, idRegistroAsociado,
-        word: letter + word
+        word: letter + '-' + word
       }, { transaction: t });
     })
   }

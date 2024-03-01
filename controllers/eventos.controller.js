@@ -2,8 +2,9 @@ const { response, request } = require('express');
 const { sequelize } = require('../db/connection');
 const EventosModel = require('../models/Eventos');
 const { Op, literal } = require('sequelize');
-const { deleteFile } = require('../helpers/helpers');
+const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
+const bcrypt = require('bcrypt')
 
 class EventosCTR {
   async getEvents(req = request, res = response) {
@@ -24,6 +25,7 @@ class EventosCTR {
           'urlRegistro',
           'precio',
           'estado',
+          'keydata',
           'tipoResponsable',
           'createdBy',
           'estadoLabel',
@@ -60,6 +62,7 @@ class EventosCTR {
           'descripcion',
           'logo',
           'fechaInicio',
+          'keydata',
           'urlRegistro',
           'precio',
           'tipoResponsable',
@@ -91,15 +94,18 @@ class EventosCTR {
         const { file, token } = req
         const idContact = token.superadmin && idUserResponsable ? idUserResponsable : token.id;
         const contact = await UsersModel.findByPk(idContact);
+        const keydata = await generateKeyWord();
 
         const model = await EventosModel.create({
           nombre, descripcion, urlRegistro, precio, idCiudad,
           tipoResponsable: contact.tipo,
+          keydata: await bcrypt.hash(keydata, 10),
           logo: file ? file?.filename : null,
           createdBy: contact.id,
           fechaInicio: new Date(fechaInicio)
         }, { transaction: t })
 
+        await registerKeyData(model.id, nombre, keydata, 'EV');
         return res.status(200).json({ msg: 'success', data: model });
       })
     } catch (error) {
@@ -110,9 +116,13 @@ class EventosCTR {
   async updateLogoEvent(req = request, res = response) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { file, token } = req
+        const { file, token, body } = req
+        const id = req.params.idEvento
 
-        const event = await EventosModel.findByPk(req.params.idEvento);
+        const validateKeyData = await validateKeyWord(id, 'EV', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
+
+        const event = await EventosModel.findByPk(id);
         const fileToDelete = event?.logo;
         await event.update({
           logo: file ? file?.filename : null,
@@ -137,6 +147,10 @@ class EventosCTR {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idEvento
         const { body, token } = req
+
+        const validateKeyData = await validateKeyWord(id, 'EV', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
+
         body.updatedBy = token.id
         const model = await EventosModel.update(body, {
           where: { id },
@@ -154,6 +168,10 @@ class EventosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idEvento
+        const { keydata } = req.query
+
+        const validateKeyData = await validateKeyWord(id, 'EV', keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
 
         const event = await EventosModel.findByPk(id);
         const fileToDelete = event?.logo;
