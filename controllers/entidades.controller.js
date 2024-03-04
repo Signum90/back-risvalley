@@ -133,6 +133,9 @@ class EntidadesCTR {
         const { campo, value } = body;
         const id = req.params.idEntidad
 
+        const entidad = await EntidadesModel.findByPk(id);
+
+        if (entidad.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar la entidad', status: 400 });
         const validateKeyData = await validateKeyWord(id, 'EN', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
@@ -144,7 +147,7 @@ class EntidadesCTR {
           [campo]: value,
           updatedBy: token.id
         }
-        await EntidadesModel.update(updateData, { where: { id } }, { transaction: t });
+        await entidad.update(updateData, { transaction: t });
 
         return res.status(200).json({ msg: 'success' });
       })
@@ -159,7 +162,7 @@ class EntidadesCTR {
         const { file, token, body } = req
 
         const entidad = await EntidadesModel.findByPk(req.params.idEntidad);
-
+        if (entidad.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar la entidad', status: 400 });
         const validateKeyData = await validateKeyWord(req.params.idEntidad, 'EN', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
@@ -185,12 +188,14 @@ class EntidadesCTR {
   async deleteEntidad(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
+        const { token } = req;
         const id = req.params.idEntidad
 
         const validateKeyData = await validateKeyWord(req.params.idEntidad, 'EN', req.query.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
         const entidad = await EntidadesModel.findByPk(id);
+        if (entidad.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar la entidad', status: 400 });
         const fileToDelete = entidad?.logo;
 
         await entidad.destroy({ transaction: t });
