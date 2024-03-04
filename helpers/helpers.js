@@ -24,7 +24,7 @@ const UsersValidacionesModel = require('../models/UsersValidaciones');
 const XTipoModel = require('../models/XTipos');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const DepartamentosModel = require('../models/Departamentos');
-const FormatosAfiliacionModel = require('../models/FormatosAfiliacion');
+const FormatosModel = require('../models/Formatos');
 const PqrsModel = require('../models/Pqrs');
 
 //■► CLASE: Helpers de Datos ◄■:
@@ -98,7 +98,7 @@ class Helpers {
         'tipo': XTipoModel,
         'servicio': ServiciosTecnologicosModel,
         'departamento': DepartamentosModel,
-        'formato': FormatosAfiliacionModel,
+        'formato': FormatosModel,
         'pqr': PqrsModel
       }
       if (!models[model]) return false;

@@ -1,6 +1,6 @@
 const { sequelize } = require('../db/connection');
 const { literal } = require('sequelize');
-const FormatosAfiliacionModel = require('../models/FormatosAfiliacion');
+const FormatosModel = require('../models/Formatos');
 const { saveResourceMultimedia, deleteResourceMultimedia, deleteFile } = require('../helpers/helpers');
 const { urlFiles } = require('../config/config');
 
@@ -10,11 +10,12 @@ class FormatosAfilicacionCTR {
       return await sequelize.transaction(async (t) => {
         const { file, token, body } = req;
         const recursoMultimediaRegistro = await saveResourceMultimedia(file, token?.id);
-        await FormatosAfilicacionCTR.inactiveAllFormats();
+        await FormatosAfilicacionCTR.inactiveAllFormats(body.tipo);
 
-        const model = await FormatosAfiliacionModel.create({
+        const model = await FormatosModel.create({
           idRecursoMultimedia: recursoMultimediaRegistro.id,
           estado: 1,
+          tipo: body.tipo,
           fechaInicioFormato: body.fechaInicioFormato,
           fechaFinFormato: body.fechaFinFormato,
           createdBy: token.id
@@ -29,13 +30,18 @@ class FormatosAfilicacionCTR {
 
   async getFormatActive(req, res) {
     try {
-      const format = await FormatosAfiliacionModel.findOne({
+      const tipo = req.query.tipo
+
+      const format = await FormatosModel.findOne({
         attributes: [
           'id',
           [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipo'],
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
         ],
-        where: { estado: 1 },
+        where: {
+          estado: 1,
+          tipo
+        },
         order: [['createdAt', 'Desc']],
       });
 
@@ -45,10 +51,10 @@ class FormatosAfilicacionCTR {
     }
   }
 
-  static async inactiveAllFormats() {
+  static async inactiveAllFormats(tipo) {
     try {
       return await sequelize.transaction(async (t) => {
-        await FormatosAfiliacionModel.update({ estado: 0 }, { where: {} }, { transaction: t })
+        await FormatosModel.update({ estado: 0 }, { where: { tipo } }, { transaction: t })
       })
     } catch (error) {
       throw error;
@@ -61,8 +67,10 @@ class FormatosAfilicacionCTR {
         const { token, body } = req;
         const id = req.params.idFormato
 
-        await FormatosAfilicacionCTR.inactiveAllFormats();
-        await FormatosAfiliacionModel.update({
+        const model = await FormatosModel.findByPk(id)
+
+        await FormatosAfilicacionCTR.inactiveAllFormats(model.tipo);
+        await model.update({
           estado: 1,
           updatedBy: token.id
         }, { where: { id } }, { transaction: t });
@@ -79,7 +87,7 @@ class FormatosAfilicacionCTR {
       return await sequelize.transaction(async (t) => {
         const idFormat = req.params.idFormato
 
-        const format = await FormatosAfiliacionModel.findByPk(idFormat);
+        const format = await FormatosModel.findByPk(idFormat);
         if (format.estado == 1) return res.status(400).json({ type: 'error', msg: 'Active otro formato antes de eliminar este', status: 400 });
         const multimediaFile = await deleteResourceMultimedia(format.idRecursoMultimedia);
 
@@ -98,13 +106,16 @@ class FormatosAfilicacionCTR {
 
   async getAllFormats(req, res) {
     try {
-      const formats = await FormatosAfiliacionModel.findAll({
+      const formats = await FormatosModel.findAll({
         attributes: [
           'id',
           'estado',
           [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipo'],
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
         ],
+        where: {
+          tipo: req.query.tipo
+        },
         order: [['estado', 'Desc']],
       })
 

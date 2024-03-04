@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 
-class FormatosAfiliacionModel extends Model {
+class FormatosModel extends Model {
   static initialize(sequelizeInstace) {
     const Formatos = super.init(
       {
@@ -24,6 +24,12 @@ class FormatosAfiliacionModel extends Model {
           field: 'estado',
           allowNull: false,
           comment: "0=inactivo 1=activo"
+        },
+        tipo: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'tipo',
+          allowNull: false,
+          comment: "1=Afiliacion, 2=Curso"
         },
         fechaInicioFormato: {
           type: DataTypes.DATEONLY,
@@ -71,8 +77,8 @@ class FormatosAfiliacionModel extends Model {
       },
       {
         sequelize: sequelizeInstace,
-        modelName: 'FormatosAfiliacion',
-        tableName: 'formatos_afiliacion'
+        modelName: 'Formatos',
+        tableName: 'formatos'
       },
 
     )
@@ -80,4 +86,4 @@ class FormatosAfiliacionModel extends Model {
   }
 }
 
-module.exports = FormatosAfiliacionModel;
+module.exports = FormatosModel;
