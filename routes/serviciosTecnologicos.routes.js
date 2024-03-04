@@ -11,8 +11,8 @@ router.get("/", async (req, res) => await serviciosTecnologicosController.getTec
 router.get("/usuario", Middlewares.validateJWTMiddleware, async (req, res) => await serviciosTecnologicosController.getMyServices(req, res));
 router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await serviciosTecnologicosController.getTechnologicalService(req, res));
 router.get("/:idServicio/detalle",
-  ServiciosValidator.validateIdService,
-  async (req, res) => await serviciosTecnologicosController.validateExistsIdService(req, res));
+  ServiciosValidator.validateExistsIdService,
+  async (req, res) => await serviciosTecnologicosController.getDetailService(req, res));
 router.post("/", Middlewares.validateJWTMiddleware,
   multerConfig.upload.single('imagen'),
   ServiciosValidator.createServicesValidator,
