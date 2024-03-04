@@ -99,12 +99,16 @@ class UsersValidator {
           if (req.body.tipo != 1 && !sigla) return Promise.reject('Las siglas de la entidad son obligatorias');
         }),
       check('tipoEntidad').custom(async (tipoEntidad, { req }) => {
-        if (req.body.tipo != 1 && !tipoEntidad) return Promise.reject('El tipo de la entidad es obligatorio');
-        if (![1, 2, 3].includes(tipoEntidad)) return Promise.reject('El tipo de la entidad debe ser un numero entre 1 y 3')
+        if (req.body.tipo != 1) {
+          if (!tipoEntidad) return Promise.reject('El tipo de la entidad es obligatorio');
+          if (![1, 2, 3].includes(Number(tipoEntidad))) return Promise.reject('El tipo de la entidad debe ser un numero entre 1 y 3')
+        }
       }),
       check('idTipoNaturalezaJuridica').custom(async (tipoNaturaleza, { req }) => {
-        if (req.body.tipo != 1 && !tipoNaturaleza) return Promise.reject('El tipo de naturaleza de la entidad es obligatorio');
-        await UsersValidator.validateXTipoId(tipoNaturaleza)
+        if (req.body.tipo != 1) {
+          if (!tipoNaturaleza) return Promise.reject('El tipo de naturaleza de la entidad es obligatorio');
+          await UsersValidator.validateXTipoId(tipoNaturaleza)
+        }
       }),
       check('direccion').trim().isString().withMessage(customMessages.string)
         .isLength({ max: 80 }).withMessage(customMessages.length).custom(async (direccion, { req }) => {
