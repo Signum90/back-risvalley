@@ -123,6 +123,8 @@ class EventosCTR {
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
 
         const event = await EventosModel.findByPk(id);
+        if (event.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el evento', status: 400 });
+
         const fileToDelete = event?.logo;
         await event.update({
           logo: file ? file?.filename : null,
@@ -150,11 +152,11 @@ class EventosCTR {
 
         const validateKeyData = await validateKeyWord(id, 'EV', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
+        const model = await EventosModel.findByPk(id);
+        if (model.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el evento', status: 400 });
 
         body.updatedBy = token.id
-        const model = await EventosModel.update(body, {
-          where: { id },
-        }, { transaction: t })
+        await model.update(body, { transaction: t })
 
         return res.status(200).json({ msg: 'success', data: model });
       })
@@ -168,12 +170,14 @@ class EventosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idEvento
+        const token = req.token
         const { keydata } = req.query
 
         const validateKeyData = await validateKeyWord(id, 'EV', keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
 
         const event = await EventosModel.findByPk(id);
+        if (event.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el evento', status: 400 });
         const fileToDelete = event?.logo;
 
         await event.destroy({ transaction: t });
