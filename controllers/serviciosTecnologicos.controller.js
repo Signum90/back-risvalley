@@ -127,7 +127,9 @@ class ServiciosTecnologicosCTR {
           idTipoClienteServicio: body.idTipoClienteServicio,
           updatedBy: token.id
         };
-        await ServiciosTecnologicosModel.update(editData, { where: { id } }, { transaction: t });
+        const model = await ServiciosTecnologicosModel.findByPk(id);
+        if (model.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el servicio', status: 400 });
+        await model.update(editData, { transaction: t });
 
         return res.status(200).json({ msg: 'success' });
       })
@@ -161,6 +163,7 @@ class ServiciosTecnologicosCTR {
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún servicio', status: 400 });
 
         const service = await ServiciosTecnologicosModel.findByPk(id);
+        if (service.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el servicio', status: 400 });
         const fileToDelete = service?.imagen;
         await service.update({
           imagen: file ? file?.filename : null,
@@ -182,13 +185,15 @@ class ServiciosTecnologicosCTR {
   async deleteService(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const id = req.params.idServicio
-        const { keydata } = req.query
+        const id = req.params.idServicio;
+        const { keydata } = req.query;
+        const token = req.token;
 
         const validateKeyData = await validateKeyWord(id, 'SE', keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún servicio', status: 400 });
 
         const service = await ServiciosTecnologicosModel.findByPk(id);
+        if (service.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar el servicio', status: 400 });
         const fileToDelete = service?.imagen;
 
         await service.destroy({ transaction: t });

@@ -145,7 +145,6 @@ class RetosCTR {
         const multimedia = files['recursoMultimedia'][0];
         if (!multimedia) return res.status(400).json({ type: 'error', msg: 'El recurso multimedia es requerido', status: 400 });
         const entidad = await EntidadesModel.findOne({ where: { idUserResponsable: token.id } });
-        console.log("🚀 ~ RetosCTR ~ returnawaitsequelize.transaction ~ token.id:", token.id)
         if (!entidad) return res.status(400).json({ type: 'error', msg: 'Por favor cree una entidad unipersonal para crear eventos', status: 400 });
 
         const keydata = await generateKeyWord();
@@ -213,6 +212,7 @@ class RetosCTR {
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún reto', status: 400 });
 
         const reto = await RetosTecnologicosModel.findByPk(id);
+        if (reto.idUserEntidad != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el reto', status: 400 });
         let fileToDelete;
         let updateData = { updatedBy: token.id };
 
@@ -260,7 +260,9 @@ class RetosCTR {
           [campo]: value,
           updatedBy: token.id
         }
-        await RetosTecnologicosModel.update(updateData, { where: { id } }, { transaction: t });
+        const model = await RetosTecnologicosModel.findByPk(id)
+        if (model.idUserEntidad != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el reto', status: 400 });
+        await model.update(updateData, { transaction: t });
 
         return res.status(200).json({ msg: 'success' });
       })
@@ -273,10 +275,12 @@ class RetosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idReto;
+        const token = req.token;
         const { keydata } = req.query;
         const validateKeyData = await validateKeyWord(id, 'RE', keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún reto', status: 400 });
         const reto = await RetosTecnologicosModel.findByPk(id);
+        if (reto.idUserEntidad != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar el reto', status: 400 });
         const fileToDelete = reto?.fichaTecnica;
 
         const multimediaFile = await deleteResourceMultimedia(reto.idRecursoMultimedia)

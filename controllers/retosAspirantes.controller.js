@@ -45,8 +45,10 @@ class RetosAspirantesCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idRetoAspirante;
+        const token = req.token
 
         const model = await RetosAspirantesModel.findByPk(id);
+        if (model.idUserAspirante != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar la solicitud', status: 400 });
         const fileToDelete = model?.fichaTecnica;
         await model.destroy({ transaction: t });
 
