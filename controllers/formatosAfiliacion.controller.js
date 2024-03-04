@@ -109,6 +109,8 @@ class FormatosAfilicacionCTR {
       const formats = await FormatosModel.findAll({
         attributes: [
           'id',
+          'fechaInicioFormato',
+          'fechaFinFormato',
           'estado',
           [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipo'],
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],

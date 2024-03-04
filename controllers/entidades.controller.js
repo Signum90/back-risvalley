@@ -135,7 +135,7 @@ class EntidadesCTR {
 
         const entidad = await EntidadesModel.findByPk(id);
 
-        if (entidad.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar la entidad', status: 400 });
+        if (entidad.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar la entidad', status: 400 });
         const validateKeyData = await validateKeyWord(id, 'EN', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
@@ -162,7 +162,7 @@ class EntidadesCTR {
         const { file, token, body } = req
 
         const entidad = await EntidadesModel.findByPk(req.params.idEntidad);
-        if (entidad.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar la entidad', status: 400 });
+        if (entidad.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar la entidad', status: 400 });
         const validateKeyData = await validateKeyWord(req.params.idEntidad, 'EN', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
