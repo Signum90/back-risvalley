@@ -250,6 +250,30 @@ class UsersCTR {
     }
   }
 
+  async deleteUser(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { token, params, query } = req
+        const id = params.idUser
+
+        const validateKeyData = await validateKeyWord(id, 'U', query.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
+        const entidad = await EntidadesModel.findOne({
+          where: {
+            idUserResponsable: id
+          }
+        })
+        if (entidad) return res.status(400).json({ type: 'error', status: 400, msg: 'El usuario no puede ser eliminado porque tiene una entidad a su cargo' });
+        const user = await UsersModel.findByPk(id)
+        await user.destroy({ transaction: t });
+
+        return res.status(200).json({ msg: 'success' });
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
 
 }
 

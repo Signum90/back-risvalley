@@ -23,5 +23,5 @@ router.post("/create", multerConfig.upload.single('logo'), UsersValidator.userVa
 router.put("/:idUser/update", Middlewares.validateJWTMiddleware, UsersValidator.userUpdateValidate, usersController.updateUser);
 router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), UsersValidator.userDashboardValidate, usersController.registerUser);
 router.put("/:idUser/update-logo", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), UsersValidator.updateLogoValidator, async (req, res) => await usersController.updateLogoUser(req, res));
-
+router.delete("/:idUser/eliminar", Middlewares.validateJWTMiddleware, UsersValidator.deleteUserValidator, async (req, res) => await usersController.deleteUser(req, res))
 module.exports = router;

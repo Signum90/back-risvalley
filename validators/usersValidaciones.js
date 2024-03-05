@@ -142,6 +142,15 @@ class UsersValidator {
       Middlewares.scan_errors
     ]
   }
+
+  static get deleteUserValidator() {
+    const customMessages = CustomMessages.getValidationMessages();
+    return [
+      param('idUser').notEmpty().isInt().custom(UsersValidator.validateIdUserExists),
+      query('keydata').trim().notEmpty().withMessage(customMessages.required),
+      Middlewares.scan_errors
+    ]
+  }
 }
 
 module.exports = UsersValidator;
