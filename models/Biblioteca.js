@@ -1,52 +1,30 @@
 const { DataTypes, Model } = require('sequelize');
 
-class CursosModel extends Model {
+class BibliotecaModel extends Model {
   static initialize(sequelizeInstace) {
-    return super.init(
+    const Biblioteca = super.init(
       {
         id: {
-          type: DataTypes.MEDIUMINT.UNSIGNED,
+          type: DataTypes.MEDIUMINT,
           primaryKey: true,
           autoIncrement: true
+        },
+        idRecursoMultimedia: {
+          type: DataTypes.MEDIUMINT,
+          allowNull: false,
+          field: 'id_recurso_multimedia',
+          references: {
+            model: 'recursos_multimedia',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
         },
         estado: {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'estado',
           allowNull: false,
-          comment: "1=Activo, 2=Inactivo 3=Pendiente aprobacion"
-        },
-        nombre: {
-          type: DataTypes.STRING(50),
-          allowNull: false,
-          field: 'nombre',
-          unique: 'nombre'
-        },
-        imagen: {
-          type: DataTypes.STRING(120),
-          field: 'imagen',
-          allowNull: true,
-        },
-        vistaPrevia: {
-          type: DataTypes.STRING(120),
-          field: 'vista_previa',
-          allowNull: true,
-        },
-        descripcion: {
-          type: DataTypes.STRING(250),
-          allowNull: false,
-          field: 'descripcion',
-          unique: 'descripcion'
-        },
-        idUserResponsable: {
-          type: DataTypes.MEDIUMINT.UNSIGNED,
-          allowNull: false,
-          comment: "User",
-          references: {
-            model: 'users',
-            key: 'id',
-          },
-          field: 'id_user_responsable',
-          unique: 'id_user_responsable'
+          defaultValue: 1,
+          comment: "0=inactivo 1=activo"
         },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
@@ -84,10 +62,13 @@ class CursosModel extends Model {
       },
       {
         sequelize: sequelizeInstace,
-        modelName: 'Cursos',
-        tableName: 'cursos'
-      })
+        modelName: 'Biblioteca',
+        tableName: 'bliblioteca',
+        timestamps: false
+      },
+    );
+    return Biblioteca;
   }
 }
 
-module.exports = CursosModel;
+module.exports = BibliotecaModel;
