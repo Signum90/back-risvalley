@@ -220,12 +220,16 @@ class RetosCTR {
           fileToDelete = reto[body.campo]
           updateData[body.campo] = file ? file?.filename : null
         } else if (body.campo == 'recursoMultimedia') {
-          fileToDelete = await deleteResourceMultimedia(body.idRecursoMultimedia);
           const recursoMultimediaRegistro = await saveResourceMultimedia(file, token?.id);
-          updateData[multimedia] = recursoMultimediaRegistro?.id
+          updateData['idRecursoMultimedia'] = recursoMultimediaRegistro?.id
         }
         await reto.update(updateData, { transaction: t });
 
+        // if (body.campo == 'recursoMultimedia') {
+        //  fileToDelete = await sequelize.transaction(async (t) => {
+        //    await deleteResourceMultimedia(reto.idRecursoMultimedia, { transaction: t })
+        //  })
+        // }
         if (fileToDelete) {
           deleteFile(fileToDelete, (err) => {
             if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
@@ -274,9 +278,9 @@ class RetosCTR {
   async deleteReto(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const id = req.params.idReto;
-        const token = req.token;
-        const { keydata } = req.query;
+        const { token, query, params } = req
+        const id = params.idReto;
+        const keydata = query.keydata;
         const validateKeyData = await validateKeyWord(id, 'RE', keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún reto', status: 400 });
         const reto = await RetosTecnologicosModel.findByPk(id);
@@ -284,8 +288,8 @@ class RetosCTR {
         const fileToDelete = reto?.fichaTecnica;
 
         const multimediaFile = await deleteResourceMultimedia(reto.idRecursoMultimedia)
-        await reto.destroy({ transaction: t });
         await deleteKeyWord(validateKeyData.id);
+        await reto.destroy({ transaction: t });
         deleteFile(fileToDelete, (err) => {
           if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
         })
@@ -308,7 +312,6 @@ class RetosCTR {
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún reto', status: 400 });
 
         await RetosTecnologicosModel.update({ estado: 1 }, { where: { id } }, { transaction: t });
-        await deleteKeyWord(validateKeyData.id);
         return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {

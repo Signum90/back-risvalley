@@ -193,7 +193,6 @@ class ServiciosTecnologicosCTR {
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún servicio', status: 400 });
 
         const service = await ServiciosTecnologicosModel.findByPk(id);
-        console.log("🚀 ~ ServiciosTecnologicosCTR ~ returnawaitsequelize.transaction ~ token.superadmin:", token.superadmin)
         if (service.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar el servicio', status: 400 });
         const fileToDelete = service?.imagen;
 

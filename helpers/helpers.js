@@ -213,7 +213,7 @@ class Helpers {
           idRegistroAsociado: id
         }
       })
-      if (!bcrypt.compareSync(keyword.key, keydata)) {
+      if (!bcrypt.compareSync(keyword?.key, keydata)) {
         return false;
       }
       return keyword;
