@@ -14,6 +14,9 @@ class TypesCTR {
   async saveTypes(req = request, res = response) {
     try {
       return await sequelize.transaction(async (t) => {
+        const existsTypes = await XTiposModel.findOne();
+        if (existsTypes) return res.status(400).json({ type: 'error', status: 400, msg: 'Los tipos ya están creados' })
+
         const types = [
           { nombre: 'Sociedad Limitada', clasificacion: 1 },
           { nombre: 'Empresa Unipersonal', clasificacion: 1 },
@@ -74,6 +77,9 @@ class TypesCTR {
   async departamentosYCiudades(req = request, res = response) {
     try {
       return await sequelize.transaction(async (t) => {
+        const exists = await DepartamentosModel.findOne();
+        if (exists) return res.status(200).json({ status: 400, msg: 'Las ciudades ya estan creadas' })
+
         const departamentos = [
           { "id": 5, "nombre": "ANTIOQUIA" },
           { "id": 8, "nombre": "ATLANTICO" },
