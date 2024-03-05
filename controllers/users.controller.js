@@ -4,7 +4,7 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 const { response, request } = require('express');
 const { sequelize } = require('../db/connection');
-const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate, generatePasswordTemporal, validateKeyWord, deleteFile } = require('../helpers/helpers');
+const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate, generatePasswordTemporal, validateKeyWord, deleteFile, deleteKeyWord } = require('../helpers/helpers');
 const { readHTMLFile } = require('../config/email')
 const hbs = require('hbs');
 const bcrypt = require('bcrypt')
@@ -199,20 +199,20 @@ class UsersCTR {
 
         const validateKeyData = await validateKeyWord(id, 'U', keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
+        const user = await UsersModel.findByPk(id)
+        if (user.id != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar el usuario', status: 400 });
 
         const updateData = {
           [campo]: value,
           updateBy: token?.id
         }
         if (campo == 'email') {
-          const user = await UsersModel.findByPk(id)
           updateData['registroValidado'] = 0;
           const codeTemp = await generateCodeTemporal();
           await UsersCTR.sendEmailValidate(value, user.nombre, codeTemp, user.id);
           await registerUserValidate(user.id, codeTemp);
         }
-
-        await UsersModel.update(updateData, { where: { id } }, { transaction: t });
+        await user.update(updateData, { transaction: t });
 
         return res.status(200).json({ msg: "success", data: true });
       })
@@ -227,6 +227,7 @@ class UsersCTR {
         const { file, token, body } = req
         const id = req.params.idUser
         const user = await UsersModel.findByPk(id);
+        if (user.id != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar el usuario', status: 400 });
 
         const validateKeyData = await validateKeyWord(id, 'U', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
@@ -265,6 +266,8 @@ class UsersCTR {
         })
         if (entidad) return res.status(400).json({ type: 'error', status: 400, msg: 'El usuario no puede ser eliminado porque tiene una entidad a su cargo' });
         const user = await UsersModel.findByPk(id)
+        if (user.id != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar el usuario', status: 400 });
+        await deleteKeyWord(validateKeyData.id);
         await user.destroy({ transaction: t });
 
         return res.status(200).json({ msg: 'success' });
