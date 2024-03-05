@@ -32,7 +32,7 @@ class CursosModel extends Model {
           allowNull: true,
         },
         descripcion: {
-          type: DataTypes.STRING(120),
+          type: DataTypes.STRING(250),
           allowNull: false,
           field: 'descripcion',
           unique: 'descripcion'

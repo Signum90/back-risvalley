@@ -16,7 +16,7 @@ class RetosTecnologicosModel extends Model {
           field: 'nombre',
         },
         descripcion: {
-          type: DataTypes.STRING(150),
+          type: DataTypes.STRING(250),
           allowNull: false,
           field: 'descripcion',
         },

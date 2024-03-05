@@ -43,7 +43,7 @@ class EntidadesModel extends Model {
           field: 'email',
         },
         descripcion: {
-          type: DataTypes.STRING(150),
+          type: DataTypes.STRING(250),
           allowNull: false,
           field: 'descripcion',
         },

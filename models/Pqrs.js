@@ -16,7 +16,7 @@ class PqrsModel extends Model {
           comment: "1=Peticiones, 2=Quejas 3=Reclamos 4=Sugerencias"
         },
         pqr: {
-          type: DataTypes.STRING(150),
+          type: DataTypes.STRING(250),
           allowNull: false,
           field: 'pqr',
         },
