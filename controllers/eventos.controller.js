@@ -170,6 +170,31 @@ class EventosCTR {
     }
   }
 
+  async updateEventField(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const id = req.params.idEvento
+        const { body, token } = req
+
+        const validateKeyData = await validateKeyWord(id, 'EV', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
+        const model = await EventosModel.findByPk(id);
+        if (model.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el evento', status: 400 });
+
+        const editData = {
+          [body.campo]: body.value
+        }
+        await model.update(editData, { transaction: t })
+
+        return res.status(200).json({ msg: 'success', data: model });
+      })
+    } catch (error) {
+      console.log("🚀 ~ EventosCTR ~ updateEvent ~ error:", error)
+      return res.status(400).json({ error })
+    }
+  }
+
+
   async deleteEvent(req, res) {
     try {
       return await sequelize.transaction(async (t) => {

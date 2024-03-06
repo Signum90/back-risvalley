@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { param, check, query } = require('express-validator');
+const { param, check, query, validationResult, body } = require('express-validator');
 const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
@@ -9,6 +9,14 @@ const CustomMessages = require('../helpers/customMessages');
 
 const eventosController = new EventosCTR();
 const customMessages = CustomMessages.getValidationMessages();
+
+const validations = {
+  'nombre' : body('value').trim().notEmpty().withMessage(customMessages.required).isString().isLength({ max: 120 }),
+  'fechaInicio' : body('value').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio del evento debe ser mayor a hoy'),
+  'urlRegistro' : body('value').trim().notEmpty().isString().isLength({ max: 80 }),
+  'precio' : body('value').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
+  'descripcion' : body('value').trim().notEmpty().isString().isLength({ max: 250 }),
+}
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", async (req, res) => await eventosController.getEvents(req, res));
@@ -52,6 +60,24 @@ router.put("/:idEvento/update-logo", Middlewares.validateJWTMiddleware, multerCo
   check('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await eventosController.updateLogoEvent(req, res));
+
+router.put("/:idEvento/update/field", Middlewares.validateJWTMiddleware, [
+  param('idEvento').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('evento', id)
+    if (!exists) return Promise.reject('Id evento no válido');
+  }),
+  body('keydata').trim().notEmpty().withMessage(customMessages.required),
+  body('value').notEmpty().withMessage(customMessages.required).custom(async (id, { req }) => {
+    const validate = validations[req.body.campo]
+    if (!validate) return Promise.reject('Campo no válido');
+    //ejecuta la validacion encontrada
+    await validate.run(req);
+    const errors = validationResult(req);
+    //comprueba si hay errores y los retorna
+    if (!errors.isEmpty()) return Promise.reject('error');
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await eventosController.updateEventField(req, res));
 
 router.put("/:idEvento/update", Middlewares.validateJWTMiddleware, [
   param('idEvento').notEmpty().isInt().custom(async (id) => {
