@@ -32,7 +32,7 @@ class AuthController {
           email: user.email,
           sesionActiva: user.sesionActiva,
           primerIngreso: user.primerIngreso,
-          keydata: user.keyData,
+          keydata: user.keydata,
           registroValidado: user.registroValidado
         }
         return res.status(200).json({ data: { token, user: data } });
