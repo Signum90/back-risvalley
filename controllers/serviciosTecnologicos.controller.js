@@ -138,6 +138,32 @@ class ServiciosTecnologicosCTR {
     }
   }
 
+  async updateFieldsTechnologicalService(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { body, token } = req;
+        const {campo, value } = body
+        const id = req.params.idServicio;
+
+        const validateKeyData = await validateKeyWord(id, 'SE', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
+
+        const editData = {
+          [campo]: value,
+          updatedBy: token.id
+        };
+        console.log("🚀 ~ ServiciosTecnologicosCTR ~ returnawaitsequelize.transaction ~ editData:", editData)
+        const model = await ServiciosTecnologicosModel.findByPk(id);
+        if (model.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el servicio', status: 400 });
+        await model.update(editData, { transaction: t });
+
+        return res.status(200).json({ msg: 'success' });
+      })
+    } catch (error) {
+      throw (error);
+    }
+  }
+
   async aprobeTechnologicalService(req, res) {
     try {
       return await sequelize.transaction(async (t) => {

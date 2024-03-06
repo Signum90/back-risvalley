@@ -34,5 +34,8 @@ router.put("/:idServicio/aprobar", Middlewares.validateAdminMiddleware,
 router.delete("/:idServicio/delete", Middlewares.validateJWTMiddleware,
   ServiciosValidator.validateDeleteService,
   async (req, res) => await serviciosTecnologicosController.deleteService(req, res))
+router.put("/:idServicio/update/fields", Middlewares.validateJWTMiddleware,
+  ServiciosValidator.updateFieldService,
+  async (req, res) => await  serviciosTecnologicosController.updateFieldsTechnologicalService(req,res))
 
 module.exports = router;
