@@ -130,29 +130,21 @@ class ServiciosValidator {
   static get updateFieldService() {
     const customMessages = CustomMessages.getValidationMessages();
 
+    const validations = {
+      'nombre': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage('El nombre no puede tener más de 120 caracteres'),
+      'descripcion': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage('La descripción no puede tener más de 150 caracteres'),
+      'idTipoServicio': body('value').notEmpty().isInt().custom(ServiciosValidator.validateExitsType),
+      'idTipoClienteServicio': body('value').trim().isInt().withMessage(customMessages.int).custom(ServiciosValidator.validateExitsType)
+    }
+
     return [
       param('idServicio').notEmpty().withMessage(customMessages.required)
         .isInt().withMessage(customMessages.int)
         .custom(ServiciosValidator.validateIdService),
       body('keydata').trim().notEmpty().withMessage(customMessages.required),
       body('value').notEmpty().withMessage(customMessages.required).custom(async (value, { req }) => {
-        let validate
-        switch (req.body.campo) {
-          case 'nombre':
-            validate = body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage('El nombre no puede tener más de 120 caracteres')
-            break;
-          case 'descripcion':
-            validate = body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage('La descripción no puede tener más de 150 caracteres')
-            break;
-          case 'idTipoServicio':
-            validate = body('value').notEmpty().isInt().custom(ServiciosValidator.validateExitsType)
-            break;
-          case 'idTipoClienteServicio':
-            validate = body('value').trim().isInt().withMessage(customMessages.int).custom(ServiciosValidator.validateExitsType)
-            break;
-          default:
-            return Promise.reject('Campo no válido');
-        }
+        const validate = validations[req.body.campo]
+        if (!validate) return Promise.reject('Campo no válido');
         //ejecuta la validacion encontrada
         await validate.run(req);
         const errors = validationResult(req);

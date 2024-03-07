@@ -125,29 +125,19 @@ class RetosValidator {
   static get updateFieldsValidator() {
     const customMessages = CustomMessages.getValidationMessages();
 
+    const validations = {
+      'nombre': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage('El nombre no puede tener más de 120 caracteres'),
+      'descripcion': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage('La descripción no puede tener más de 150 caracteres'),
+      'fechaInicioConvocatoria': body('value').isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a hoy'),
+      'fechaFinConvocatoria': body('value').isAfter(new Date().toString()).withMessage('La fecha de fin debe ser mayor a hoy'),
+      'estado': body('value').notEmpty().isInt({ min: 3, max: 3 }).withMessage('El estado solo se puede cambiar a finalizado')
+    }
+
     return [
       param('idReto').notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).custom(RetosValidator.validateIdReto),
       body('value').notEmpty().withMessage(customMessages.required).custom(async (value, { req }) => {
-        let validate
-        switch (req.body.campo) {
-          case 'nombre':
-            validate = check('value').trim().isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage('El nombre no puede tener más de 120 caracteres')
-            break;
-          case 'descripcion':
-            validate = check('value').trim().isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage('La descripción no puede tener más de 150 caracteres')
-            break;
-          case 'fechaInicioConvocatoria':
-            validate = check('value').isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a hoy')
-            break;
-          case 'fechaFinConvocatoria':
-            validate = check('value').isAfter(new Date().toString()).withMessage('La fecha de fin debe ser mayor a hoy')
-            break;
-          case 'estado':
-            validate = check('value').notEmpty().isInt({ min: 3, max: 3 }).withMessage('El estado solo se puede cambiar a finalizado')
-            break;
-          default:
-            return Promise.reject('Campo no válido');
-        }
+        const validate = validations[req.body.campo]
+        if (!validate) return Promise.reject('Campo no válido');
         //ejecuta la validacion encontrada
         await validate.run(req);
         const errors = validationResult(req);
