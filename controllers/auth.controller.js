@@ -12,6 +12,7 @@ const { literal } = require('sequelize');
 const { sequelize } = require('../db/connection');
 const UsersModel = require('../models/Users');
 const UsersValidacionesModel = require('../models/UsersValidaciones');
+const EntidadesModel = require('../models/Entidades');
 
 class AuthController {
   async login(req = request, res = response) {
@@ -24,12 +25,14 @@ class AuthController {
         if (!user.registroValidado && !user.primerIngreso) return res.status(200).json({ data: { token: false, user: { id: user.id, registroValidado: false } } });
         await user.update({ sesionActiva: 1 }, { transaction: t })
         const token = await generarJWT({ id: user.id, keyData: user.keydata, superadmin: user.superadmin, primerIngreso: user.primerIngreso })
+        const responsableEntidad = await EntidadesModel.findOne({ where: { idUserResponsable: user.id } });
         const data = {
           id: user.id,
           superadmin: user.superadmin,
           nombre: user.nombre,
           telefono: user.telefono,
           email: user.email,
+          responsableEntidad: responsableEntidad ? 1 : 0,
           sesionActiva: user.sesionActiva,
           primerIngreso: user.primerIngreso,
           keydata: user.keydata,
