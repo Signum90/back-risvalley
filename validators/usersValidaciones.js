@@ -48,6 +48,9 @@ class UsersValidator {
       'cargo': body('value').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
         .isLength({ max: 70 }).withMessage('El cargo debe tener como máximo 70 caracteres'),
+      'password': body('value').trim().notEmpty().withMessage(customMessages.required)
+        .isString().withMessage(customMessages.string)
+        .isLength({ max: 25 }).withMessage('El cargo debe tener como máximo 25 caracteres'),
     }
 
     return [
