@@ -17,7 +17,8 @@ const RetosAspirantesModel = require('../models/RetosAspirantes');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const UsersValidacionesModel = require('../models/UsersValidaciones');
 const PqrsModel = require('../models/Pqrs');
-const FormatosModel = require('../models/Formatos')
+const FormatosModel = require('../models/Formatos');
+const NotificacionesModel = require('../models/Notificaciones');
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -40,6 +41,7 @@ class DataBase {
     this.usersValidacionesModel = UsersValidacionesModel.initialize(this.sequelize);
     this.PqrsModel = PqrsModel.initialize(this.sequelize);
     this.FormatosModel = FormatosModel.initialize(this.sequelize);
+    this.NotificacionesModel = NotificacionesModel.initialize(this.sequelize);
   }
   //■► MET: Autenticación de la DB ◄■:
   async authenticateDB() {

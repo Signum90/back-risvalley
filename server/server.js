@@ -33,7 +33,8 @@ class Server {
       ciudadesDepartamentos: `${this.endpoint_base}/departamentos`,
       pqrs: `${this.endpoint_base}/pqrs`,
       formatos: `${this.endpoint_base}/formatos-afiliacion`,
-      generales: `${this.endpoint_base}/rispark`
+      generales: `${this.endpoint_base}/rispark`,
+      notificaciones: `${this.endpoint_base}/notificaciones`
     }
     //■► lista blanca:
     this.whitelist = ['http://localhost:80',
@@ -93,6 +94,7 @@ class Server {
     this.app.use(this.endpoints.pqrs, require('../routes/pqrs.routes'));
     this.app.use(this.endpoints.formatos, require('../routes/formatosAfiliacion.routes'));
     this.app.use(this.endpoints.generales, require('../routes/generales.routes'));
+    this.app.use(this.endpoints.notificaciones, require('../routes/notificaciones.routes'));
   }
 
   //■► MET: listen ◄■

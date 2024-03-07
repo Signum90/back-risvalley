@@ -32,17 +32,17 @@ class PqrsCTR {
       let contactoCorreo
       let contactoTelefono
       let userActivo
-      if(token) {
+      if (token) {
         const user = await UsersModel.findByPk(token.id)
-        userActivo= 1
-        contactoNombre= user.nombre 
-        contactoCorreo= user.email
-        contactoTelefono= user.telefono
+        userActivo = 1
+        contactoNombre = user.nombre
+        contactoCorreo = user.email
+        contactoTelefono = user.telefono
       } else {
-        userActivo= 0
-        contactoNombre= body.nombre 
-        contactoCorreo= body.email
-        contactoTelefono= body.telefono
+        userActivo = 0
+        contactoNombre = body.nombre
+        contactoCorreo = body.email
+        contactoTelefono = body.telefono
       }
 
       const postData = {
@@ -63,7 +63,7 @@ class PqrsCTR {
   async resolvePQR(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const {body, token, file, params} = req
+        const { body, token, file, params } = req
         const id = params.idPqr
 
         const editData = {
@@ -73,7 +73,7 @@ class PqrsCTR {
           updatedBy: token.id
         }
         await PqrsModel.update(editData, { where: { id } })
-        return res.status(200).json({ msg: 'success', data:true });
+        return res.status(200).json({ msg: 'success', data: true });
       })
     } catch (error) {
       throw error;
