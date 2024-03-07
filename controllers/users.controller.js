@@ -212,6 +212,9 @@ class UsersCTR {
           await UsersCTR.sendEmailValidate(value, user.nombre, codeTemp, user.id);
           await registerUserValidate(user.id, codeTemp);
         }
+        if (campo == 'password') {
+          updateData[campo] = await bcrypt.hash(value, 10);
+        }
         await user.update(updateData, { transaction: t });
 
         return res.status(200).json({ msg: "success", data: true });
