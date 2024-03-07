@@ -21,6 +21,8 @@ class ServiciosTecnologicosCTR {
           'descripcion',
           'estado',
           'estadoLabel',
+          'imagen',
+          'urlImagen',
           'idTipoServicio',
           'idTipoClienteServicio',
           'keydata',
@@ -142,7 +144,7 @@ class ServiciosTecnologicosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const { body, token } = req;
-        const {campo, value } = body
+        const { campo, value } = body
         const id = req.params.idServicio;
 
         const validateKeyData = await validateKeyWord(id, 'SE', body.keydata);
