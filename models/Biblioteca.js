@@ -63,7 +63,7 @@ class BibliotecaModel extends Model {
       {
         sequelize: sequelizeInstace,
         modelName: 'Biblioteca',
-        tableName: 'bliblioteca',
+        tableName: 'biblioteca',
         timestamps: false
       },
     );

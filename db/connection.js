@@ -19,6 +19,7 @@ const UsersValidacionesModel = require('../models/UsersValidaciones');
 const PqrsModel = require('../models/Pqrs');
 const FormatosModel = require('../models/Formatos');
 const NotificacionesModel = require('../models/Notificaciones');
+const BibliotecaModel = require('../models/Biblioteca')
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -42,6 +43,7 @@ class DataBase {
     this.PqrsModel = PqrsModel.initialize(this.sequelize);
     this.FormatosModel = FormatosModel.initialize(this.sequelize);
     this.NotificacionesModel = NotificacionesModel.initialize(this.sequelize);
+    this.BibliotecaModel = BibliotecaModel.initialize(this.sequelize);
   }
   //■► MET: Autenticación de la DB ◄■:
   async authenticateDB() {
