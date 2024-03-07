@@ -1,104 +1,35 @@
 const { Router } = require('express');
-const { param, check, query, validationResult, body } = require('express-validator');
 const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
 const EventosCTR = require('../controllers/eventos.controller');
-const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
-const CustomMessages = require('../helpers/customMessages');
+const EventosValidator = require('../validators/eventosValidator');
 
 const eventosController = new EventosCTR();
-const customMessages = CustomMessages.getValidationMessages();
 
-const validations = {
-  'nombre' : body('value').trim().notEmpty().withMessage(customMessages.required).isString().isLength({ max: 120 }),
-  'fechaInicio' : body('value').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio del evento debe ser mayor a hoy'),
-  'urlRegistro' : body('value').trim().notEmpty().isString().isLength({ max: 80 }),
-  'precio' : body('value').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
-  'descripcion' : body('value').trim().notEmpty().isString().isLength({ max: 250 }),
-}
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", async (req, res) => await eventosController.getEvents(req, res));
 router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await eventosController.getEventsDashboard(req, res));
-
-router.post("/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
-  check('nombre').trim().notEmpty().isString().isLength({ max: 120 }),
-  check('fechaInicio').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio del evento debe ser mayor a hoy'),
-  check('urlRegistro').trim().notEmpty().isString().isLength({ max: 80 }),
-  check('precio').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
-  check('descripcion').trim().notEmpty().isString().isLength({ max: 250 }),
-  check('idCiudad').notEmpty().isInt().custom(async (id) => {
-    const ciudad = await validateExistId('ciudad', id)
-    if (!ciudad) return Promise.reject('Id ciudad no válido');
-  }),
-  Middlewares.scan_errors
-], eventosController.saveEvent);
-
-router.post("/create/dashboard", Middlewares.validateAdminMiddleware, multerConfig.upload.single('logo'), [
-  check('nombre').trim().notEmpty().isString().isLength({ max: 120 }),
-  check('fechaInicio').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio del evento debe ser mayor a hoy'),
-  check('urlRegistro').trim().notEmpty().isString().isLength({ max: 80 }),
-  check('precio').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
-  check('descripcion').trim().notEmpty().isString().isLength({ max: 250 }),
-  check('idCiudad').notEmpty().isInt().custom(async (id) => {
-    const ciudad = await validateExistId('ciudad', id)
-    if (!ciudad) return Promise.reject('Id ciudad no válido');
-  }),
-  check('idUserResponsable').notEmpty().isInt().custom(async (id) => {
-    const exists = await validateExistId('user', id)
-    if (!exists) return Promise.reject('Id user no válido');
-  }),
-  Middlewares.scan_errors
-], eventosController.saveEvent);
-
-router.put("/:idEvento/update-logo", Middlewares.validateJWTMiddleware, multerConfig.upload.single('logo'), [
-  param('idEvento').notEmpty().isInt().custom(async (id) => {
-    const exists = await validateExistId('evento', id)
-    if (!exists) return Promise.reject('Id evento no válido');
-  }),
-  check('keydata').trim().notEmpty().withMessage(customMessages.required),
-  Middlewares.scan_errors
-], async (req, res) => await eventosController.updateLogoEvent(req, res));
-
-router.put("/:idEvento/update/field", Middlewares.validateJWTMiddleware, [
-  param('idEvento').notEmpty().isInt().custom(async (id) => {
-    const exists = await validateExistId('evento', id)
-    if (!exists) return Promise.reject('Id evento no válido');
-  }),
-  body('keydata').trim().notEmpty().withMessage(customMessages.required),
-  body('value').notEmpty().withMessage(customMessages.required).custom(async (id, { req }) => {
-    const validate = validations[req.body.campo]
-    if (!validate) return Promise.reject('Campo no válido');
-    //ejecuta la validacion encontrada
-    await validate.run(req);
-    const errors = validationResult(req);
-    //comprueba si hay errores y los retorna
-    if (!errors.isEmpty()) return Promise.reject('error');
-  }),
-  Middlewares.scan_errors
-], async (req, res) => await eventosController.updateEventField(req, res));
-
-router.put("/:idEvento/update", Middlewares.validateJWTMiddleware, [
-  param('idEvento').notEmpty().isInt().custom(async (id) => {
-    const exists = await validateExistId('evento', id)
-    if (!exists) return Promise.reject('Id evento no válido');
-  }),
-  check('nombre').trim().notEmpty().isString().isLength({ max: 120 }),
-  check('fechaInicio').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio del evento debe ser mayor a hoy'),
-  check('urlRegistro').trim().notEmpty().isString().isLength({ max: 80 }),
-  check('precio').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
-  check('descripcion').trim().notEmpty().isString().isLength({ max: 250 }),
-  check('keydata').trim().notEmpty().withMessage(customMessages.required),
-  Middlewares.scan_errors
-], async (req, res) => await eventosController.updateEvent(req, res));
-
-router.delete("/:idEvento/delete", Middlewares.validateJWTMiddleware, [
-  param('idEvento').notEmpty().withMessage(customMessages.required).isInt().custom(async (id) => {
-    const exists = await validateExistId('evento', id)
-    if (!exists) return Promise.reject('Id evento no válido');
-  }),
-  query('keydata').trim().notEmpty().withMessage(customMessages.required),
-  Middlewares.scan_errors
-], async (req, res) => await eventosController.deleteEvent(req, res))
+router.post("/create", Middlewares.validateJWTMiddleware,
+  multerConfig.upload.single('logo'),
+  EventosValidator.createEventValidator,
+  eventosController.saveEvent);
+router.post("/create/dashboard", Middlewares.validateAdminMiddleware,
+  multerConfig.upload.single('logo'),
+  EventosValidator.createEventDashboardValidator,
+  eventosController.saveEvent);
+router.put("/:idEvento/update-logo", Middlewares.validateJWTMiddleware,
+  multerConfig.upload.single('logo'),
+  EventosValidator.editEventLogoValidator,
+  async (req, res) => await eventosController.updateLogoEvent(req, res));
+router.put("/:idEvento/update/field", Middlewares.validateJWTMiddleware,
+  EventosValidator.editFieldEventValidator,
+  async (req, res) => await eventosController.updateEventField(req, res));
+router.put("/:idEvento/update", Middlewares.validateJWTMiddleware,
+  EventosValidator.updateEventValidator,
+  async (req, res) => await eventosController.updateEvent(req, res));
+router.delete("/:idEvento/delete", Middlewares.validateJWTMiddleware,
+  EventosValidator.deleteEventValidator,
+  async (req, res) => await eventosController.deleteEvent(req, res))
 module.exports = router;
