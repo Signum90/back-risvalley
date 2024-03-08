@@ -17,6 +17,7 @@ class NotificacionesCTR {
           'idServicio',
           'idUser',
           'idReto',
+          'idRetoAspirante',
           'contactoNombre',
           'contactoCorreo',
           'contactoTelefono',
@@ -24,7 +25,12 @@ class NotificacionesCTR {
           'tipo',
           'comentario',
           'notificacion',
-          'idPqr'
+          'idPqr',
+          [literal(`COALESCE(
+            (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = idReto),
+            (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = idReto),
+            (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante)
+          )`), 'nombre']
         ],
         where: {
           ...(token.superadmin ? { idUser: null } : { idUser: token.id }),
