@@ -35,7 +35,7 @@ class ServiciosTecnologicosCTR {
           [col('contacto.email'), 'correoContacto'],
           [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
-          [literal(`(SELECT CONCAT('${urlFiles}', e.logo) FROM entidades AS e WHERE e.id_user_responsable = contacto.id)`), 'urlLogo'],
+          [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE e.id_user_responsable = contacto.id)`), 'urlLogo'],
         ],
         where: {
           estado: { [Op.in]: estados },
@@ -280,7 +280,7 @@ class ServiciosTecnologicosCTR {
           [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.email'), 'correoContacto'],
-          [literal(`(SELECT CONCAT('${urlFiles}', e.logo) FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlLogo'],
+          [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlLogo'],
         ],
         where: { id },
         include: [{ model: UsersModel, as: 'contacto', attributes: [] }],
