@@ -27,6 +27,7 @@ const DepartamentosModel = require('../models/Departamentos');
 const FormatosModel = require('../models/Formatos');
 const PqrsModel = require('../models/Pqrs');
 const BibliotecaModel = require('../models/Biblioteca');
+const NotificacionesModel = require('../models/Notificaciones');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -232,6 +233,12 @@ class Helpers {
     } catch (error) {
       throw error;
     }
+  }
+
+  async saveNotification(postData) {
+    return await sequelize.transaction(async (t) => {
+      await NotificacionesModel.create({ ...postData }, { transaction: t });
+    })
   }
   response_handlers() {
 

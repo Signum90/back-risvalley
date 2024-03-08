@@ -3,6 +3,7 @@ const { literal } = require('sequelize');
 const PqrsModel = require('../models/Pqrs');
 const UsersModel = require('../models/Users');
 const { urlFiles } = require('../config/config');
+const NotificacionesModel = require('../models/Notificaciones');
 
 class PqrsCTR {
   async getPQRS(req, res) {
@@ -56,6 +57,18 @@ class PqrsCTR {
       }
 
       const model = await PqrsModel.create(postData, { transaction: t })
+
+      const notificationData = {
+        tipo: 41,
+        idPqr: model.id,
+        userActivo: model.userActivo,
+        contactoNombre: model?.contactoNombre,
+        contactoCorreo: model?.contactoCorreo,
+        contactoTelefono: model?.contactoTelefono,
+        createdBy: token.id
+      }
+      await NotificacionesModel.create(notificationData, { transaction: t });
+
       return res.status(200).json({ msg: 'success', data: model });
     })
   }
@@ -72,7 +85,22 @@ class PqrsCTR {
           estado: 3,
           updatedBy: token.id
         }
-        await PqrsModel.update(editData, { where: { id } })
+        const model = await PqrsModel.findByPk(id);
+        await model.update(editData, { transaction: t });
+        if (model.userActivo) {
+          const notificationData = {
+            tipo: 42,
+            idPqr: id,
+            idUser: model.createdBy,
+            userActivo: 1,
+            contactoNombre: model?.contactoNombre,
+            contactoCorreo: model?.contactoCorreo,
+            contactoTelefono: model?.contactoTelefono,
+            createdBy: token.id
+          }
+          await NotificacionesModel.create(notificationData, { transaction: t });
+        }
+
         return res.status(200).json({ msg: 'success', data: true });
       })
     } catch (error) {

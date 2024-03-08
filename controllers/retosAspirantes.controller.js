@@ -3,6 +3,8 @@ const { sequelize } = require('../db/connection');
 const { col } = require('sequelize');
 const { deleteFile } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
+const NotificacionesModel = require('../models/Notificaciones');
+const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 
 class RetosAspirantesCTR {
   async getCandidatesChallenge(req, res) {
@@ -33,6 +35,21 @@ class RetosAspirantesCTR {
           fichaTecnica: file ? file?.filename : null,
           createdBy: token.id
         }, { transaction: t })
+
+        const reto = await RetosTecnologicosModel.findByPk(body.idReto);
+        const user = await UsersModel.findByPk(token.id)
+
+        const notificationData = {
+          tipo: 21,
+          idRetoAspirante: model.id,
+          idUser: reto.idUserEntidad,
+          userActivo: 1,
+          contactoNombre: user?.nombre,
+          contactoCorreo: user?.email,
+          contactoTelefono: user?.telefono,
+          createdBy: token.id
+        }
+        await NotificacionesModel.create(notificationData, { transaction: t });
 
         return res.status(200).json({ msg: 'success', data: model });
       })

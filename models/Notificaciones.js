@@ -9,6 +9,24 @@ class NotificacionesModel extends Model {
           primaryKey: true,
           autoIncrement: true
         },
+        estado: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'estado',
+          allowNull: false,
+          defaultValue: 0,
+          comment: "0=sin leer 1=leido"
+        },
+        idUser: {
+          type: DataTypes.MEDIUMINT.UNSIGNED,
+          allowNull: true,
+          references: {
+            model: 'users',
+            key: 'id',
+          },
+          onDelete: 'NO ACTION',
+          comment: "NULL=notificaciones superadmin",
+          field: 'id_user'
+        },
         idServicio: {
           type: DataTypes.MEDIUMINT,
           allowNull: true,
@@ -19,19 +37,55 @@ class NotificacionesModel extends Model {
           onDelete: 'CASCADE',
           field: 'id_servicio'
         },
+        idPqr: {
+          type: DataTypes.MEDIUMINT.UNSIGNED,
+          allowNull: true,
+          references: {
+            model: 'pqrs',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
+          field: 'id_pqr'
+        },
+        idReto: {
+          type: DataTypes.MEDIUMINT.UNSIGNED,
+          allowNull: true,
+          references: {
+            model: 'retos_tecnologicos',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'id_reto'
+        },
+        idRetoAspirante: {
+          type: DataTypes.MEDIUMINT.UNSIGNED,
+          allowNull: true,
+          references: {
+            model: 'retos_aspirantes',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'id_reto_aspirante'
+        },
+        tipo: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'tipo',
+          allowNull: false,
+          comment: "10*s=*SERVICIOS* 11=contacto 12=aprobado 13=pendiente aprobacion 20*s=*RETOS TECNOLOGICOS* 21=postulacion 22=aprobado 23=pendiente aprobacion 24=correpcion 30*s=*CURSOS* 31=inscripcion 32=aprobado 33=pendiente aprobación 40*PQRS* 41=Nueva 42=resuelto"
+        },
         contactoNombre: {
           type: DataTypes.STRING(70),
-          allowNull: false,
+          allowNull: true,
           field: 'contacto_nombre',
         },
         contactoCorreo: {
           type: DataTypes.STRING(80),
-          allowNull: false,
+          allowNull: true,
           field: 'contacto_correo',
         },
         contactoTelefono: {
           type: DataTypes.BIGINT,
-          allowNull: false,
+          allowNull: true,
           field: 'contacto_telefono',
         },
         userActivo: {
@@ -39,6 +93,35 @@ class NotificacionesModel extends Model {
           field: 'user_activo',
           allowNull: false,
           comment: "0=no 1=si"
+        },
+        comentario: {
+          type: DataTypes.STRING(70),
+          allowNull: true,
+          field: 'comentario',
+        },
+        notificacion: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const nombre = this.getDataValue('contactoNombre');
+            const correo = this.getDataValue('contactoCorreo');
+            const telefono = this.getDataValue('contactoTelefono');
+            const states = {
+              11: `${nombre} esta interesado en este servicio, puedes contactar con el a traves del siguiente correo electronico ${correo} o al siguiente telefono: ${telefono}`,
+              12: `Tu servicio ha sido aceptado por nuestro administrador.`,
+              13: `Se ha postulado un nuevo servicio para revisión.`,
+              21: `${nombre} se postulo a tu reto, puedes contactar con el a traves del siguiente correo electronico ${correo} o al siguiente telefono ${telefono}`,
+              22: `Tu reto tecnologico ha sido aceptado por nuestro administrador.`,
+              23: `Te informamos que se ha postulado un nuevo reto tecnologico para revisión.`,
+              24: `${nombre} ha revisado con atención tu solicitud para participar en nuestro reto tecnologico y quisiera solicitarte algunas mejoras:`, //pendiente
+              31: `${nombre} se ha matriculado en tu curso, puedes contactar con el a traves del siguiente correo electronico ${correo} o al siguiente telefono: ${telefono}`,
+              32: `Tu curso ha sido aceptado por nuestro administrador. ya puedes crear modulos y subir contenido para el curso`,
+              33: `Te informamos que se ha postulado un nuevo curso para revisión.`,
+              41: `Se ha recibido una nueva PQR.`,
+              42: `¡Respuesta recibida! Revisa la respuesta del administrador a tu PQR`
+            }
+            const state = this.getDataValue('tipo');
+            return states[state] ?? '';
+          }
         },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,

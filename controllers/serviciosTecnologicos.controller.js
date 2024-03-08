@@ -1,10 +1,11 @@
 const { sequelize } = require('../db/connection');
 const { literal, col, Op } = require('sequelize');
-const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord } = require('../helpers/helpers');
+const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord, saveNotification } = require('../helpers/helpers');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const UsersModel = require('../models/Users');
 const { urlFiles } = require('../config/config');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const NotificacionesModel = require('../models/Notificaciones');
 class ServiciosTecnologicosCTR {
   async getTechnologicalService(req, res) {
     try {
@@ -79,7 +80,14 @@ class ServiciosTecnologicosCTR {
           createdBy: token.id
         };
         const model = await ServiciosTecnologicosModel.create(postData, { transaction: t });
+        const notificationData = {
+          tipo: 13,
+          idServicio: model.id,
+          userActivo: 1,
+          createdBy: token.id
+        }
         await registerKeyData(model.id, body.nombre, keydata, 'SE');
+        await NotificacionesModel.create(notificationData, { transaction: t });
 
         return res.status(200).json({ msg: 'success', data: model });
       })
@@ -154,7 +162,6 @@ class ServiciosTecnologicosCTR {
           [campo]: value,
           updatedBy: token.id
         };
-        console.log("🚀 ~ ServiciosTecnologicosCTR ~ returnawaitsequelize.transaction ~ editData:", editData)
         const model = await ServiciosTecnologicosModel.findByPk(id);
         if (model.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el servicio', status: 400 });
         await model.update(editData, { transaction: t });
@@ -169,12 +176,22 @@ class ServiciosTecnologicosCTR {
   async aprobeTechnologicalService(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { body } = req;
+        const { body, token } = req;
         const id = req.params.idServicio;
         const validateKeyData = await validateKeyWord(id, 'SE', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún servicio', status: 400 });
+        const model = await ServiciosTecnologicosModel.findByPk(id);
+        await model.update({ estado: 1 }, { transaction: t });
 
-        await ServiciosTecnologicosModel.update({ estado: 1 }, { where: { id } }, { transaction: t });
+        const notificationData = {
+          tipo: 12,
+          idUser: model.createdBy,
+          idServicio: id,
+          userActivo: 1,
+          createdBy: token.id
+        }
+        await NotificacionesModel.create(notificationData, { transaction: t });
+
         return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {

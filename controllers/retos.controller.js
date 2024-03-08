@@ -5,6 +5,7 @@ const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia, generateKe
 const { urlFiles } = require('../config/config');
 const EntidadesModel = require('../models/Entidades');
 const bcrypt = require('bcrypt');
+const NotificacionesModel = require('../models/Notificaciones');
 
 class RetosCTR {
   async getTechnologicalChallenges(req, res) {
@@ -162,6 +163,13 @@ class RetosCTR {
           createdBy: token.id,
         }, { transaction: t })
         await registerKeyData(model.id, body.nombre, keydata, 'RE');
+        const notificationData = {
+          tipo: 23,
+          idReto: model.id,
+          userActivo: 1,
+          createdBy: token.id
+        }
+        await NotificacionesModel.create(notificationData, { transaction: t });
 
         return res.status(200).json({ msg: 'success', data: model });
       })
@@ -307,11 +315,20 @@ class RetosCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const id = req.params.idReto;
-        const { body } = req;
+        const { body, token } = req;
         const validateKeyData = await validateKeyWord(id, 'RE', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún reto', status: 400 });
+        const model = await RetosTecnologicosModel.findByPk(id);
+        await model.update({ estado: 1 }, { transaction: t });
+        const notificationData = {
+          tipo: 22,
+          idReto: id,
+          idUser: model.idUserEntidad,
+          userActivo: 1,
+          createdBy: token.id
+        }
+        await NotificacionesModel.create(notificationData, { transaction: t });
 
-        await RetosTecnologicosModel.update({ estado: 1 }, { where: { id } }, { transaction: t });
         return res.status(200).json({ msg: 'success' });
       })
     } catch (error) {

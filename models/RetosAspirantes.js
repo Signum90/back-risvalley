@@ -2,6 +2,7 @@
 const { DataTypes, Model } = require('sequelize');
 const UsersModel = require('./Users');
 const { urlFiles } = require('../config/config');
+const RetosTecnologicosModel = require('./RetosTecnologicos');
 
 class RetosAspirantesModel extends Model {
   static initialize(sequelizeInstace) {

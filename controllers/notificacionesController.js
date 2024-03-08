@@ -4,28 +4,30 @@ const UsersModel = require('../models/Users');
 const { urlFiles } = require('../config/config');
 const NotificacionesModel = require('../models/Notificaciones');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
+const { saveNotification } = require('../helpers/helpers');
 
 class NotificacionesCTR {
   async getNotifications(req, res) {
     try {
       const { token } = req;
 
-      const myServices = await ServiciosTecnologicosModel.findAll({ where: { createdBy: token.id } })
-
       const notifications = await NotificacionesModel.findAll({
         attributes: [
           'id',
           'idServicio',
+          'idUser',
+          'idReto',
           'contactoNombre',
           'contactoCorreo',
           'contactoTelefono',
           'userActivo',
-          [literal('(SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = idServicio)'), 'nombreServicio']
+          'tipo',
+          'comentario',
+          'notificacion',
+          'idPqr'
         ],
         where: {
-          idServicio: {
-            [Op.in]: myServices.map((e) => e.id)
-          }
+          ...(token.superadmin ? { idUser: null } : { idUser: token.id }),
         },
         order: [['createdAt', 'Desc']],
         limit: 10
@@ -50,9 +52,11 @@ class NotificacionesCTR {
           telefono: body.telefono
         }
       }
-
+      const service = await ServiciosTecnologicosModel.findByPk(body.idServicio)
       const postData = {
+        tipo: 11,
         idServicio: body.idServicio,
+        idUser: service.createdBy,
         contactoNombre: user.nombre,
         contactoCorreo: user.email,
         contactoTelefono: user.telefono,
@@ -60,7 +64,7 @@ class NotificacionesCTR {
         createdBy: token ? token.id : null
       }
 
-      const model = await NotificacionesModel.create(postData, { transaction: t });
+      const model = await saveNotification(postData);
       return res.status(200).json({ data: model, msg: 'success' });
     })
   }
