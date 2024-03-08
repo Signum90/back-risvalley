@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { body, check, param } = require('express-validator');
+const { body, check, param, query } = require('express-validator');
 const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const BibliotecaCTR = require('../controllers/biblioteca.controller')
@@ -15,8 +15,17 @@ router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) =
 router.post("/", Middlewares.validateAdminMiddleware,
   MulterConfig.upload.single('file'), [
   check('file').custom(async (file, { req }) => {
+    const imageFormat = ['application/pdf'];
     if (!req.file) return Promise.reject('El archivo es obligatorio');
+    if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Ingrese un pdf válido');
   }),
+  check('nombre').trim().notEmpty().withMessage(customMessages.required)
+    .isString().isLength({ max: 120 }).withMessage('El campo nombre debe tener como máximo 120 caracteres'),
+  check('descripcion').trim().notEmpty().withMessage(customMessages.required)
+    .isString().withMessage(customMessages.string)
+    .isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 80 caracteres'),
+  check('autor').trim().notEmpty().withMessage(customMessages.required)
+    .isString().isLength({ max: 50 }).withMessage('El campo nombre debe tener como máximo 50 caracteres'),
   Middlewares.scan_errors],
   async (req, res) => bibliotecaController.postFileLibrary(req, res));
 router.put("/:idArchivo/update-estado", Middlewares.validateAdminMiddleware, [
@@ -24,6 +33,7 @@ router.put("/:idArchivo/update-estado", Middlewares.validateAdminMiddleware, [
     const exists = await validateExistId('archivo', id)
     if (!exists) return Promise.reject('Id archivo no válido');
   }),
+  check('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await bibliotecaController.changeStateFile(req, res));
 router.delete("/:idArchivo/eliminar", Middlewares.validateAdminMiddleware, [
@@ -31,6 +41,7 @@ router.delete("/:idArchivo/eliminar", Middlewares.validateAdminMiddleware, [
     const exists = await validateExistId('archivo', id)
     if (!exists) return Promise.reject('Id archivo no válido');
   }),
+  query('keydata').trim().notEmpty().withMessage(customMessages.required),
   Middlewares.scan_errors
 ], async (req, res) => await bibliotecaController.deleteFileLibrary(req, res))
 

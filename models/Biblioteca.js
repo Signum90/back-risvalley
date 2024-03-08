@@ -9,6 +9,25 @@ class BibliotecaModel extends Model {
           primaryKey: true,
           autoIncrement: true
         },
+        keydata: {
+          type: DataTypes.STRING,
+          allowNull: false
+        },
+        nombre: {
+          type: DataTypes.STRING(120),
+          allowNull: false,
+          field: 'nombre',
+        },
+        descripcion: {
+          type: DataTypes.STRING(250),
+          allowNull: false,
+          field: 'descripcion',
+        },
+        autor: {
+          type: DataTypes.STRING(50),
+          allowNull: false,
+          field: 'autor',
+        },
         idRecursoMultimedia: {
           type: DataTypes.MEDIUMINT,
           allowNull: false,
