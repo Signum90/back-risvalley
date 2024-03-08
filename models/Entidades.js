@@ -74,7 +74,7 @@ class EntidadesModel extends Model {
           type: DataTypes.VIRTUAL,
           get() {
             const logo = this.getDataValue('logo');
-            return logo ? `${urlFiles}${logo}` : null
+            return logo ? `${urlFiles}${logo}` : '/public/img/not_content/not_logo.png'
           }
         },
         idUserResponsable: {

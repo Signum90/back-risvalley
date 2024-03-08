@@ -38,7 +38,7 @@ class EntidadesValidator {
         .custom(EntidadesValidator.validateExistsUser),
       check('descripcion').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
-        .isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 80 caracteres'),
+        .isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 150 caracteres'),
       check('sigla').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
         .isLength({ max: 10 }).withMessage('El campo sigla debe tener como máximo 10 caracteres'),
