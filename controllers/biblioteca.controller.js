@@ -112,11 +112,64 @@ class BibliotecaController {
 
   async updateFieldsFile(req, res) {
     try {
+      return await sequelize.transaction(async (t) => {
+        const { params, token, body } = req;
+        const { keydata, campo, value } = body;
+
+        const model = await BibliotecaModel.findByPk(params.idArchivo);
+        const validateKeyData = await validateKeyWord(params.idArchivo, 'BI', keydata);
+        console.log("🚀 ~ BibliotecaController ~ returnawaitsequelize.transaction ~ validateKeyData:", validateKeyData)
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
+
+        const updateData = {
+          [campo]: value,
+          updatedBy: token.id
+        }
+
+        await model.update(updateData, { transaction: t });
+
+        return res.status(200).json({ msg: 'success', data: model });
+      })
+
 
     } catch (error) {
       throw error
     }
   }
+
+  async updateFile(req = request, res = response) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { file, token, body, params } = req
+
+        const model = await BibliotecaModel.findByPk(params.idArchivo);
+        const validateKeyData = await validateKeyWord(params.idArchivo, 'BI', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
+
+        const idFileToDelete = model?.idRecursoMultimedia;
+        const recursoMultimediaRegistro = await saveResourceMultimedia(file, token?.id);
+
+
+        await model.update({
+          idRecursoMultimedia: recursoMultimediaRegistro.id,
+          updatedBy: token.id
+        }, { transaction: t });
+
+        //const fileToDelete = await deleteResourceMultimedia(idFileToDelete);
+
+        //if (fileToDelete) {
+        //  deleteFile(fileToDelete, (err) => {
+        //    if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)
+        //  })
+        //}
+        return res.status(200).json({ msg: 'success', data: model });
+      })
+    } catch (error) {
+      console.log("🚀 ~ EventosCTR ~ updateLogoEvent ~ error:", error)
+      return res.status(400).json({ error })
+    }
+  }
+
 }
 
 module.exports = BibliotecaController;
