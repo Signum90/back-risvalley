@@ -174,6 +174,17 @@ class RetosValidator {
       Middlewares.scan_errors
     ]
   }
+
+  static get existsRetoValidator() {
+    const customMessages = CustomMessages.getValidationMessages();
+
+    return [
+      param('idReto').notEmpty().withMessage(customMessages.required)
+        .isInt().withMessage(customMessages.int)
+        .custom(RetosValidator.validateIdReto),
+      Middlewares.scan_errors
+    ]
+  }
 }
 
 module.exports = RetosValidator;
