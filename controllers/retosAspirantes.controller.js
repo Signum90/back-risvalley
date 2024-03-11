@@ -11,7 +11,7 @@ class RetosAspirantesCTR {
     try {
       const candidates = await RetosAspirantesModel.findAll({
         attributes: [
-          'id', 'idUserAspirante', 'idReto', 'urlFichaTecnica', 'fichaTecnica',
+          'id', 'idUserAspirante', 'idReto', 'urlFichaTecnica', 'fichaTecnica', 'createdAt',
           [col('aspirante.nombre'), 'nombreAspirante'],
         ],
         where: {
