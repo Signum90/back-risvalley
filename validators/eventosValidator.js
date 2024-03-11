@@ -96,6 +96,7 @@ class EventosValidator {
     const customMessages = CustomMessages.getValidationMessages();
     const validations = {
       'nombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().isLength({ max: 120 }),
+      'descripcion': body('value').trim().notEmpty().withMessage(customMessages.required).isString().isLength({ max: 250 }).withMessage('El campo descripción no debe tener más de 250 caracteres'),
       'fechaInicio': body('value').notEmpty().isAfter(new Date().toString()).withMessage('La fecha de inicio del evento debe ser mayor a hoy'),
       'urlRegistro': body('value').trim().notEmpty().isString().isLength({ max: 80 }),
       'precio': body('value').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
