@@ -118,7 +118,6 @@ class BibliotecaController {
 
         const model = await BibliotecaModel.findByPk(params.idArchivo);
         const validateKeyData = await validateKeyWord(params.idArchivo, 'BI', keydata);
-        console.log("🚀 ~ BibliotecaController ~ returnawaitsequelize.transaction ~ validateKeyData:", validateKeyData)
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
         const updateData = {
@@ -137,7 +136,7 @@ class BibliotecaController {
     }
   }
 
-  async updateFile(req = request, res = response) {
+  async updateFile(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
         const { file, token, body, params } = req
