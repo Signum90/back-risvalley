@@ -55,7 +55,6 @@ class PqrsCTR {
         contactoCorreo,
         contactoTelefono,
       }
-
       const model = await PqrsModel.create(postData, { transaction: t })
 
       const notificationData = {
@@ -65,7 +64,7 @@ class PqrsCTR {
         contactoNombre: model?.contactoNombre,
         contactoCorreo: model?.contactoCorreo,
         contactoTelefono: model?.contactoTelefono,
-        createdBy: token.id
+        createdBy: token ? token.id : null
       }
       await NotificacionesModel.create(notificationData, { transaction: t });
 
