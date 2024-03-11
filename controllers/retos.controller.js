@@ -143,8 +143,8 @@ class RetosCTR {
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
           [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
-          [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
-          [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
+          [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'telefonoEntidad'],
+          [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'emailEntidad'],
           [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'logoEntidad'],
         ],
         where: {
