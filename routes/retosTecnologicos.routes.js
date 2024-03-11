@@ -11,6 +11,7 @@ const retosController = new retosCTR();
 const router = Router();
 
 router.get("/list", async (req, res) => await retosController.getTechnologicalChallenges(req, res));
+router.get("/:idReto/detalle", RetosValidator.existsRetoValidator, async (req, res) => await retosController.getDetailTechnologicalChallenge(req, res));
 router.get("/usuario", Middlewares.validateJWTMiddleware, async (req, res) => retosController.getUserTechnologicalChallenges(req, res))
 router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await retosController.getAllTechnologicalChallenges(req, res));
 router.post("/create", Middlewares.validateJWTMiddleware,

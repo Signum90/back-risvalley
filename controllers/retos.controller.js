@@ -123,6 +123,39 @@ class RetosCTR {
     }
   }
 
+  async getDetailTechnologicalChallenge(req, res) {
+    try {
+      const id = req.params.idReto;
+      await RetosCTR.updateStatesTechnologicalChallenge();
+      const challenge = await RetosTecnologicosModel.findOne({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'estado',
+          'estadoLabel',
+          'fechaInicioConvocatoria',
+          'fechaFinConvocatoria',
+          'fichaTecnica',
+          'idUserEntidad',
+          'keydata',
+          'urlFichaTecnica',
+          [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
+          [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
+        ],
+        where: {
+          id
+        },
+      })
+
+      return res.status(200).json({ msg: 'success', data: challenge });
+
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async updateStatesTechnologicalChallenge() {
     return await sequelize.transaction(async (t) => {
       const now = new Date();
