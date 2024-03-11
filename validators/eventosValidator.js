@@ -100,6 +100,7 @@ class EventosValidator {
       'urlRegistro': body('value').trim().notEmpty().isString().isLength({ max: 80 }),
       'precio': body('value').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
       'descripcion': body('value').trim().notEmpty().isString().isLength({ max: 250 }),
+      'idCiudad': check('value').notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).custom(EventosValidator.validateExitsCity),
     }
 
     return [
