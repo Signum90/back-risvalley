@@ -1,8 +1,8 @@
 const { DataTypes, Model } = require('sequelize');
 
-class CursosSesionesModel extends Model {
+class CursosClasesModel extends Model {
   static initialize(sequelizeInstace) {
-    const CursosSesiones = super.init(
+    const CursosClases = super.init(
       {
         id: {
           type: DataTypes.MEDIUMINT,
@@ -13,7 +13,7 @@ class CursosSesionesModel extends Model {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'estado',
           allowNull: false,
-          comment: "1=Activo, 2=Inactivo 3=Pendiente aprobacion"
+          comment: "1=Activo, 2=Inactivo"
         },
         nombre: {
           type: DataTypes.STRING(50),
@@ -27,15 +27,20 @@ class CursosSesionesModel extends Model {
           field: 'descripcion',
           unique: 'descripcion'
         },
-        idCurso: {
+        clase: {
+          type: DataTypes.STRING(120),
+          allowNull: false,
+          field: 'clase',
+        },
+        idCursoSesion: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: false,
           references: {
-            model: 'cursos',
+            model: 'cursos_sesiones',
             key: 'id'
           },
           onDelete: 'CASCADE',
-          field: 'id_curso'
+          field: 'id_curso_sesion'
         },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
@@ -73,13 +78,13 @@ class CursosSesionesModel extends Model {
       },
       {
         sequelize: sequelizeInstace,
-        modelName: 'CursosSesiones',
-        tableName: 'cursos_sesiones'
+        modelName: 'CursosClases',
+        tableName: 'cursos_clases'
       },
 
     )
-    return CursosSesiones;
+    return CursosClases;
   }
 }
 
-module.exports = CursosSesionesModel;
+module.exports = CursosClasesModel;
