@@ -17,7 +17,10 @@ class BibliotecaController {
         attributes: [
           'id',
           'estado',
+          'nombre',
+          'autor',
           'imagen',
+          'urlImagen',
           'keydata',
           'urlImagen',
           [literal(`(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'tipo'],

@@ -1,4 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
+const { urlFiles } = require('../config/config');
 
 class BibliotecaModel extends Model {
   static initialize(sequelizeInstace) {
@@ -22,6 +23,18 @@ class BibliotecaModel extends Model {
           type: DataTypes.STRING(250),
           allowNull: false,
           field: 'descripcion',
+        },
+        imagen: {
+          type: DataTypes.STRING(120),
+          field: 'imagen',
+          allowNull: true,
+        },
+        urlImagen: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const img = this.getDataValue('imagen');
+            return img ? `${urlFiles}${img}` : '/public/img/not_content/not_logo.png'
+          }
         },
         autor: {
           type: DataTypes.STRING(50),
