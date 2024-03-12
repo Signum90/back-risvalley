@@ -19,6 +19,7 @@ class BibliotecaController {
           'estado',
           'nombre',
           'autor',
+          'descripcion',
           'imagen',
           'urlImagen',
           'keydata',
