@@ -25,6 +25,7 @@ class NotificacionesCTR {
           'comentario',
           'notificacion',
           'idPqr',
+          'createdAt',
           [literal(`COALESCE(
             (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = idReto),
             (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = idReto),

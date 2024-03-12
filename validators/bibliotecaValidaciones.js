@@ -36,7 +36,7 @@ class BibliotecaValidator {
         .isString().isLength({ max: 120 }).withMessage('El campo nombre debe tener como máximo 120 caracteres'),
       check('descripcion').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
-        .isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 150 caracteres'),
+        .isLength({ max: 250 }).withMessage('El campo descripcion debe tener como máximo 250 caracteres'),
       check('autor').trim().notEmpty().withMessage(customMessages.required)
         .isString().isLength({ max: 50 }).withMessage('El campo nombre debe tener como máximo 50 caracteres'),
       Middlewares.scan_errors
@@ -46,7 +46,7 @@ class BibliotecaValidator {
     const customMessages = CustomMessages.getValidationMessages();
     const validations = {
       'nombre': check('value').trim().notEmpty().withMessage(customMessages.required).isString().isLength({ max: 120 }).withMessage('El campo nombre debe tener como máximo 120 caracteres'),
-      'descripcion': check('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 80 caracteres'),
+      'descripcion': check('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 250 }).withMessage('El campo descripcion debe tener como máximo 250 caracteres'),
       'autor': check('value').trim().notEmpty().withMessage(customMessages.required).isString().isLength({ max: 50 }).withMessage('El campo nombre debe tener como máximo 50 caracteres'),
       'imagen': check('file').custom(async (file, { req }) => {
         const imageFormat = ['image/jpeg', 'image/png'];
