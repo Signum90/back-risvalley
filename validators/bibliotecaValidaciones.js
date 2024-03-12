@@ -18,6 +18,13 @@ class BibliotecaValidator {
       Middlewares.scan_errors
     ]
   }
+  static get detailArchivoValidator() {
+    const customMessages = CustomMessages.getValidationMessages();
+    return [
+      param('idArchivo').trim().notEmpty().withMessage(customMessages.required).custom(BibliotecaValidator.validateIdFile),
+      Middlewares.scan_errors
+    ]
+  }
   static get createLibraryValidator() {
     const customMessages = CustomMessages.getValidationMessages();
     return [

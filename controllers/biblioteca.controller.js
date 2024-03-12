@@ -24,7 +24,7 @@ class BibliotecaController {
           'urlImagen',
           'keydata',
           'urlImagen',
-          //[literal(`(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'tipo'],
+          'createdAt',
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
         ],
         where: {
@@ -37,8 +37,42 @@ class BibliotecaController {
         limit: pageSize
       })
 
-      return res.status(200).json({ data: files });
+      const count = await BibliotecaModel.count({
+        where: {
+          ...(token ? {} : { estado: 1 }),
+          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+          ...(autor ? { autor: { [Op.like]: `%${autor}%` } } : {}),
+        },
+      })
 
+      return res.status(200).json({ data: files, total: count });
+
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getDetailFile(req, res) {
+    try {
+      const id = req.params.idArchivo;
+      const file = await BibliotecaModel.findOne({
+        attributes: [
+          'id',
+          'estado',
+          'nombre',
+          'autor',
+          'descripcion',
+          'imagen',
+          'urlImagen',
+          'keydata',
+          'urlImagen',
+          'createdAt',
+          [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
+        ],
+        where: { id },
+      })
+
+      return res.status(200).json({ msg: 'success', data: file });
     } catch (error) {
       throw error;
     }

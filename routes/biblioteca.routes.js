@@ -9,6 +9,7 @@ const bibliotecaController = new BibliotecaCTR();
 
 router.get("/", async (req, res) => await bibliotecaController.getFilesLibrary(req, res));
 router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await bibliotecaController.getFilesLibrary(req, res));
+router.get("/:idArchivo/detalle", BibliotecaValidator.detailArchivoValidator, async (req, res) => await bibliotecaController.getDetailFile(req, res))
 router.post("/", Middlewares.validateAdminMiddleware,
   //MulterConfig.upload.single('file'),
   MulterConfig.upload.fields([{ name: 'imagen', maxCount: 1 }, { name: 'libro', maxCount: 1 }]),
