@@ -22,9 +22,15 @@ class BibliotecaValidator {
     const customMessages = CustomMessages.getValidationMessages();
     return [
       check('file').custom(async (file, { req }) => {
-        const imageFormat = ['application/pdf'];
-        if (!req.file) return Promise.reject('El archivo es obligatorio');
-        if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Ingrese un pdf válido');
+        const imagen = req.files['imagen'][0];
+        const libro = req.files['libro'][0];
+
+        const libroFormat = ['application/pdf'];
+        const imageFormat = ['image/jpeg', 'image/png'];
+        if (!libro) return Promise.reject('El archivo es obligatorio');
+        if (!imagen) return Promise.reject('La imagen es obligatoria');
+        if (!libroFormat.includes(libro.mimetype)) return Promise.reject('Ingrese un pdf válido');
+        if (!imageFormat.includes(imagen.mimetype)) return Promise.reject('Ingrese una imagen válida');
       }),
       check('nombre').trim().notEmpty().withMessage(customMessages.required)
         .isString().isLength({ max: 120 }).withMessage('El campo nombre debe tener como máximo 120 caracteres'),
@@ -42,12 +48,17 @@ class BibliotecaValidator {
       'nombre': check('value').trim().notEmpty().withMessage(customMessages.required).isString().isLength({ max: 120 }).withMessage('El campo nombre debe tener como máximo 120 caracteres'),
       'descripcion': check('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 80 caracteres'),
       'autor': check('value').trim().notEmpty().withMessage(customMessages.required).isString().isLength({ max: 50 }).withMessage('El campo nombre debe tener como máximo 50 caracteres'),
+      'imagen': check('file').custom(async (file, { req }) => {
+        const imageFormat = ['image/jpeg', 'image/png'];
+        if (!req.file) return Promise.reject('El archivo es obligatorio');
+        if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Ingrese una imagen válida');
+      }),
     }
 
     return [
       param('idArchivo').trim().notEmpty().withMessage(customMessages.required).custom(BibliotecaValidator.validateIdFile),
       body('keydata').trim().notEmpty().withMessage(customMessages.required),
-      body('value').notEmpty().withMessage(customMessages.required).custom(async (id, { req }) => {
+      body('value').custom(async (id, { req }) => {
         const validate = validations[req.body.campo]
         if (!validate) return Promise.reject('Campo no válido');
         //ejecuta la validacion encontrada

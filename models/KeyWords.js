@@ -13,12 +13,12 @@ class KeyWordsModel extends Model {
           autoIncrement: true
         },
         word: {
-          type: DataTypes.STRING(60),
+          type: DataTypes.STRING(),
           allowNull: false,
           field: 'word'
         },
         key: {
-          type: DataTypes.STRING(60),
+          type: DataTypes.STRING(),
           allowNull: false,
           field: 'key'
         },

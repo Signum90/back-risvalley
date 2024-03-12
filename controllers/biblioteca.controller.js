@@ -1,5 +1,5 @@
 const { sequelize } = require('../db/connection');
-const { literal } = require('sequelize');
+const { literal, Op } = require('sequelize');
 const { urlFiles } = require('../config/config');
 const BibliotecaModel = require('../models/Biblioteca');
 const { saveResourceMultimedia, deleteResourceMultimedia, deleteFile, generateKeyWord, registerKeyData, validateKeyWord } = require('../helpers/helpers');
@@ -9,7 +9,7 @@ class BibliotecaController {
   async getFilesLibrary(req, res) {
     try {
       const { token } = req
-      const { page } = req.query
+      const { page, nombre, autor } = req.query
       const paginate = page ?? 1;
       const pageSize = 10;
 
@@ -17,12 +17,16 @@ class BibliotecaController {
         attributes: [
           'id',
           'estado',
+          'imagen',
           'keydata',
+          'urlImagen',
           [literal(`(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'tipo'],
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
         ],
         where: {
           ...(token ? {} : { estado: 1 }),
+          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+          ...(autor ? { autor: { [Op.like]: `%${autor}%` } } : {}),
         },
         order: [['createdAt', 'Desc']],
         offset: (paginate - 1) * pageSize,
@@ -39,15 +43,19 @@ class BibliotecaController {
   async postFileLibrary(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { file, token, body } = req
-        const { nombre, descripcion, autor } = body
+        const { files, token, body } = req;
+        const { nombre, descripcion, autor } = body;
 
-        const recursoMultimediaRegistro = await saveResourceMultimedia(file, token?.id);
+        const imagen = files['imagen'][0];
+        const libro = files['libro'][0];
+
+        const recursoMultimediaRegistro = await saveResourceMultimedia(libro, token?.id);
         const keydata = await generateKeyWord();
 
         const model = await BibliotecaModel.create({
           idRecursoMultimedia: recursoMultimediaRegistro.id,
           estado: 1,
+          imagen: imagen?.filename,
           keydata: await bcrypt.hash(keydata, 10),
           nombre,
           descripcion,
@@ -113,7 +121,7 @@ class BibliotecaController {
   async updateFieldsFile(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { params, token, body } = req;
+        const { params, token, body, file } = req;
         const { keydata, campo, value } = body;
 
         const model = await BibliotecaModel.findByPk(params.idArchivo);
@@ -121,10 +129,10 @@ class BibliotecaController {
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
         const updateData = {
-          [campo]: value,
+          [campo]: campo == 'imagen' ? file.filename : value,
           updatedBy: token.id
         }
-
+        //return res.status(200).json({ msg: 'success', data: updateData });
         await model.update(updateData, { transaction: t });
 
         return res.status(200).json({ msg: 'success', data: model });
