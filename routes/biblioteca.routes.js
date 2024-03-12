@@ -10,12 +10,15 @@ const bibliotecaController = new BibliotecaCTR();
 router.get("/", async (req, res) => await bibliotecaController.getFilesLibrary(req, res));
 router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await bibliotecaController.getFilesLibrary(req, res));
 router.post("/", Middlewares.validateAdminMiddleware,
-  MulterConfig.upload.single('file'), BibliotecaValidator.createLibraryValidator,
+  //MulterConfig.upload.single('file'),
+  MulterConfig.upload.fields([{ name: 'imagen', maxCount: 1 }, { name: 'libro', maxCount: 1 }]),
+  BibliotecaValidator.createLibraryValidator,
   async (req, res) => bibliotecaController.postFileLibrary(req, res));
 router.put("/:idArchivo/update-estado", Middlewares.validateAdminMiddleware,
   BibliotecaValidator.updateStateValidator,
   async (req, res) => await bibliotecaController.changeStateFile(req, res));
 router.put("/:idArchivo/update", Middlewares.validateAdminMiddleware,
+  MulterConfig.upload.single('file'),
   BibliotecaValidator.updateLibraryFile,
   async (req, res) => bibliotecaController.updateFieldsFile(req, res));
 router.put("/:idArchivo/update-file", Middlewares.validateAdminMiddleware,
