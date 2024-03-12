@@ -15,6 +15,20 @@ class PqrsModel extends Model {
           allowNull: false,
           comment: "1=Peticiones, 2=Quejas 3=Reclamos 4=Sugerencias"
         },
+        tipoLabel: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const types = {
+              1: 'Peticiones',
+              2: 'Quejas',
+              3: 'Reclamos',
+              4: 'Sugerencias'
+            }
+
+            const tipo = this.getDataValue('tipo');
+            return types[tipo] ?? null;
+          }
+        },
         pqr: {
           type: DataTypes.STRING(250),
           allowNull: false,
@@ -32,6 +46,19 @@ class PqrsModel extends Model {
           allowNull: false,
           defaultValue: 1,
           comment: "1=Pendiente, 2=En proceso 3=Finalizado"
+        },
+        estadoLabel: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const types = {
+              1: 'Pendiente',
+              2: 'En proceso',
+              3: 'Finalizado',
+            }
+
+            const state = this.getDataValue('estado');
+            return types[state] ?? null;
+          }
         },
         contactoNombre: {
           type: DataTypes.STRING(70),
