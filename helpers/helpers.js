@@ -28,6 +28,7 @@ const FormatosModel = require('../models/Formatos');
 const PqrsModel = require('../models/Pqrs');
 const BibliotecaModel = require('../models/Biblioteca');
 const NotificacionesModel = require('../models/Notificaciones');
+const CursosModel = require('../models/Cursos');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -102,7 +103,8 @@ class Helpers {
         'departamento': DepartamentosModel,
         'formato': FormatosModel,
         'pqr': PqrsModel,
-        'archivo': BibliotecaModel
+        'archivo': BibliotecaModel,
+        'curso': CursosModel
       }
       if (!models[model]) return false;
       const register = await models[model].findByPk(id);

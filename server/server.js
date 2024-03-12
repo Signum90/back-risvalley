@@ -36,6 +36,7 @@ class Server {
       generales: `${this.endpoint_base}/rispark`,
       notificaciones: `${this.endpoint_base}/notificaciones`,
       biblioteca: `${this.endpoint_base}/biblioteca`,
+      cursos: `${this.endpoint_base}/cursos`,
     }
     //■► lista blanca:
     this.whitelist = ['http://localhost:80',
@@ -97,6 +98,7 @@ class Server {
     this.app.use(this.endpoints.generales, require('../routes/generales.routes'));
     this.app.use(this.endpoints.notificaciones, require('../routes/notificaciones.routes'));
     this.app.use(this.endpoints.biblioteca, require('../routes/biblioteca.routes'));
+    this.app.use(this.endpoints.cursos, require('../routes/cursos.routes'));
   }
 
   //■► MET: listen ◄■

@@ -1,12 +1,11 @@
 const { DataTypes, Model } = require('sequelize');
-const { urlFiles } = require('../config/config');
 
-class CursosModel extends Model {
+class CursosSesionesModel extends Model {
   static initialize(sequelizeInstace) {
-    return super.init(
+    const CursosSesiones = super.init(
       {
         id: {
-          type: DataTypes.MEDIUMINT.UNSIGNED,
+          type: DataTypes.MEDIUMINT,
           primaryKey: true,
           autoIncrement: true
         },
@@ -19,49 +18,14 @@ class CursosModel extends Model {
         nombre: {
           type: DataTypes.STRING(50),
           allowNull: false,
-          field: 'nombre'
-        },
-        imagen: {
-          type: DataTypes.STRING(120),
-          field: 'imagen',
-          allowNull: true,
-        },
-        urlImagen: {
-          type: DataTypes.VIRTUAL,
-          get() {
-            const img = this.getDataValue('imagen');
-            return img ? `${urlFiles}${img}` : '/public/img/not_content/not_logo.png'
-          }
-        },
-        fichaTecnica: {
-          type: DataTypes.STRING(120),
-          allowNull: false,
-          field: 'ficha_tecnica',
-          comment: "Archivo PDF",
-        },
-        urlFichaTecnica: {
-          type: DataTypes.VIRTUAL,
-          get() {
-            const ficha = this.getDataValue('fichaTecnica');
-            return ficha ? `${urlFiles}${ficha}` : '/public/img/not_content/not_logo.png'
-          }
+          field: 'nombre',
+          unique: 'nombre'
         },
         descripcion: {
           type: DataTypes.STRING(250),
           allowNull: false,
           field: 'descripcion',
           unique: 'descripcion'
-        },
-        idUserResponsable: {
-          type: DataTypes.MEDIUMINT.UNSIGNED,
-          allowNull: false,
-          comment: "User",
-          references: {
-            model: 'users',
-            key: 'id',
-          },
-          field: 'id_user_responsable',
-          unique: 'id_user_responsable'
         },
         keydata: {
           type: DataTypes.STRING,
@@ -103,10 +67,13 @@ class CursosModel extends Model {
       },
       {
         sequelize: sequelizeInstace,
-        modelName: 'Cursos',
-        tableName: 'cursos'
-      })
+        modelName: 'CursosSesiones',
+        tableName: 'cursos_sesiones'
+      },
+
+    )
+    return CursosSesiones;
   }
 }
 
-module.exports = CursosModel;
+module.exports = CursosSesionesModel;

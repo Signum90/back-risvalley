@@ -24,7 +24,7 @@ class BibliotecaController {
           'urlImagen',
           'keydata',
           'urlImagen',
-          [literal(`(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'tipo'],
+          //[literal(`(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'tipo'],
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
         ],
         where: {
