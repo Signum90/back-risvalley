@@ -104,7 +104,8 @@ class Helpers {
         'formato': FormatosModel,
         'pqr': PqrsModel,
         'archivo': BibliotecaModel,
-        'curso': CursosModel
+        'curso': CursosModel,
+        'notificacion': NotificacionesModel
       }
       if (!models[model]) return false;
       const register = await models[model].findByPk(id);
