@@ -14,7 +14,7 @@ class CursosModel extends Model {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'estado',
           allowNull: false,
-          comment: "1=Activo, 2=Inactivo 3=Pendiente aprobacion"
+          comment: "0= inactivo 1=Activo, 2=Pendiente aprobacion"
         },
         nombre: {
           type: DataTypes.STRING(50),
