@@ -25,7 +25,7 @@ class RetosTecnologicosModel extends Model {
           field: 'estado',
           allowNull: false,
           defaultValue: 1,
-          comment: "1=Pendiente, 2=Convocatoria abierta 3=finalizado 4=Pendiente aprobacion"
+          comment: "0=inactivo 1=activo 2=pendiente aprobacion"
         },
         fechaInicioConvocatoria: {
           type: DataTypes.DATEONLY,

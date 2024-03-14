@@ -13,8 +13,9 @@ class RetosCTR {
       const { nombre, page } = req.query;
       const paginate = page ?? 1;
       const pageSize = 12;
+      const now = new Date();
 
-      await RetosCTR.updateStatesTechnologicalChallenge();
+      //await RetosCTR.updateStatesTechnologicalChallenge();
       const challenges = await RetosTecnologicosModel.findAll({
         attributes: [
           'id',
@@ -33,8 +34,9 @@ class RetosCTR {
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
         ],
         where: {
-          estado: { [Op.in]: [1, 2] },
+          estado: 1,
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+          fechaFinConvocatoria: { [Op.gte]: now }
         },
         order: [['fechaInicioConvocatoria', 'DESC']],
         offset: (paginate - 1) * pageSize,
@@ -43,8 +45,9 @@ class RetosCTR {
 
       const total = await RetosTecnologicosModel.count({
         where: {
-          estado: { [Op.in]: [1, 2] },
+          estado: { [Op.in]: [1] },
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+          fechaFinConvocatoria: { [Op.gte]: now }
         }
       })
 
@@ -59,7 +62,6 @@ class RetosCTR {
       const { page } = req.query
       const paginate = page ?? 1;
 
-      await RetosCTR.updateStatesTechnologicalChallenge();
       const challenges = await RetosTecnologicosModel.findAll({
         attributes: [
           'id',
@@ -93,7 +95,6 @@ class RetosCTR {
     try {
       const token = req.token;
 
-      await RetosCTR.updateStatesTechnologicalChallenge();
       const challenges = await RetosTecnologicosModel.findAll({
         attributes: [
           'id',
@@ -126,7 +127,6 @@ class RetosCTR {
   async getDetailTechnologicalChallenge(req, res) {
     try {
       const id = req.params.idReto;
-      await RetosCTR.updateStatesTechnologicalChallenge();
       const challenge = await RetosTecnologicosModel.findOne({
         attributes: [
           'id',
@@ -158,21 +158,6 @@ class RetosCTR {
       throw error;
     }
   }
-
-  static async updateStatesTechnologicalChallenge() {
-    return await sequelize.transaction(async (t) => {
-      const now = new Date();
-      await RetosTecnologicosModel.update({ estado: 3 }, { where: { estado: { [Op.ne]: 4 }, fechaFinConvocatoria: { [Op.lt]: now } } }, { transaction: t })
-      await RetosTecnologicosModel.update({ estado: 2 }, {
-        where: {
-          estado: { [Op.ne]: 4 },
-          fechaInicioConvocatoria: { [Op.lte]: now },
-          fechaFinConvocatoria: { [Op.gte]: now }
-        }
-      }, { transaction: t })
-    })
-  }
-
   async saveTechnologicalChallenge(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
@@ -189,7 +174,7 @@ class RetosCTR {
         const model = await RetosTecnologicosModel.create({
           nombre,
           descripcion,
-          estado: 4,
+          estado: 2,
           fechaInicioConvocatoria,
           fechaFinConvocatoria,
           keydata: await bcrypt.hash(keydata, 10),
@@ -309,6 +294,7 @@ class RetosCTR {
           updatedBy: token.id
         }
         const model = await RetosTecnologicosModel.findByPk(id)
+        if (campo == 'estado' && model.estado == 2 && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'El admin debe aprobar el reto para que puedas editar el estado', status: 400 });
         if (model.idUserEntidad != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el reto', status: 400 });
         await model.update(updateData, { transaction: t });
 
