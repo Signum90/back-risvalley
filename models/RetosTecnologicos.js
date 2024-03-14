@@ -53,7 +53,7 @@ class RetosTecnologicosModel extends Model {
         estadoLabel: {
           type: DataTypes.VIRTUAL,
           get() {
-            const types = { 1: 'Pendiente', 2: 'Convocatoria abierta', 3: 'Finalizado', 4: 'pendiente aprobaciòn' }
+            const types = { 0: 'inactivo', 1: 'activo', 2: 'pendiente aprobacion' }
             const type = this.getDataValue('estado');
             return types[type] ?? '';
           }
