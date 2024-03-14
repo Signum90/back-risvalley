@@ -9,6 +9,7 @@ const middlewares = require('../middlewares/middlewares');
 const ciudadesDepartamentosController = new CiudadesDepartamentosCTR();
 
 router.get("/", async (req, res) => await ciudadesDepartamentosController.selectDepartamentos(req, res));
+router.post("/ciudades", Middlewares.validateJWTMiddleware, async (req, res) => await ciudadesDepartamentosController.departamentosYCiudades(req, res));
 router.get("/:idDepartamento/ciudades", [
   param('idDepartamento').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('departamento', id)
