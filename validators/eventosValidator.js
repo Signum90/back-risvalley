@@ -101,6 +101,7 @@ class EventosValidator {
       'urlRegistro': body('value').trim().notEmpty().isString().isLength({ max: 80 }),
       'precio': body('value').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
       'idCiudad': check('value').notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).custom(EventosValidator.validateExitsCity),
+      'estado': body('value').notEmpty().isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un valor entre 0 y 1')
     }
 
     return [
@@ -151,6 +152,15 @@ class EventosValidator {
     return [
       param('idEvento').notEmpty().withMessage(customMessages.required).isInt().custom(EventosValidator.validateIdEvent),
       query('keydata').trim().notEmpty().withMessage(customMessages.required),
+      Middlewares.scan_errors
+    ]
+  }
+  static get aprobeEventValidator() {
+    const customMessages = CustomMessages.getValidationMessages();
+
+    return [
+      param('idEvento').notEmpty().withMessage(customMessages.required).isInt().custom(EventosValidator.validateIdEvent),
+      body('keydata').trim().notEmpty().withMessage(customMessages.required),
       Middlewares.scan_errors
     ]
   }

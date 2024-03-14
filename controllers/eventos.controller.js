@@ -11,9 +11,6 @@ class EventosCTR {
     try {
       const { preview } = req.query
       const now = new Date();
-      await EventosModel.update({ estado: 3 }, {
-        where: { fechaInicio: { [Op.lt]: now } }
-      })
 
       const events = await EventosModel.findAll({
         attributes: [
@@ -36,7 +33,10 @@ class EventosCTR {
           [literal('(SELECT d.id FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'idDepartamento'],
           [literal(`COALESCE((SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy), (SELECT nombre FROM users AS u WHERE u.id = createdBy))`), 'nombreResponsable']
         ],
-        where: { estado: { [Op.in]: [1, 2] } },
+        where: {
+          estado: 1,
+          fechaInicio: { [Op.gte]: now }
+        },
         order: [['fechaInicio', 'ASC']],
         limit: preview ? 4 : null
       })
@@ -48,14 +48,9 @@ class EventosCTR {
 
   async getEventsDashboard(req, res) {
     try {
-      const now = new Date();
       const { page } = req.query
       const paginate = page ?? 1;
       const pageSize = 10;
-
-      await EventosModel.update({ estado: 3 }, {
-        where: { fechaInicio: { [Op.lt]: now } }
-      })
 
       const events = await EventosModel.findAll({
         attributes: [
@@ -102,6 +97,7 @@ class EventosCTR {
 
         const model = await EventosModel.create({
           nombre, descripcion, urlRegistro, precio, idCiudad,
+          estado: token.superadmin ? 1 : 2,
           tipoResponsable: contact.tipo,
           keydata: await bcrypt.hash(keydata, 10),
           logo: file ? file?.filename : null,
@@ -179,6 +175,7 @@ class EventosCTR {
         const validateKeyData = await validateKeyWord(id, 'EV', body.keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
         const model = await EventosModel.findByPk(id);
+        if (body.campo == 'estado' && model.estado == 2 && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'El administrador debe aprobar el evento para que puedas modificar el estado', status: 400 });
         if (model.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el evento', status: 400 });
 
         const editData = {
@@ -221,6 +218,23 @@ class EventosCTR {
     } catch (error) {
       console.log("🚀 ~ EventosCTR ~ updateEvent ~ error:", error)
       return res.status(400).json({ error })
+    }
+  }
+
+  async aprobeEvent(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const id = req.params.idEvento;
+        const { body, token } = req;
+        const validateKeyData = await validateKeyWord(id, 'EV', body.keydata);
+        if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
+        const model = await EventosModel.findByPk(id);
+        await model.update({ estado: 1, updatedBy: token.id }, { transaction: t });
+
+        return res.status(200).json({ msg: 'success' });
+      })
+    } catch (error) {
+      throw error;
     }
   }
 

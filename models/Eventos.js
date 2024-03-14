@@ -55,12 +55,12 @@ class EventosModel extends Model {
           field: 'estado',
           allowNull: false,
           defaultValue: 1,
-          comment: "1=Pendiente, 2=Cancelado 3=Finalizado"
+          comment: "0=inactivo, 1=activo 2=pendiente aprobacion"
         },
         estadoLabel: {
           type: DataTypes.VIRTUAL,
           get() {
-            const states = { 1: 'Pendiente', 2: 'Cancelado', 3: 'Finalizado' }
+            const states = { 0: 'inactivo', 1: 'activo', 2: 'pendiente aprobacion' }
             const state = this.getDataValue('estado');
             return states[state] ?? '';
           }

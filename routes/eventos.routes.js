@@ -29,6 +29,9 @@ router.put("/:idEvento/update/field", Middlewares.validateJWTMiddleware,
 router.put("/:idEvento/update", Middlewares.validateJWTMiddleware,
   EventosValidator.updateEventValidator,
   async (req, res) => await eventosController.updateEvent(req, res));
+router.put("/:idEvento/aprobar", Middlewares.validateAdminMiddleware,
+  EventosValidator.aprobeEventValidator,
+  async (req, res) => await eventosController.aprobeEvent(req, res))
 router.delete("/:idEvento/delete", Middlewares.validateJWTMiddleware,
   EventosValidator.deleteEventValidator,
   async (req, res) => await eventosController.deleteEvent(req, res))
