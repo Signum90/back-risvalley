@@ -54,6 +54,7 @@ class CursosValidator {
       'descripcion': body('value').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
         .isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 150 caracteres'),
+      'estado': body('value').notEmpty().isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un valor entre 0 y 1')
     }
 
     return [

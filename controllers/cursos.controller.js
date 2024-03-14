@@ -83,7 +83,7 @@ class CursosCTR {
           imagen: imagen ? imagen?.filename : null,
           fichaTecnica: fichaTecnica ? fichaTecnica.filename : null,
           idUserResponsable: token.id,
-          estado: token.superadmin ? 1 : 3,
+          estado: token.superadmin ? 1 : 2,
           createdBy: token.id
         }, { transaction: t })
 
@@ -138,6 +138,7 @@ class CursosCTR {
         const { keydata, campo, value } = body;
 
         const model = await CursosModel.findByPk(params.idCurso);
+        if (body.campo == 'estado' && model.estado == 2 && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'El administrador debe aceptar el curso para que le puedas editar el estado', status: 400 });
         if (model.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el curso', status: 400 });
         const validateKeyData = await validateKeyWord(params.idCurso, 'CU', keydata);
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún curso registrado', status: 400 });
