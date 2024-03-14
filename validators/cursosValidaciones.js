@@ -39,6 +39,13 @@ class CursosValidator {
       Middlewares.scan_errors
     ]
   }
+  static get detailCourseValidation() {
+    const customMessages = CustomMessages.getValidationMessages();
+    return [
+      param('idCurso').trim().notEmpty().withMessage(customMessages.required).custom(CursosValidator.validateIdCourse),
+      Middlewares.scan_errors
+    ]
+  }
   static get updateCorseFieldValidation() {
     const customMessages = CustomMessages.getValidationMessages();
     const validations = {

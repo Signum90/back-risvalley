@@ -38,6 +38,35 @@ class CursosCTR {
     }
   }
 
+  async getDetailCourse(req, res) {
+    try {
+      const id = req.params.idCurso;
+
+      const course = await CursosModel.findOne({
+        attributes: [
+          'id',
+          'estado',
+          'nombre',
+          'imagen',
+          'urlImagen',
+          'keydata',
+          'descripcion',
+          'idUserResponsable',
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'nombreEntidad'],
+          [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'telefonoEntidad'],
+          [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'emailEntidad'],
+        ],
+        where: {
+          id
+        }
+      })
+
+      return res.status(200).json({ data: course, msg: 'success' });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async postulateCourse(req, res) {
     try {
       return await sequelize.transaction(async (t) => {

@@ -13,19 +13,13 @@ class CursosSesionesModel extends Model {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'estado',
           allowNull: false,
-          comment: "1=Activo, 2=Inactivo 3=Pendiente aprobacion"
+          comment: "1=Activo, 2=Inactivo"
         },
         nombre: {
           type: DataTypes.STRING(50),
           allowNull: false,
           field: 'nombre',
           unique: 'nombre'
-        },
-        descripcion: {
-          type: DataTypes.STRING(250),
-          allowNull: false,
-          field: 'descripcion',
-          unique: 'descripcion'
         },
         idCurso: {
           type: DataTypes.MEDIUMINT.UNSIGNED,

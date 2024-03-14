@@ -20,8 +20,9 @@ const PqrsModel = require('../models/Pqrs');
 const FormatosModel = require('../models/Formatos');
 const NotificacionesModel = require('../models/Notificaciones');
 const BibliotecaModel = require('../models/Biblioteca');
-const CursosModel = require('../models/Cursos')
-const CursosSesionesModel = require('../models/CursosSesiones')
+const CursosModel = require('../models/Cursos');
+const CursosSesionesModel = require('../models/CursosSesiones');
+const CursosEstudiantesModel = require('../models/CursosEstudiantes')
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -47,7 +48,8 @@ class DataBase {
     this.NotificacionesModel = NotificacionesModel.initialize(this.sequelize);
     this.BibliotecaModel = BibliotecaModel.initialize(this.sequelize);
     this.CursosModel = CursosModel.initialize(this.sequelize);
-    this.CursosSesionesModel = CursosSesionesModel.initialize(this.sequelize)
+    this.CursosSesionesModel = CursosSesionesModel.initialize(this.sequelize);
+    this.CursosEstudiantesModel = CursosEstudiantesModel.initialize(this.sequelize);
   }
   //■► MET: Autenticación de la DB ◄■:
   async authenticateDB() {
