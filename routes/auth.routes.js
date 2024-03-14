@@ -35,6 +35,11 @@ router.post("/validar-usuario", [
   Middlewares.scan_errors
 ], async (req, res) => await authController.validateUser(req, res));
 
+router.post("/forgot-password", [
+  body('correo').notEmpty().withMessage(customMessages.required).isEmail().withMessage(customMessages.email),
+  Middlewares.scan_errors
+], async (req, res) => await authController.updateStateUserForgotPassword(req, res));
+
 router.post("/reenviar-codigo", [
   body('idUser').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('user', id)

@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt')
 const config = require('../config/config');
 const path = require('path');
 const hbs = require('hbs');
-const { generarJWT, sendEmail, generateCodeTemporal, registerUserValidate } = require('../helpers/helpers');
+const { generarJWT, sendEmail, generateCodeTemporal, registerUserValidate, generatePasswordTemporal } = require('../helpers/helpers');
 const { readHTMLFile } = require('../config/email')
 const { literal } = require('sequelize');
 const { sequelize } = require('../db/connection');
@@ -148,6 +148,29 @@ class AuthController {
 
       return res.status(200).json({ data: { token: newToken, user: data }, msg: 'success' });
     })
+  }
+
+  async updateStateUserForgotPassword(req, res) {
+    try {
+      return await sequelize.transaction(async (t) => {
+        const { body } = req;
+
+        const user = await UsersModel.findByEmail(body.correo);
+        if (!user) return res.status(400).json({ type: 'error', msg: 'El email no se encuentra registrado', status: 400 });
+
+        const passTemp = await generatePasswordTemporal()
+        const password = await bcrypt.hash(passTemp, 10);
+
+        await user.update({
+          password,
+          primerIngreso: 1,
+        }, { transaction: t })
+        await AuthController.sendEmailValidate(user?.email, user?.nombre, passTemp, user?.id);
+        return res.status(200).json({ data: true, msg: 'success' });
+      })
+    } catch (error) {
+      throw error;
+    }
   }
 
   static async sendEmailValidate(email, userName, code, id) {
