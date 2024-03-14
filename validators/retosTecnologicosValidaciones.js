@@ -130,7 +130,7 @@ class RetosValidator {
       'descripcion': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage('La descripción no puede tener más de 150 caracteres'),
       'fechaInicioConvocatoria': body('value').isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a hoy'),
       'fechaFinConvocatoria': body('value').isAfter(new Date().toString()).withMessage('La fecha de fin debe ser mayor a hoy'),
-      'estado': body('value').notEmpty().isInt({ min: 0, max: 2 }).withMessage('El estado debe ser un valor entre 0 y 2')
+      'estado': body('value').notEmpty().isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un valor entre 0 y 1')
     }
 
     return [

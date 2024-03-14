@@ -134,7 +134,8 @@ class ServiciosValidator {
       'nombre': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage('El nombre no puede tener más de 120 caracteres'),
       'descripcion': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage('La descripción no puede tener más de 150 caracteres'),
       'idTipoServicio': body('value').notEmpty().isInt().custom(ServiciosValidator.validateExitsType),
-      'idTipoClienteServicio': body('value').trim().isInt().withMessage(customMessages.int).custom(ServiciosValidator.validateExitsType)
+      'idTipoClienteServicio': body('value').trim().isInt().withMessage(customMessages.int).custom(ServiciosValidator.validateExitsType),
+      'estado': body('value').notEmpty().isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un valor entre 0 y 1')
     }
 
     return [

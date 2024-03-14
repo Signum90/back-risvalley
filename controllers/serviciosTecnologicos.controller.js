@@ -163,6 +163,7 @@ class ServiciosTecnologicosCTR {
           updatedBy: token.id
         };
         const model = await ServiciosTecnologicosModel.findByPk(id);
+        if (campo == 'estado' && model.estado == 2 && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'El administrador debe aprobar el servicio para que puedas editar el estado', status: 400 });
         if (model.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el servicio', status: 400 });
         await model.update(editData, { transaction: t });
 
