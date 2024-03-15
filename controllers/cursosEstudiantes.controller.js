@@ -11,11 +11,13 @@ class CursosEstudiantesCTR {
       return await sequelize.transaction(async (t) => {
         const { token, body } = req
 
-        const course = await CursosModel.findOne(body.idCurso);
+        const course = await CursosModel.findByPk(body.idCurso);
         if (!course || !course.estado) return res.status(400).json({ type: 'error', msg: 'El curso no está disponible', status: 400 });
-
+        if (course.precio > 0) {
+          //Acá va la logica si en el futuro se ingresa pasarela de pagos para cobrar el curso
+        }
         const postData = {
-          idCurso,
+          idCurso: body.idCurso,
           estado: 1,
           idUser: token.id,
           createdBy: token.id

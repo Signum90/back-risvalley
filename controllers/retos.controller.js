@@ -6,6 +6,7 @@ const { urlFiles } = require('../config/config');
 const EntidadesModel = require('../models/Entidades');
 const bcrypt = require('bcrypt');
 const NotificacionesModel = require('../models/Notificaciones');
+const UsersModel = require('../models/Users');
 
 class RetosCTR {
   async getTechnologicalChallenges(req, res) {
@@ -184,11 +185,16 @@ class RetosCTR {
           createdBy: token.id,
         }, { transaction: t })
         await registerKeyData(model.id, body.nombre, keydata, 'RE');
+
+        const user = await UsersModel.findOne({ where: { id: token.id } })
         const notificationData = {
           tipo: 23,
           idReto: model.id,
           userActivo: 1,
-          createdBy: token.id
+          createdBy: token.id,
+          contactoNombre: user.nombre,
+          contactoCorreo: user.email,
+          contactoTelefono: user.telefono
         }
         await NotificacionesModel.create(notificationData, { transaction: t });
 
