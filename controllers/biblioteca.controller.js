@@ -9,7 +9,7 @@ class BibliotecaController {
   async getFilesLibrary(req, res) {
     try {
       const { token } = req
-      const { page, nombre, autor } = req.query
+      const { page, nombre, autor, idsCategorias } = req.query
       const paginate = page ?? 1;
       const pageSize = 10;
 
@@ -24,13 +24,18 @@ class BibliotecaController {
           'urlImagen',
           'keydata',
           'urlImagen',
+          'idTipoCategoria',
+          'tipo',
+          'tipoLabel',
           'createdAt',
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
+          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = idTipoCategoria)`), 'categoria'],
         ],
         where: {
           ...(token ? {} : { estado: 1 }),
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
           ...(autor ? { autor: { [Op.like]: `%${autor}%` } } : {}),
+          ...(idsCategorias ? { idCategoria: { [Op.in]: idsCategorias } } : {})
         },
         order: [['createdAt', 'Desc']],
         offset: (paginate - 1) * pageSize,
@@ -42,6 +47,7 @@ class BibliotecaController {
           ...(token ? {} : { estado: 1 }),
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
           ...(autor ? { autor: { [Op.like]: `%${autor}%` } } : {}),
+          ...(idsCategorias ? { idCategoria: { [Op.in]: idsCategorias } } : {})
         },
       })
 
@@ -92,6 +98,8 @@ class BibliotecaController {
 
         const model = await BibliotecaModel.create({
           idRecursoMultimedia: recursoMultimediaRegistro.id,
+          idTipoCategoria: body.idCategoria,
+          tipo: body.tipo,
           estado: 1,
           imagen: imagen?.filename,
           keydata: await bcrypt.hash(keydata, 10),

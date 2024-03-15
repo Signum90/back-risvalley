@@ -24,6 +24,30 @@ class BibliotecaModel extends Model {
           allowNull: false,
           field: 'descripcion',
         },
+        tipo: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'tipo',
+          allowNull: false,
+          comment: "1=Libro, 2=Documento 3=Infografia"
+        },
+        tipoLabel: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const types = { 1: 'Libro', 2: 'Documento', 3: 'Infografia' }
+            const type = this.getDataValue('tipo');
+            return types[type] ?? '';
+          }
+        },
+        idTipoCategoria: {
+          type: DataTypes.MEDIUMINT.UNSIGNED,
+          allowNull: false,
+          references: {
+            model: 'x_tipos',
+            key: 'id'
+          },
+          comment: "Tipo 4",
+          field: 'id_tipo_categoria'
+        },
         imagen: {
           type: DataTypes.STRING(120),
           field: 'imagen',

@@ -9,6 +9,11 @@ class BibliotecaValidator {
     const exists = await validateExistId('archivo', id)
     if (!exists) return Promise.reject('Id archivo no válido');
   }
+  static async validateExitsType(tipo) {
+    const exists = await validateExistId('tipo', tipo);
+    if (!exists) return Promise.reject('Tipo no válido');
+  }
+
 
   static get updateStateValidator() {
     const customMessages = CustomMessages.getValidationMessages();
@@ -46,6 +51,10 @@ class BibliotecaValidator {
         .isLength({ max: 250 }).withMessage('El campo descripcion debe tener como máximo 250 caracteres'),
       check('autor').trim().notEmpty().withMessage(customMessages.required)
         .isString().isLength({ max: 50 }).withMessage('El campo nombre debe tener como máximo 50 caracteres'),
+      check('idCategoria').trim().notEmpty().withMessage(customMessages.required)
+        .isInt().withMessage(customMessages.int).custom(BibliotecaValidator.validateExitsType),
+      check('tipo').trim().notEmpty().withMessage(customMessages.required)
+        .isInt({ min: 1, max: 2 }).withMessage('El tipo debe ser un numero entre 1 y 2'),
       Middlewares.scan_errors
     ]
   }
@@ -60,6 +69,8 @@ class BibliotecaValidator {
         if (!req.file) return Promise.reject('El archivo es obligatorio');
         if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Ingrese una imagen válida');
       }),
+      'idTipoCategoria': check('value').trim().notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).custom(BibliotecaValidator.validateExitsType),
+      'tipo': check('value').trim().notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }).withMessage('El tipo debe ser un numero entre 1 y 2'),
     }
 
     return [
