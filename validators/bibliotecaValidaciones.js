@@ -71,6 +71,7 @@ class BibliotecaValidator {
       }),
       'idTipoCategoria': check('value').trim().notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).custom(BibliotecaValidator.validateExitsType),
       'tipo': check('value').trim().notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }).withMessage('El tipo debe ser un numero entre 1 y 3'),
+      'estado': check('value').trim().notEmpty().withMessage(customMessages.required).isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un numero entre 1 y 0'),
     }
 
     return [
