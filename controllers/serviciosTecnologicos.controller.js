@@ -13,7 +13,7 @@ class ServiciosTecnologicosCTR {
       const paginate = page ?? 1;
       const pageSize = 10;
       const token = req?.token;
-      const estados = token && token.superadmin ? [1, 2, 3] : [1];
+      const estados = token && token.superadmin ? [0, 1, 2] : [1];
 
       const services = await ServiciosTecnologicosModel.findAll({
         attributes: [
