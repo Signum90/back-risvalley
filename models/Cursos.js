@@ -16,6 +16,14 @@ class CursosModel extends Model {
           allowNull: false,
           comment: "0= inactivo 1=Activo, 2=Pendiente aprobacion"
         },
+        estadoLabel: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const types = { 0: 'inactivo', 1: 'activo', 2: 'pendiente aprobacion' }
+            const type = this.getDataValue('estado');
+            return types[type] ?? '';
+          }
+        },
         nombre: {
           type: DataTypes.STRING(50),
           allowNull: false,
@@ -51,6 +59,16 @@ class CursosModel extends Model {
           allowNull: false,
           field: 'descripcion',
           unique: 'descripcion'
+        },
+        idTipoCategoria: {
+          type: DataTypes.MEDIUMINT.UNSIGNED,
+          allowNull: false,
+          references: {
+            model: 'x_tipos',
+            key: 'id'
+          },
+          comment: "Tipo 4",
+          field: 'id_tipo_categoria'
         },
         idUserResponsable: {
           type: DataTypes.MEDIUMINT.UNSIGNED,

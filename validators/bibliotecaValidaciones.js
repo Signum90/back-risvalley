@@ -54,7 +54,7 @@ class BibliotecaValidator {
       check('idCategoria').trim().notEmpty().withMessage(customMessages.required)
         .isInt().withMessage(customMessages.int).custom(BibliotecaValidator.validateExitsType),
       check('tipo').trim().notEmpty().withMessage(customMessages.required)
-        .isInt({ min: 1, max: 2 }).withMessage('El tipo debe ser un numero entre 1 y 2'),
+        .isInt({ min: 1, max: 3 }).withMessage('El tipo debe ser un numero entre 1 y 3'),
       Middlewares.scan_errors
     ]
   }
@@ -70,7 +70,7 @@ class BibliotecaValidator {
         if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Ingrese una imagen válida');
       }),
       'idTipoCategoria': check('value').trim().notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).custom(BibliotecaValidator.validateExitsType),
-      'tipo': check('value').trim().notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }).withMessage('El tipo debe ser un numero entre 1 y 2'),
+      'tipo': check('value').trim().notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }).withMessage('El tipo debe ser un numero entre 1 y 3'),
     }
 
     return [

@@ -9,7 +9,8 @@ class BibliotecaController {
   async getFilesLibrary(req, res) {
     try {
       const { token } = req
-      const { page, nombre, autor, idsCategorias } = req.query
+      const { page, nombre, autor, idsCategorias } = req.query;
+      const ids = idsCategorias?.split(',');
       const paginate = page ?? 1;
       const pageSize = 10;
 
@@ -34,8 +35,8 @@ class BibliotecaController {
         where: {
           ...(token ? {} : { estado: 1 }),
           ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
-          ...(autor ? { autor: { [Op.like]: `%${autor}%` } } : {}),
-          ...(idsCategorias ? { idCategoria: { [Op.in]: idsCategorias } } : {})
+          ...(nombre ? { autor: { [Op.like]: `%${nombre}%` } } : {}),
+          ...(idsCategorias ? { idTipoCategoria: { [Op.in]: ids } } : {})
         },
         order: [['createdAt', 'Desc']],
         offset: (paginate - 1) * pageSize,

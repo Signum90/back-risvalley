@@ -9,6 +9,11 @@ class CursosValidator {
     const exists = await validateExistId('curso', id)
     if (!exists) return Promise.reject('Id curso no válido');
   }
+  static async validateExitsType(tipo) {
+    const exists = await validateExistId('tipo', tipo);
+    if (!exists) return Promise.reject('Tipo no válido');
+  }
+
 
   static get postCourseValidation() {
     const customMessages = CustomMessages.getValidationMessages();
@@ -28,6 +33,8 @@ class CursosValidator {
         if (!pdfFormat.includes(fichaTecnica[0]?.mimetype)) return Promise.reject('La ficha tecnica debe ser un pdf');
         if (!imageFormat.includes(imagen[0]?.mimetype)) return Promise.reject('Ingrese una imagen válida');
       }),
+      check('idCategoria').trim().notEmpty().withMessage(customMessages.required)
+        .isInt().withMessage(customMessages.int).custom(CursosValidator.validateExitsType),
       Middlewares.scan_errors
     ]
   }
@@ -54,7 +61,9 @@ class CursosValidator {
       'descripcion': body('value').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
         .isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 150 caracteres'),
-      'estado': body('value').notEmpty().isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un valor entre 0 y 1')
+      'estado': body('value').notEmpty().isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un valor entre 0 y 1'),
+      'idTipoCategoria': body('value').trim().notEmpty().withMessage(customMessages.required)
+        .isInt().withMessage(customMessages.int).custom(CursosValidator.validateExitsType),
     }
 
     return [

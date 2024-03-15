@@ -1,15 +1,18 @@
 const { sequelize } = require('../db/connection');
-const { literal } = require('sequelize');
+const { literal, Op } = require('sequelize');
 const { urlFiles } = require('../config/config');
 const CursosModel = require('../models/Cursos');
 const bcrypt = require('bcrypt');
 const { registerKeyData, validateKeyWord, deleteFile, generateKeyWord } = require('../helpers/helpers');
 const NotificacionesModel = require('../models/Notificaciones');
+const EntidadesModel = require('../models/Entidades');
 
 class CursosCTR {
   async getCourses(req, res) {
     try {
-      const { token } = req;
+      const { token, query } = req;
+      const { nombre, idsCategorias } = query;
+      const ids = idsCategorias?.split(',');
 
       const courses = await CursosModel.findAll({
         attributes: [
@@ -21,13 +24,17 @@ class CursosCTR {
           'keydata',
           'descripcion',
           'idUserResponsable',
+          'idTipoCategoria',
+          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = idTipoCategoria)`), 'categoria'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'nombreEntidad'],
           [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'telefonoEntidad'],
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'emailEntidad'],
         ],
         where: {
           ...(token && token.superadmin ? {} : { estado: 1 }),
-          ...(token && !token.superadmin ? { idUserResponsable: token.id } : {})
+          ...(token && !token.superadmin ? { idUserResponsable: token.id } : {}),
+          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+          ...(idsCategorias ? { idTipoCategoria: { [Op.in]: ids } } : {}),
         },
         order: [['createdAt', 'Desc']],
       })
@@ -75,10 +82,14 @@ class CursosCTR {
         const imagen = files['imagen'][0];
         const fichaTecnica = files['fichaTecnica'][0];
 
+        const entidad = await EntidadesModel.findOne({ where: { idUserResponsable: token.id } });
+        if (!entidad) return res.status(400).json({ type: 'error', msg: 'Por favor cree una entidad unipersonal para crear cursos', status: 400 });
+
         const keydata = await generateKeyWord();
         const model = await CursosModel.create({
           nombre,
           descripcion,
+          idTipoCategoria: body.idCategoria,
           keydata: await bcrypt.hash(keydata, 10),
           imagen: imagen ? imagen?.filename : null,
           fichaTecnica: fichaTecnica ? fichaTecnica.filename : null,
