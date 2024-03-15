@@ -34,8 +34,12 @@ class BibliotecaController {
         ],
         where: {
           ...(token ? {} : { estado: 1 }),
-          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
-          ...(nombre ? { autor: { [Op.like]: `%${nombre}%` } } : {}),
+          ...(nombre ? {
+            [Op.or]: [
+              { nombre: { [Op.like]: `%${nombre}%` } },
+              { autor: { [Op.like]: `%${nombre}%` } }
+            ]
+          } : {}),
           ...(idsCategorias ? { idTipoCategoria: { [Op.in]: ids } } : {})
         },
         order: [['createdAt', 'Desc']],

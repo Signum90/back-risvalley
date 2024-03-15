@@ -33,7 +33,12 @@ class CursosCTR {
         where: {
           ...(token && token.superadmin ? {} : { estado: 1 }),
           ...(token && !token.superadmin ? { idUserResponsable: token.id } : {}),
-          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
+          ...(nombre ? {
+            [Op.or]: [
+              { nombre: { [Op.like]: `%${nombre}%` } },
+              literal(`(SELECT e.nombre FROM entidades AS e WHERE e.id_user_responsable = id_user_responsable) LIKE '%${nombre}%'`)
+            ]
+          } : {}),
           ...(idsCategorias ? { idTipoCategoria: { [Op.in]: ids } } : {}),
         },
         order: [['createdAt', 'Desc']],
