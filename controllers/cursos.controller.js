@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt');
 const { registerKeyData, validateKeyWord, deleteFile, generateKeyWord } = require('../helpers/helpers');
 const NotificacionesModel = require('../models/Notificaciones');
 const EntidadesModel = require('../models/Entidades');
+const CursosEstudiantesModel = require('../models/CursosEstudiantes');
+const CursosSesionesModel = require('../models/CursosSesiones');
 
 class CursosCTR {
   async getCourses(req, res) {
@@ -13,6 +15,7 @@ class CursosCTR {
       const { token, query } = req;
       const { nombre, idsCategorias } = query;
       const ids = idsCategorias?.split(',');
+      const paginate = query.page ?? 1;
 
       const courses = await CursosModel.findAll({
         attributes: [
@@ -24,6 +27,7 @@ class CursosCTR {
           'keydata',
           'descripcion',
           'idUserResponsable',
+          'estadoLabel',
           'idTipoCategoria',
           [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = idTipoCategoria)`), 'categoria'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'nombreEntidad'],
@@ -42,6 +46,64 @@ class CursosCTR {
           ...(idsCategorias ? { idTipoCategoria: { [Op.in]: ids } } : {}),
         },
         order: [['createdAt', 'Desc']],
+        offset: (paginate - 1) * 20,
+        limit: 20
+      })
+
+      const count = await CursosModel.count({
+        where: {
+          ...(token && token.superadmin ? {} : { estado: 1 }),
+          ...(token && !token.superadmin ? { idUserResponsable: token.id } : {}),
+          ...(nombre ? {
+            [Op.or]: [
+              { nombre: { [Op.like]: `%${nombre}%` } },
+              literal(`(SELECT e.nombre FROM entidades AS e WHERE e.id_user_responsable = id_user_responsable) LIKE '%${nombre}%'`)
+            ]
+          } : {}),
+          ...(idsCategorias ? { idTipoCategoria: { [Op.in]: ids } } : {}),
+        }
+      })
+
+      return res.status(200).json({ data: courses, msg: 'success', total: count });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getCourseAcquire(req, res) {
+    try {
+      const { token } = req;
+
+      const courses = await CursosModel.findAll({
+        attributes: [
+          'id',
+          'estado',
+          'nombre',
+          'imagen',
+          'urlImagen',
+          'keydata',
+          'descripcion',
+          'idUserResponsable',
+          'idTipoCategoria',
+          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = idTipoCategoria)`), 'categoria'],
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'nombreEntidad'],
+          [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'telefonoEntidad'],
+          [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'emailEntidad'],
+        ],
+        where: {
+          estado: 1,
+        },
+        include: [{
+          model: CursosEstudiantesModel,
+          as: 'estudiante',
+          attributes: [],
+          where: {
+            idUser: token.id,
+            estado: 1
+          },
+          required: true
+        }],
+        order: [['createdAt', 'Desc']],
       })
 
       return res.status(200).json({ data: courses, msg: 'success' });
@@ -52,7 +114,8 @@ class CursosCTR {
 
   async getDetailCourse(req, res) {
     try {
-      const id = req.params.idCurso;
+      const { token, params } = req
+      const id = params.idCurso;
 
       const course = await CursosModel.findOne({
         attributes: [
@@ -64,14 +127,43 @@ class CursosCTR {
           'keydata',
           'descripcion',
           'idUserResponsable',
+          'createdBy',
+          'idTipoCategoria',
+          [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = idTipoCategoria)`), 'categoria'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'nombreEntidad'],
           [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'telefonoEntidad'],
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'emailEntidad'],
+          [literal(`(SELECT COUNT(1) FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id)`), 'totalEstudiantes'],
+          [literal(`COALESCE( (SELECT 1 FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id AND ce.id_user = ${token?.id ?? null} AND ce.estado = 1), 0)`), 'cursoAdquirido']
         ],
         where: {
           id
-        }
+        },
+        include: [{
+          model: CursosSesionesModel,
+          as: 'sesiones',
+          attributes: [
+            'id',
+            'nombre',
+            [literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = sesiones.id AND cc.estado = 1)`), 'totalClases']
+          ],
+          where: {
+            estado: 1
+          },
+          required: false
+        }],
       })
+
+      if (token?.superadmin || course.createdBy == token?.id) {
+        const students = await CursosEstudiantesModel.findAll({
+          attributes: [
+            'id',
+            'idUser',
+            [literal(`(SELECT u.nombre FROM users AS u WHERE idUser = u.id)`), 'nombreEstudiante']
+          ]
+        })
+        //course = students
+      }
 
       return res.status(200).json({ data: course, msg: 'success' });
     } catch (error) {

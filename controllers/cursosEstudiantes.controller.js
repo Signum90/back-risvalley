@@ -1,6 +1,4 @@
 const { sequelize } = require('../db/connection');
-const { literal } = require('sequelize');
-const { urlFiles } = require('../config/config');
 const CursosModel = require('../models/Cursos');
 const CursosEstudiantesModel = require('../models/CursosEstudiantes');
 
@@ -10,7 +8,6 @@ class CursosEstudiantesCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const { token, body } = req
-
         const course = await CursosModel.findByPk(body.idCurso);
         if (!course || !course.estado) return res.status(400).json({ type: 'error', msg: 'El curso no está disponible', status: 400 });
         if (course.precio > 0) {

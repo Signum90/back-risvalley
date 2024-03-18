@@ -33,7 +33,7 @@ class CursosClasesModel extends Model {
           field: 'clase',
         },
         idCursoSesion: {
-          type: DataTypes.MEDIUMINT.UNSIGNED,
+          type: DataTypes.MEDIUMINT,
           allowNull: false,
           references: {
             model: 'cursos_sesiones',
