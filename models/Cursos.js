@@ -1,9 +1,10 @@
 const { DataTypes, Model } = require('sequelize');
 const { urlFiles } = require('../config/config');
+const CursosEstudiantesModel = require('./CursosEstudiantes');
 
 class CursosModel extends Model {
   static initialize(sequelizeInstace) {
-    return super.init(
+    const Cursos = super.init(
       {
         id: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
@@ -58,7 +59,6 @@ class CursosModel extends Model {
           type: DataTypes.STRING(250),
           allowNull: false,
           field: 'descripcion',
-          unique: 'descripcion'
         },
         idTipoCategoria: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
@@ -79,7 +79,6 @@ class CursosModel extends Model {
             key: 'id',
           },
           field: 'id_user_responsable',
-          unique: 'id_user_responsable'
         },
         keydata: {
           type: DataTypes.STRING,
@@ -124,6 +123,8 @@ class CursosModel extends Model {
         modelName: 'Cursos',
         tableName: 'cursos'
       })
+    Cursos.hasMany(CursosEstudiantesModel.initialize(sequelizeInstace), { foreignKey: 'id_curso', as: 'estudiante' });
+    return Cursos;
   }
 }
 
