@@ -29,6 +29,7 @@ const PqrsModel = require('../models/Pqrs');
 const BibliotecaModel = require('../models/Biblioteca');
 const NotificacionesModel = require('../models/Notificaciones');
 const CursosModel = require('../models/Cursos');
+const CursosEstudiantesModel = require('../models/CursosEstudiantes');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -133,6 +134,9 @@ class Helpers {
         break;
       case 'user':
         exists = await UsersModel.findOne({ where: condition })
+        break;
+      case 'cursoEstudiante':
+        exists = await CursosEstudiantesModel.findOne({ where: condition })
         break;
       default:
         exists = false;
