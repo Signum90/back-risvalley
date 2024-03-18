@@ -4,6 +4,9 @@ const UsersModel = require('../models/Users');
 const NotificacionesModel = require('../models/Notificaciones');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const { saveNotification } = require('../helpers/helpers');
+const RetosTecnologicosModel = require('../models/RetosTecnologicos');
+const EventosModel = require('../models/Eventos');
+const CursosModel = require('../models/Cursos');
 
 class NotificacionesCTR {
   async getNotifications(req, res) {
@@ -14,6 +17,7 @@ class NotificacionesCTR {
         attributes: [
           'id',
           'idServicio',
+          'idCurso',
           'idUser',
           'idReto',
           'idRetoAspirante',
@@ -25,11 +29,15 @@ class NotificacionesCTR {
           'comentario',
           'notificacion',
           'idPqr',
+          'idEvento',
           'createdAt',
+          'tipoLabel',
           [literal(`COALESCE(
             (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = idReto),
             (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = idReto),
-            (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante)
+            (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante),
+            (SELECT c.nombre FROM cursos AS c WHERE c.id = idCurso),
+            (SELECT e.nombre FROM eventos AS e WHERE e.id = idEvento)
           )`), 'nombre']
         ],
         where: {
@@ -38,8 +46,50 @@ class NotificacionesCTR {
         },
         order: [['createdAt', 'Desc']],
       })
+      const data = [];
 
-      return res.status(200).json({ data: notifications, msg: 'success' });
+      for (let index = 0; index < notifications.length; index++) {
+        const element = notifications[index];
+
+        const { id,
+          idServicio,
+          idUser,
+          idReto,
+          idRetoAspirante,
+          contactoNombre,
+          contactoCorreo,
+          contactoTelefono,
+          userActivo,
+          tipo,
+          comentario,
+          notificacion,
+          idPqr,
+          createdAt,
+          tipoLabel,
+          idEvento,
+          nombre
+        } = element;
+
+        let keydata;
+        if (token.superadmin) {
+          keydata = await NotificacionesCTR.getKeydata(tipoLabel, id);
+        }
+        data.push({
+          idNotificacion: id,
+          keydata,
+          id: idServicio || idReto || idPqr || idEvento,
+          contactoNombre,
+          contactoCorreo,
+          contactoTelefono,
+          userActivo,
+          tipoLabel,
+          notificacion,
+          comentario,
+          createdAt,
+          nombre,
+        })
+      }
+      return res.status(200).json({ data, msg: 'success' });
     } catch (error) {
       throw error;
     }
@@ -110,6 +160,23 @@ class NotificacionesCTR {
 
         return res.status(200).json({ data: true, msg: 'success' });
       })
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getKeydata(model, id) {
+    try {
+      const models = {
+        'Servicio': ServiciosTecnologicosModel,
+        'Reto': RetosTecnologicosModel,
+        'Curso': EventosModel,
+        'Evento': CursosModel
+      }
+
+      const registro = await models[model].findByPk(id);
+
+      return registro?.keydata ?? null;
     } catch (error) {
       throw error;
     }

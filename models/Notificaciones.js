@@ -67,11 +67,65 @@ class NotificacionesModel extends Model {
           onDelete: 'CASCADE',
           field: 'id_reto_aspirante'
         },
+        idCurso: {
+          type: DataTypes.MEDIUMINT.UNSIGNED,
+          allowNull: true,
+          references: {
+            model: 'cursos',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'id_curso'
+        },
+        idEvento: {
+          type: DataTypes.MEDIUMINT,
+          allowNull: true,
+          references: {
+            model: 'eventos',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'id_evento'
+        },
         tipo: {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'tipo',
           allowNull: false,
-          comment: "10*s=*SERVICIOS* 11=contacto 12=aprobado 13=pendiente aprobacion 20*s=*RETOS TECNOLOGICOS* 21=postulacion 22=aprobado 23=pendiente aprobacion 24=correpcion 30*s=*CURSOS* 31=inscripcion 32=aprobado 33=pendiente aprobación 40*PQRS* 41=Nueva 42=resuelto"
+          comment: "10*s=*SERVICIOS* 11=contacto 12=aprobado 13=pendiente aprobacion 20*s=*RETOS TECNOLOGICOS* 21=postulacion 22=aprobado 23=pendiente aprobacion 24=correpcion 30*s=*CURSOS* 31=inscripcion 32=aprobado 33=pendiente aprobación 40*PQRS* 41=Nueva 42=resuelto 50*EVENTOS*  51=postulacion 52=aprobado 53=pendiente aprobacion"
+        },
+        tipoLabel: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const tipo = this.getDataValue('tipo');
+            let tipoLabel = null;
+            switch (tipo) {
+              case 11:
+              case 12:
+              case 13:
+                tipoLabel = 'Servicio';
+                break;
+              case 21:
+              case 22:
+              case 23:
+              case 24:
+                tipoLabel = 'Reto';
+                break;
+              case 31:
+              case 32:
+              case 33:
+                tipoLabel = 'Curso';
+                break;
+              case 51:
+              case 52:
+              case 53:
+                tipoLabel = 'Evento';
+                break;
+              default:
+                tipoLabel = '';
+                break;
+            }
+            return tipoLabel;
+          }
         },
         contactoNombre: {
           type: DataTypes.STRING(70),
