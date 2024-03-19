@@ -1,7 +1,7 @@
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const { sequelize } = require('../db/connection');
 const { literal, Op, where } = require('sequelize');
-const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord } = require('../helpers/helpers');
+const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord, verifyToken } = require('../helpers/helpers');
 const { urlFiles } = require('../config/config');
 const EntidadesModel = require('../models/Entidades');
 const bcrypt = require('bcrypt');
@@ -128,9 +128,13 @@ class RetosCTR {
   async getDetailTechnologicalChallenge(req, res) {
     try {
       const id = req.params.idReto;
+      const { authorization } = req.headers
+      const tokenData = authorization ? verifyToken(authorization?.split(' ')[1]) : null;
+
       const challenge = await RetosTecnologicosModel.findOne({
         attributes: [
           'id',
+          ['id', 'idReto'],
           'nombre',
           'descripcion',
           'estado',
@@ -147,6 +151,8 @@ class RetosCTR {
           [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'telefonoEntidad'],
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'emailEntidad'],
           [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'logoEntidad'],
+          [literal(`COALESCE( (SELECT 1 FROM favoritos AS f WHERE f.id_reto = idReto AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'favorito']
+
         ],
         where: {
           id

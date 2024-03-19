@@ -2,7 +2,7 @@ const { sequelize } = require('../db/connection');
 const { literal, Op } = require('sequelize');
 const { urlFiles } = require('../config/config');
 const BibliotecaModel = require('../models/Biblioteca');
-const { saveResourceMultimedia, deleteResourceMultimedia, deleteFile, generateKeyWord, registerKeyData, validateKeyWord } = require('../helpers/helpers');
+const { saveResourceMultimedia, deleteResourceMultimedia, deleteFile, generateKeyWord, registerKeyData, validateKeyWord, verifyToken } = require('../helpers/helpers');
 const bcrypt = require('bcrypt')
 
 class BibliotecaController {
@@ -65,6 +65,9 @@ class BibliotecaController {
 
   async getDetailFile(req, res) {
     try {
+      const { authorization } = req.headers
+      const tokenData = authorization ? verifyToken(authorization?.split(' ')[1]) : null;
+
       const id = req.params.idArchivo;
       const file = await BibliotecaModel.findOne({
         attributes: [
@@ -79,6 +82,7 @@ class BibliotecaController {
           'urlImagen',
           'createdAt',
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
+          [literal(`COALESCE( (SELECT 1 FROM favoritos AS f WHERE f.id_biblioteca = biblioteca.id AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'favorito']
         ],
         where: { id },
       })

@@ -1,6 +1,6 @@
 const { sequelize } = require('../db/connection');
 const { literal, col, Op } = require('sequelize');
-const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord, saveNotification } = require('../helpers/helpers');
+const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord, saveNotification, verifyToken } = require('../helpers/helpers');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const UsersModel = require('../models/Users');
 const { urlFiles } = require('../config/config');
@@ -265,11 +265,14 @@ class ServiciosTecnologicosCTR {
 
   async getDetailService(req, res) {
     try {
+      const { authorization } = req.headers
       const id = req.params.idServicio;
+      const tokenData = authorization ? verifyToken(authorization?.split(' ')[1]) : null;
 
       const service = await ServiciosTecnologicosModel.findOne({
         attributes: [
           'id',
+          ['id', 'idServicio'],
           'nombre',
           'descripcion',
           'keydata',
@@ -287,6 +290,7 @@ class ServiciosTecnologicosCTR {
           [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.email'), 'correoContacto'],
           [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlLogo'],
+          [literal(`COALESCE((SELECT 1 FROM favoritos AS f WHERE f.id_servicio = idServicio AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'favorito']
         ],
         where: { id },
         include: [{ model: UsersModel, as: 'contacto', attributes: [] }],
