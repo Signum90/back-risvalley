@@ -10,6 +10,8 @@ const eventosController = new EventosCTR();
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/list", async (req, res) => await eventosController.getEvents(req, res));
+router.get("/:idEvento/detalle", EventosValidator.detailEventValidator,
+  async (req, res) => await eventosController.getDetailEvent(req, res));
 router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await eventosController.getEventsDashboard(req, res));
 router.post("/create", Middlewares.validateJWTMiddleware,
   multerConfig.upload.single('logo'),

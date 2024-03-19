@@ -47,6 +47,40 @@ class EventosCTR {
     }
   }
 
+  async getDetailEvent(req, res) {
+    try {
+      const id = req.params.idEvento;
+
+      const event = await EventosModel.findAll({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'logo',
+          'fechaInicio',
+          'urlRegistro',
+          'precio',
+          'idCiudad',
+          'estado',
+          'keydata',
+          'tipoResponsable',
+          'createdBy',
+          'estadoLabel',
+          'urlLogo',
+          [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = idCiudad)'), 'ciudad'],
+          [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'departamento'],
+          [literal('(SELECT d.id FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'idDepartamento'],
+          [literal(`COALESCE((SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy), (SELECT nombre FROM users AS u WHERE u.id = createdBy))`), 'nombreResponsable']
+        ],
+        where: { id },
+      })
+
+      return res.status(200).json({ msg: 'success', data: event });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getEventsDashboard(req, res) {
     try {
       const { page } = req.query

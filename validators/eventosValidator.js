@@ -164,6 +164,14 @@ class EventosValidator {
       Middlewares.scan_errors
     ]
   }
+  static get detailEventValidator() {
+    const customMessages = CustomMessages.getValidationMessages();
+
+    return [
+      param('idEvento').notEmpty().withMessage(customMessages.required).isInt().custom(EventosValidator.validateIdEvent),
+      Middlewares.scan_errors
+    ]
+  }
 }
 
 module.exports = EventosValidator;
