@@ -72,7 +72,8 @@ class NotificacionesCTR {
 
         let keydata;
         if (token.superadmin) {
-          keydata = await NotificacionesCTR.getKeydata(tipoLabel, id);
+          const idRegister = idServicio || idReto || idPqr || idEvento;
+          keydata = await NotificacionesCTR.getKeydata(tipoLabel, idRegister);
         }
         data.push({
           idNotificacion: id,
@@ -89,7 +90,7 @@ class NotificacionesCTR {
           nombre,
         })
       }
-      return res.status(200).json({ data, msg: 'success' });
+      return res.status(200).json({ data, msg: 'success', notifications });
     } catch (error) {
       throw error;
     }
