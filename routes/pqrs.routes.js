@@ -16,6 +16,7 @@ router.get("/:idPqr/detalle", Middlewares.validateAdminMiddleware, [
     const exists = await validateExistId('pqr', id)
     if (!exists) return Promise.reject('Id pqr no válido');
   }),
+  Middlewares.scan_errors
 ], async (req, res) => await pqrsController.getDetailPQRS(req, res));
 router.post("/", [
   body('pqr').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage(customMessages.length),
