@@ -96,10 +96,13 @@ class FavoritosCTR {
   async deleteFavorite(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { params } = req;
-        const id = params.idFavorito
+        const { params, token } = req;
+        const id = params.idFavorito;
 
-        await FavoritosModel.destroy({ where: { id } }, { transaction: t });
+        const model = await FavoritosModel.findByPk(id);
+        if (model.idUser != token.id) return res.status(400).json({ type: 'error', msg: 'No se puede eliminar' })
+
+        await model.destroy({ transaction: t });
 
         return res.status(200).json({ msg: 'success', data: true });
       })

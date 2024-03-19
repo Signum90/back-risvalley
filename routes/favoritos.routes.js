@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { body, check, param } = require('express-validator');
+const { body, param } = require('express-validator');
 const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const FavoritosCTR = require('../controllers/favoritos.controller');
@@ -30,5 +30,13 @@ router.post("/", Middlewares.validateJWTMiddleware, [
   }),
   Middlewares.scan_errors
 ], async (req, res) => await favoritosController.postFavorite(req, res))
+
+router.delete("/:idFavorito/eliminar", Middlewares.validateJWTMiddleware, [
+  param('idFavorito').trim().notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).custom(async (id) => {
+    const exists = await validateExistId('favorito', id)
+    if (!exists) return Promise.reject(`Id favorito no válido`);
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await favoritosController.deleteFavorite(req, res))
 
 module.exports = router;

@@ -107,6 +107,7 @@ class Helpers {
         'archivo': BibliotecaModel,
         'curso': CursosModel,
         'notificacion': NotificacionesModel,
+        'favorito': FavoritosModel
       }
       if (!models[model]) return false;
       const register = await models[model].findByPk(id);
