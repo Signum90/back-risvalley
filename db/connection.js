@@ -23,7 +23,8 @@ const BibliotecaModel = require('../models/Biblioteca');
 const CursosModel = require('../models/Cursos');
 const CursosSesionesModel = require('../models/CursosSesiones');
 const CursosEstudiantesModel = require('../models/CursosEstudiantes')
-const CursosClasesModel = require('../models/CursosClases')
+const CursosClasesModel = require('../models/CursosClases');
+const FavoritosModel = require('../models/Favoritos');
 
 //■► CLASE: DataBase ◄■:
 class DataBase {
@@ -52,6 +53,7 @@ class DataBase {
     this.CursosSesionesModel = CursosSesionesModel.initialize(this.sequelize);
     this.CursosEstudiantesModel = CursosEstudiantesModel.initialize(this.sequelize);
     this.CursosClasesModel = CursosClasesModel.initialize(this.sequelize);
+    this.FavoritosModel = FavoritosModel.initialize(this.sequelize);
   }
   //■► MET: Autenticación de la DB ◄■:
   async authenticateDB() {

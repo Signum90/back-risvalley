@@ -30,6 +30,7 @@ const BibliotecaModel = require('../models/Biblioteca');
 const NotificacionesModel = require('../models/Notificaciones');
 const CursosModel = require('../models/Cursos');
 const CursosEstudiantesModel = require('../models/CursosEstudiantes');
+const FavoritosModel = require('../models/Favoritos');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -100,13 +101,12 @@ class Helpers {
         'retoAspirante': RetosAspirantesModel,
         'user': UsersModel,
         'tipo': XTipoModel,
-        'servicio': ServiciosTecnologicosModel,
         'departamento': DepartamentosModel,
         'formato': FormatosModel,
         'pqr': PqrsModel,
         'archivo': BibliotecaModel,
         'curso': CursosModel,
-        'notificacion': NotificacionesModel
+        'notificacion': NotificacionesModel,
       }
       if (!models[model]) return false;
       const register = await models[model].findByPk(id);
@@ -137,6 +137,9 @@ class Helpers {
         break;
       case 'cursoEstudiante':
         exists = await CursosEstudiantesModel.findOne({ where: condition })
+        break;
+      case 'favorito':
+        exists = await FavoritosModel.findOne({ where: condition })
         break;
       default:
         exists = false;
