@@ -80,11 +80,16 @@ class ServiciosTecnologicosCTR {
           createdBy: token.id
         };
         const model = await ServiciosTecnologicosModel.create(postData, { transaction: t });
+
+        const user = await UsersModel.findByPk(token.id)
         const notificationData = {
           tipo: 13,
           idServicio: model.id,
           userActivo: 1,
-          createdBy: token.id
+          createdBy: token.id,
+          contactoNombre: user.nombre,
+          contactoCorreo: user.email,
+          contactoTelefono: user.telefono
         }
         await registerKeyData(model.id, body.nombre, keydata, 'SE');
         await NotificacionesModel.create(notificationData, { transaction: t });

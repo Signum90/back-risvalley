@@ -7,6 +7,7 @@ const { saveNotification } = require('../helpers/helpers');
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const EventosModel = require('../models/Eventos');
 const CursosModel = require('../models/Cursos');
+const PqrsModel = require('../models/Pqrs');
 
 class NotificacionesCTR {
   async getNotifications(req, res) {
@@ -90,7 +91,7 @@ class NotificacionesCTR {
           nombre,
         })
       }
-      return res.status(200).json({ data, msg: 'success', notifications });
+      return res.status(200).json({ data, msg: 'success' });
     } catch (error) {
       throw error;
     }
@@ -171,8 +172,9 @@ class NotificacionesCTR {
       const models = {
         'Servicio': ServiciosTecnologicosModel,
         'Reto': RetosTecnologicosModel,
-        'Curso': EventosModel,
-        'Evento': CursosModel
+        'Evento': EventosModel,
+        'Curso': CursosModel,
+        'Pqrs': PqrsModel
       }
 
       const registro = await models[model].findByPk(id);

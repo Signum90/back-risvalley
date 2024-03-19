@@ -91,7 +91,7 @@ class NotificacionesModel extends Model {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'tipo',
           allowNull: false,
-          comment: "10*s=*SERVICIOS* 11=contacto 12=aprobado 13=pendiente aprobacion 20*s=*RETOS TECNOLOGICOS* 21=postulacion 22=aprobado 23=pendiente aprobacion 24=correpcion 30*s=*CURSOS* 31=inscripcion 32=aprobado 33=pendiente aprobación 40*PQRS* 41=Nueva 42=resuelto 50*EVENTOS*  51=postulacion 52=aprobado 53=pendiente aprobacion"
+          comment: "10*s=*SERVICIOS* 11=contacto 12=aprobado 13=pendiente aprobacion 20*s=*RETOS TECNOLOGICOS* 21=postulacion 22=aprobado 23=pendiente aprobacion 24=correpcion 30*s=*CURSOS* 31=inscripcion 32=aprobado 33=pendiente aprobación 40*PQRS* 41=Nueva 42=resuelto 50*EVENTOS*  51=pendiente aprobacion 52=aprobado"
         },
         tipoLabel: {
           type: DataTypes.VIRTUAL,
@@ -114,6 +114,10 @@ class NotificacionesModel extends Model {
               case 32:
               case 33:
                 tipoLabel = 'Curso';
+                break;
+              case 41:
+              case 42:
+                tipoLabel = 'Pqrs';
                 break;
               case 51:
               case 52:
@@ -171,7 +175,9 @@ class NotificacionesModel extends Model {
               32: `Tu curso ha sido aceptado por nuestro administrador. ya puedes crear modulos y subir contenido para el curso`,
               33: `Te informamos que se ha postulado un nuevo curso para revisión.`,
               41: `Se ha recibido una nueva PQR.`,
-              42: `¡Respuesta recibida! Revisa la respuesta del administrador a tu PQR`
+              42: `¡Respuesta recibida! Revisa la respuesta del administrador a tu PQR`,
+              51: `Te informamos que se ha postulado un nuevo evento para revisión`,
+              52: `Tu evento ha sido aceptado por nuestro administrador`,
             }
             const state = this.getDataValue('tipo');
             return states[state] ?? '';

@@ -4,7 +4,8 @@ const EventosModel = require('../models/Eventos');
 const { Op, literal } = require('sequelize');
 const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const NotificacionesModel = require('../models/Notificaciones');
 
 class EventosCTR {
   async getEvents(req = request, res = response) {
@@ -104,6 +105,20 @@ class EventosCTR {
           createdBy: contact.id,
           fechaInicio: new Date(fechaInicio)
         }, { transaction: t })
+
+        if (!token.superadmin) {
+          const notificationData = {
+            tipo: 51,
+            idEvento: model.id,
+            userActivo: 1,
+            createdBy: token.id,
+            contactoNombre: contact.nombre,
+            contactoCorreo: contact.email,
+            contactoTelefono: contact.telefono
+          }
+          await NotificacionesModel.create(notificationData, { transaction: t });
+        }
+
 
         await registerKeyData(model.id, nombre, keydata, 'EV');
         return res.status(200).json({ msg: 'success', data: model });
@@ -230,6 +245,15 @@ class EventosCTR {
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún evento', status: 400 });
         const model = await EventosModel.findByPk(id);
         await model.update({ estado: 1, updatedBy: token.id }, { transaction: t });
+
+        const notificationData = {
+          tipo: 52,
+          idUser: model.createdBy,
+          idEvento: model.id,
+          userActivo: 1,
+          createdBy: token.id,
+        }
+        await NotificacionesModel.create(notificationData, { transaction: t });
 
         return res.status(200).json({ msg: 'success' });
       })
