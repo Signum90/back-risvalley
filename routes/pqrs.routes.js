@@ -11,6 +11,12 @@ const pqrsController = new PqrsCTR();
 const customMessages = CustomMessages.getValidationMessages();
 
 router.get("/", Middlewares.validateAdminMiddleware, async (req, res) => await pqrsController.getPQRS(req, res));
+router.get("/:idPqr/detalle", Middlewares.validateAdminMiddleware, [
+  param('idPqr').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('pqr', id)
+    if (!exists) return Promise.reject('Id pqr no válido');
+  }),
+], async (req, res) => await pqrsController.getDetailPQRS(req, res));
 router.post("/", [
   body('pqr').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage(customMessages.length),
   body('tipo').notEmpty().isInt({ min: 1, max: 4 }),

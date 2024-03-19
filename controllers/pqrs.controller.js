@@ -29,6 +29,31 @@ class PqrsCTR {
 
     return res.status(200).json({ msg: 'success', data: pqrs });
   }
+  async getDetailPQRS(req, res) {
+    const id = req.params.idPqr
+
+    const pqrs = await PqrsModel.findOne({
+      attributes: [
+        'id',
+        'pqr',
+        'created_by',
+        'tipo',
+        'userActivo',
+        'estado',
+        'contactoNombre',
+        'contactoCorreo',
+        'contactoTelefono',
+        'tipoLabel',
+        'estadoLabel',
+        'soporte',
+        [literal(`(SELECT CONCAT('${urlFiles}', imagen_soporte))`), 'urlImagenSoporte'],
+        'createdAt',
+      ],
+      where: { id }
+    })
+
+    return res.status(200).json({ msg: 'success', data: pqrs });
+  }
 
   async postPQRS(req, res) {
     return await sequelize.transaction(async (t) => {
