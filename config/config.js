@@ -30,7 +30,7 @@
 const config_db = {
   host: 'localhost',
   username: "cpcoriente_rispark",
-  password: "Rispark_:bd2024",
+  password: "rispark123456",
   database: "cpcoriente_risparkbd",
   dialect: "mysql",
   secret: 'das09df987y3nd0983nfzzqair3fd34',
