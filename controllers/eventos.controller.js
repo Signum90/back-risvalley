@@ -51,7 +51,7 @@ class EventosCTR {
     try {
       const id = req.params.idEvento;
 
-      const event = await EventosModel.findAll({
+      const event = await EventosModel.findOne({
         attributes: [
           'id',
           'nombre',
