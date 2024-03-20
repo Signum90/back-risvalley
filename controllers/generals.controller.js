@@ -27,6 +27,7 @@ class GeneralsCTR {
       return res.status(200).json({ msg: 'success', data });
 
     } catch (error) {
+      console.log("🚀 ~ GeneralsCTR ~ getStadisticsSoftware ~ error:", error)
       throw error;
     }
   }
