@@ -3,9 +3,9 @@
 // #########################################
 const config_db = {
   host: process.env.HOST ?? 'localhost',
-  username: process.env.USERDB ?? "root",
-  password: process.env.PASSDB ?? "",
-  database: process.env.DATABASE ?? "rispark",
+  username: process.env.USERDB ?? "cpcoriente_risparkuser",
+  password: process.env.PASSDB ?? "DB_::risp_2024",
+  database: process.env.DATABASE ?? "cpcoriente_rispark",
   dialect: process.env.DIALECT ?? "mysql",
   secret: process.env.SECRETKEYJWT ?? '',
   urlFiles: `http://${process.env.HOST}:${process.env.PORT}/api/archivos/`,
