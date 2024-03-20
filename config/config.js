@@ -2,10 +2,10 @@
 // ############### CONFIG #################
 // #########################################
 const config_db = {
-  host: process.env.HOST ?? 'vps-202999.cpcoriente.org',
-  username: process.env.USERDB ?? "cpcoriente_risparkuser",
-  password: process.env.PASSDB ?? "DB_::risp_2024",
-  database: process.env.DATABASE ?? "cpcoriente_rispark_bd",
+  host: process.env.HOST ?? 'localhost',
+  username: process.env.USERDB ?? "cpcoriente_rispark",
+  password: process.env.PASSDB ?? "Rispark_:bd2024",
+  database: process.env.DATABASE ?? "cpcoriente_risparkbd",
   dialect: process.env.DIALECT ?? "mysql",
   secret: process.env.SECRETKEYJWT ?? '',
   urlFiles: `http://${process.env.HOST}:${process.env.PORT}/api/archivos/`,
