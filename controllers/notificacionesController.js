@@ -43,7 +43,8 @@ class NotificacionesCTR {
         ],
         where: {
           ...(token.superadmin ? { idUser: null } : { idUser: token.id }),
-          ...(token.superadmin ? {} : { estado: 0 }),
+          //...(token.superadmin ? {} : { estado: 0 }),
+          estado: 0
         },
         order: [['createdAt', 'Desc']],
       })
