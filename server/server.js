@@ -39,6 +39,7 @@ class Server {
       cursos: `${this.endpoint_base}/cursos`,
       cursosEstudiantes: `${this.endpoint_base}/cursos-estudiantes`,
       favoritos: `${this.endpoint_base}/favoritos`,
+      test: `${this.endpoint_base}/test`
     }
     //■► lista blanca:
     this.whitelist = ['http://localhost:80',
@@ -103,6 +104,7 @@ class Server {
     this.app.use(this.endpoints.cursos, require('../routes/cursos.routes'));
     this.app.use(this.endpoints.cursosEstudiantes, require('../routes/cursosEstudiantes.routes'));
     this.app.use(this.endpoints.favoritos, require('../routes/favoritos.routes'));
+    this.app.use(this.endpoints.test, require('../routes/test.routes'));
   }
 
   //■► MET: listen ◄■
