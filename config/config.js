@@ -2,7 +2,7 @@
 // ############### CONFIG #################
 // #########################################
 const config_db = {
-  host: process.env.HOST ?? 'localhost',
+  host: process.env.HOST ?? 'vps-202999.cpcoriente.org',
   username: process.env.USERDB ?? "cpcoriente_risparkuser",
   password: process.env.PASSDB ?? "DB_::risp_2024",
   database: process.env.DATABASE ?? "cpcoriente_rispark_bd",
