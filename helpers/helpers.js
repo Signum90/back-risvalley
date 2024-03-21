@@ -31,6 +31,7 @@ const NotificacionesModel = require('../models/Notificaciones');
 const CursosModel = require('../models/Cursos');
 const CursosEstudiantesModel = require('../models/CursosEstudiantes');
 const FavoritosModel = require('../models/Favoritos');
+const CursosSesionesModel = require('../models/CursosSesiones');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -107,7 +108,8 @@ class Helpers {
         'archivo': BibliotecaModel,
         'curso': CursosModel,
         'notificacion': NotificacionesModel,
-        'favorito': FavoritosModel
+        'favorito': FavoritosModel,
+        'sesion': CursosSesionesModel
       }
       if (!models[model]) return false;
       const register = await models[model].findByPk(id);

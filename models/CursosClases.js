@@ -1,4 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
+const { urlFiles } = require('../config/config');
 
 class CursosClasesModel extends Model {
   static initialize(sequelizeInstace) {
@@ -31,6 +32,13 @@ class CursosClasesModel extends Model {
           type: DataTypes.STRING(120),
           allowNull: false,
           field: 'clase',
+        },
+        urlClase: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            const clase = this.getDataValue('clase');
+            return clase ? `${urlFiles}${clase}` : '/public/img/not_content/not_logo.png'
+          }
         },
         idCursoSesion: {
           type: DataTypes.MEDIUMINT,

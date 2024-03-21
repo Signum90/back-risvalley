@@ -1,4 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
+const CursosClasesModel = require('./CursosClases');
 
 class CursosSesionesModel extends Model {
   static initialize(sequelizeInstace) {
@@ -71,8 +72,8 @@ class CursosSesionesModel extends Model {
         modelName: 'CursosSesiones',
         tableName: 'cursos_sesiones'
       },
-
     )
+    CursosSesiones.hasMany(CursosClasesModel.initialize(sequelizeInstace), { foreignKey: 'id_curso_sesion', as: 'clases' });
     return CursosSesiones;
   }
 }

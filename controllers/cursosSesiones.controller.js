@@ -1,5 +1,5 @@
 const { sequelize } = require('../db/connection');
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 const CursosModel = require('../models/Cursos');
 const CursosSesionesModel = require('../models/CursosSesiones');
 const CursosClasesModel = require('../models/CursosClases');
@@ -11,16 +11,36 @@ class CursosSesionesCTR {
 
       const curso = await CursosModel.findByPk(params.idCurso);
       const estados = token?.superadmin || curso.idUserResponsable == token?.id ? [1, 0] : [1];
-      console.log("🚀 ~ CursosSesionesCTR ~ getSessionsCourse ~ estados:", estados)
 
       const sessions = await CursosSesionesModel.findAll({
-        attributes: ['id', 'descripcion', 'estado', 'nombre'],
+        attributes: [
+          'id',
+          'estado',
+          'nombre',
+          [literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = cursosSesiones.id AND cc.estado = 1)`), 'totalClases']
+        ],
         where: {
           idCurso: params.idCurso,
           estado: {
             [Op.in]: estados
           }
         },
+        include: [{
+          model: CursosClasesModel,
+          as: 'clases',
+          attributes: [
+            'id',
+            'nombre',
+            'descripcion',
+            'estado'
+          ],
+          where: {
+            estado: {
+              [Op.in]: estados
+            }
+          },
+          required: false
+        }],
         order: [['createdAt', 'Desc']],
       },)
 
@@ -34,8 +54,8 @@ class CursosSesionesCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const { token, body } = req;
-        const curso = CursosModel.findByPk(body.idCurso);
-        if (curso.estado == 2) return res.status(400).json({ type: 'error', msg: 'No puedes crear sesiones hasta que un admin apruebe el curso', status: 400 });
+        const curso = await CursosModel.findByPk(body.idCurso);
+        if (curso.estado == 2) return res.status(400).json({ type: 'error', msg: 'No puedes crear sesiones hasta que un administrador apruebe el curso', status: 400 });
         if (curso.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permiso para crear sesiones en este curso', status: 400 });
 
         const postData = {
@@ -58,12 +78,12 @@ class CursosSesionesCTR {
         const { token, params } = req;
 
         const model = await CursosSesionesModel.findByPk(params.idSesion)
-        const curso = CursosModel.findByPk(model.idCurso);
+        const curso = await CursosModel.findByPk(model.idCurso);
         if (curso.idUserResponsable != token.id && !token.superadmin) {
           return res.status(400).json({ type: 'error', msg: 'No tienes permiso para eliminar esta sesión', status: 400 });
         }
 
-        const sessions = CursosClasesModel.findOne({ where: { idCursoSesion: params.idSesion } });
+        const sessions = await CursosClasesModel.findOne({ where: { idCursoSesion: params.idSesion } });
         if (sessions) return res.status(400).json({ type: 'error', msg: 'No puedes eliminar la sesión porque tiene clases creadas', status: 400 });
 
         await model.destroy({ transaction: t });

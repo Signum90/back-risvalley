@@ -105,6 +105,7 @@ class Server {
     this.app.use(this.endpoints.cursosEstudiantes, require('../routes/cursosEstudiantes.routes'));
     this.app.use(this.endpoints.favoritos, require('../routes/favoritos.routes'));
     this.app.use(this.endpoints.test, require('../routes/test.routes'));
+    this.app.use(this.endpoints.cursos, require('../routes/cursosSesiones.routes'));
   }
 
   //■► MET: listen ◄■
