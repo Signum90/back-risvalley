@@ -41,7 +41,11 @@ class CursosSesionesCTR {
           },
           required: false
         }],
-        order: [['createdAt', 'Desc']],
+        order: [
+          ['createdAt', 'ASC'],
+          [{ model: CursosClasesModel, as: 'clases' }, 'createdAt', 'ASC']
+        ]
+
       },)
 
       return res.status(200).json({ msg: 'success', data: sessions });

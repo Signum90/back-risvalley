@@ -14,6 +14,7 @@ class CursosClasesModel extends Model {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'estado',
           allowNull: false,
+          defaultValue: 1,
           comment: "1=Activo, 2=Inactivo"
         },
         nombre: {
