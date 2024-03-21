@@ -11,7 +11,7 @@ const pqrsController = new PqrsCTR();
 const customMessages = CustomMessages.getValidationMessages();
 
 router.get("/", Middlewares.validateAdminMiddleware, async (req, res) => await pqrsController.getPQRS(req, res));
-router.get("/:idPqr/detalle", Middlewares.validateAdminMiddleware, [
+router.get("/:idPqr/detalle", Middlewares.validateJWTMiddleware, [
   param('idPqr').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('pqr', id)
     if (!exists) return Promise.reject('Id pqr no válido');
