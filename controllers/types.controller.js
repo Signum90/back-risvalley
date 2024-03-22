@@ -48,11 +48,11 @@ class TypesCTR {
           { nombre: 'Corporaciones ambientales', clasificacion: 3 },
           { nombre: 'Personas Naturales', clasificacion: 3 },
           { nombre: 'Otros', clasificacion: 3 },
-          { nombre: 'Ciencia', imagen: 'imagen-categoria-ciencia', clasificacion: 4 },
-          { nombre: 'Tecnologia', imagen: 'imagen-categoria-tecnologia', clasificacion: 4 },
-          { nombre: 'Conocimiento especializado', imagen: 'imagen-categoria-especializado', clasificacion: 4 },
-          { nombre: 'Conocimiento común', imagen: 'imagen-categoria-comun', clasificacion: 4 },
-          { nombre: 'Otros', imagen: 'imagen-otros', clasificacion: 4 },
+          { nombre: 'Ciencia', imagen: 'imagen-categoria-ciencia.jpg', clasificacion: 4 },
+          { nombre: 'Tecnologia', imagen: 'imagen-categoria-tecnologia.jpg', clasificacion: 4 },
+          { nombre: 'Conocimiento especializado', imagen: 'imagen-categoria-especializado.jpg', clasificacion: 4 },
+          { nombre: 'Conocimiento común', imagen: 'imagen-categoria-comun.jpg', clasificacion: 4 },
+          { nombre: 'Otros', imagen: 'imagen-otros.jpg', clasificacion: 4 },
         ]
         await XTiposModel.bulkCreate(types, { transaction: t });
 
