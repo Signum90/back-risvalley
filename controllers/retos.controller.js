@@ -151,7 +151,8 @@ class RetosCTR {
           [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'telefonoEntidad'],
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'emailEntidad'],
           [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'logoEntidad'],
-          [literal(`COALESCE( (SELECT 1 FROM favoritos AS f WHERE f.id_reto = idReto AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'favorito']
+          [literal(`COALESCE( (SELECT 1 FROM favoritos AS f WHERE f.id_reto = idReto AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'favorito'],
+          [literal(`COALESCE( (SELECT f.id FROM favoritos AS f WHERE f.id_reto = idReto AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'idFavorito']
 
         ],
         where: {

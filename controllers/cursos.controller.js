@@ -135,7 +135,8 @@ class CursosCTR {
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'emailEntidad'],
           [literal(`(SELECT COUNT(1) FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id)`), 'totalEstudiantes'],
           [literal(`COALESCE((SELECT 1 FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id AND ce.id_user = ${token?.id ?? null} AND ce.estado = 1), 0)`), 'cursoAdquirido'],
-          [literal(`COALESCE((SELECT 1 FROM favoritos AS f WHERE f.id_curso = cursos.id AND f.id_user = ${token?.id ?? null}), 0)`), 'favorito']
+          [literal(`COALESCE((SELECT 1 FROM favoritos AS f WHERE f.id_curso = cursos.id AND f.id_user = ${token?.id ?? null}), 0)`), 'favorito'],
+          [literal(`COALESCE((SELECT f.id FROM favoritos AS f WHERE f.id_curso = cursos.id AND f.id_user = ${token?.id ?? null}), 0)`), 'idFavorito']
         ],
         where: {
           id

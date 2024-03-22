@@ -82,7 +82,8 @@ class BibliotecaController {
           'urlImagen',
           'createdAt',
           [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
-          [literal(`COALESCE( (SELECT 1 FROM favoritos AS f WHERE f.id_biblioteca = biblioteca.id AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'favorito']
+          [literal(`COALESCE( (SELECT 1 FROM favoritos AS f WHERE f.id_biblioteca = biblioteca.id AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'favorito'],
+          [literal(`COALESCE( (SELECT f.id FROM favoritos AS f WHERE f.id_biblioteca = biblioteca.id AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'idFavorito']
         ],
         where: { id },
       })
