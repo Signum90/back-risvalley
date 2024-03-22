@@ -91,7 +91,7 @@ class NotificacionesModel extends Model {
           type: DataTypes.TINYINT.UNSIGNED,
           field: 'tipo',
           allowNull: false,
-          comment: "10*s=*SERVICIOS* 11=contacto 12=aprobado 13=pendiente aprobacion 20*s=*RETOS TECNOLOGICOS* 21=postulacion 22=aprobado 23=pendiente aprobacion 24=correpcion 30*s=*CURSOS* 31=inscripcion 32=aprobado 33=pendiente aprobación 40*PQRS* 41=Nueva 42=resuelto 50*EVENTOS*  51=pendiente aprobacion 52=aprobado"
+          comment: "10*s=*SERVICIOS* 11=contacto 12=aprobado 13=pendiente aprobacion 20*s=*RETOS TECNOLOGICOS* 21=postulacion 22=aprobado 23=pendiente aprobacion 24=correpcion 25=aspirante elegido 30*s=*CURSOS* 31=inscripcion 32=aprobado 33=pendiente aprobación 40*PQRS* 41=Nueva 42=resuelto 50*EVENTOS*  51=pendiente aprobacion 52=aprobado"
         },
         tipoLabel: {
           type: DataTypes.VIRTUAL,
@@ -170,7 +170,8 @@ class NotificacionesModel extends Model {
               21: `${nombre} se postulo a tu reto, puedes contactar con el a traves del siguiente correo electronico ${correo} o al siguiente telefono ${telefono}`,
               22: `Tu reto tecnologico ha sido aceptado por nuestro administrador.`,
               23: `Te informamos que se ha postulado un nuevo reto tecnologico para revisión.`,
-              24: `${nombre} ha revisado con atención tu solicitud para participar en nuestro reto tecnologico y quisiera solicitarte algunas mejoras:`, //pendiente
+              24: `${nombre} ha revisado con atención tu solicitud para participar en nuestro reto tecnologico y quisiera solicitarte algunas mejoras:`,
+              25: `Tu propuesta para asumir el reto tecnologico ha sido aceptado por su postulante, puedes contactar con él a traves del siguiente correo electronico ${correo} o al siguiente telefono ${telefono}`,
               31: `${nombre} se ha matriculado en tu curso, puedes contactar con el a traves del siguiente correo electronico ${correo} o al siguiente telefono: ${telefono}`,
               32: `Tu curso ha sido aceptado por nuestro administrador. ya puedes crear modulos y subir contenido para el curso`,
               33: `Te informamos que se ha postulado un nuevo curso para revisión.`,

@@ -82,6 +82,30 @@ class RetosAspirantesCTR {
       throw e
     }
   }
+
+  async chooseAplicant(req, res) {
+    try {
+      const { token, params } = req;
+
+      const idPostulation = params.idRetoAspirante;
+      const model = await RetosAspirantesModel.findByPk(idPostulation);
+
+      const challenge = await RetosTecnologicosModel.findOne({
+        where: { id: model.idReto }
+      })
+      if (challenge.idUserEntidad != token.id) return res.status(400).json({ type: 'error', msg: 'No tienes permiso para elegir aspirantes en este reto', status: 400 });
+
+      const updateMasive = await sequelize.transaction(async (t) => {
+        await RetosAspirantesModel.update({ aspiranteelegido: 0 }, {
+          where: { idReto: challenge.id }
+        })
+      })
+
+
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 //■► EXPORTAR:  ◄■:

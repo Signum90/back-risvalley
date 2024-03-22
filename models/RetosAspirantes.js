@@ -2,7 +2,6 @@
 const { DataTypes, Model } = require('sequelize');
 const UsersModel = require('./Users');
 const { urlFiles } = require('../config/config');
-const RetosTecnologicosModel = require('./RetosTecnologicos');
 
 class RetosAspirantesModel extends Model {
   static initialize(sequelizeInstace) {
@@ -45,6 +44,13 @@ class RetosAspirantesModel extends Model {
             const ficha = this.getDataValue('fichaTecnica');
             return ficha ? `${urlFiles}${ficha}` : null
           }
+        },
+        aspiranteElegido: {
+          type: DataTypes.TINYINT.UNSIGNED,
+          field: 'aspirante_elegido',
+          allowNull: false,
+          defaultValue: 0,
+          comment: "0=no 1=si"
         },
         createdBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
