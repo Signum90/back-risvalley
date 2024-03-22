@@ -84,9 +84,9 @@ class FavoritosCTR {
           idUser: token.id,
           createdBy: token.id
         }
-        await FavoritosModel.create(postData, { transaction: t })
+        const model = await FavoritosModel.create(postData, { transaction: t })
 
-        return res.status(200).json({ msg: 'success', data: true });
+        return res.status(200).json({ msg: 'success', data: model });
       })
     } catch (error) {
       throw error;
