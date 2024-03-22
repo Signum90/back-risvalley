@@ -13,6 +13,8 @@ class RetosAspirantesCTR {
         attributes: [
           'id', 'idUserAspirante', 'idReto', 'urlFichaTecnica', 'fichaTecnica', 'createdAt',
           [col('aspirante.nombre'), 'nombreAspirante'],
+          [col('aspirante.telefono'), 'telefonoAspirante'],
+          [col('aspirante.email'), 'emailAspirante'],
         ],
         where: {
           idReto: req.params.idReto
