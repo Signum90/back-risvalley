@@ -1,10 +1,11 @@
 const RetosAspirantesModel = require('../models/RetosAspirantes');
 const { sequelize } = require('../db/connection');
-const { col } = require('sequelize');
+const { col, literal } = require('sequelize');
 const { deleteFile } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
 const NotificacionesModel = require('../models/Notificaciones');
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
+const { urlFiles } = require('../config/config');
 
 class RetosAspirantesCTR {
   async getCandidatesChallenge(req, res) {
@@ -95,13 +96,54 @@ class RetosAspirantesCTR {
       })
       if (challenge.idUserEntidad != token.id) return res.status(400).json({ type: 'error', msg: 'No tienes permiso para elegir aspirantes en este reto', status: 400 });
 
-      const updateMasive = await sequelize.transaction(async (t) => {
-        await RetosAspirantesModel.update({ aspiranteelegido: 0 }, {
+      await sequelize.transaction(async (t) => {
+        await RetosAspirantesModel.update({ aspiranteElegido: 0 }, {
           where: { idReto: challenge.id }
-        })
+        }, { transaction: t })
       })
 
+      await sequelize.transaction(async (t) => {
+        await challenge.update({ aspiranteElegido: 1 }, { transaction: t });
+      })
 
+      return res.status(200).json({ msg: 'success', data: true });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getMyCandidacy(req, res) {
+    try {
+      const { token } = req;
+
+      const challenges = await RetosTecnologicosModel.findAll({
+        attributes: [
+          'id',
+          ['id', 'idReto'],
+          'nombre',
+          'descripcion',
+          'estado',
+          'keydata',
+          'estadoLabel',
+          'fechaInicioConvocatoria',
+          'fechaFinConvocatoria',
+          'fichaTecnica',
+          'idUserEntidad',
+          'urlFichaTecnica',
+          [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)`), 'recursoMultimedia'],
+          [literal('(SELECT rm.tipo FROM recursos_multimedia AS rm WHERE rm.id = id_recurso_multimedia)'), 'tipoRecursoMultimedia'],
+          [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'nombreEntidad'],
+          [literal(`(SELECT 1 FROM retos_aspirantes AS ra WHERE ra.id_reto = idReto AND ra.id_user_aspirante = ${token.id})`), 'postulacion']
+        ],
+        where: {
+          estado: 1
+        },
+        raw:true
+      })
+
+      const data = challenges.filter((e) => e.postulacion == 1)
+
+      return res.status(200).json({ msg: 'success', data });
     } catch (error) {
       throw error;
     }

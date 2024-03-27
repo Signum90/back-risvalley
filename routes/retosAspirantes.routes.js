@@ -10,6 +10,7 @@ const retosAspirantesController = new RetosAspirantesCTR();
 
 //■► RUTEO: ===================================== ◄■:
 router.get("/:idReto/aspirantes", Middlewares.validateJWTMiddleware, async (req, res) => await retosAspirantesController.getCandidatesChallenge(req, res));
+router.get("/aspiraciones", Middlewares.validateJWTMiddleware, async (req, res) => await retosAspirantesController.getMyCandidacy(req, res));
 
 router.post("/aspirantes/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('fichaTecnica'), [
   check('fichaTecnica').custom(async (ficha, { req }) => {
