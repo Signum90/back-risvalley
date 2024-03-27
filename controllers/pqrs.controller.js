@@ -7,6 +7,11 @@ const NotificacionesModel = require('../models/Notificaciones');
 
 class PqrsCTR {
   async getPQRS(req, res) {
+
+    const { page } = req.query;
+    const paginate = page ?? 1;
+    const pageSize = 10;
+
     const pqrs = await PqrsModel.findAll({
       attributes: [
         'id',
@@ -25,9 +30,12 @@ class PqrsCTR {
         'createdAt',
       ],
       order: [['estado', 'Asc']],
+      offset: (paginate - 1) * pageSize,
+      limit: pageSize
     })
+    const count = await PqrsModel.count();
 
-    return res.status(200).json({ msg: 'success', data: pqrs });
+    return res.status(200).json({ msg: 'success', data: pqrs, total:count });
   }
   async getDetailPQRS(req, res) {
     const id = req.params.idPqr
