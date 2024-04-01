@@ -21,6 +21,7 @@ class FavoritosCTR {
           model: ServiciosTecnologicosModel, as: 'servicio', attributes: [
             'id',
             'nombre',
+            'descripcion',
             [literal(`(SELECT CONCAT('${urlFiles}', servicio.imagen))`), 'imagen'],
             [literal('(SELECT x.nombre FROM x_tipos AS x WHERE x.id = servicio.id_tipo_servicio)'), 'tipoServicio'],
           ], required: false
@@ -29,6 +30,8 @@ class FavoritosCTR {
           model: RetosTecnologicosModel, as: 'reto', attributes: [
             'id',
             'nombre',
+            'descripcion',
+            [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = reto.id_recurso_multimedia)`), 'recursoMultimedia'],
             'fechaInicioConvocatoria',
             'fechaFinConvocatoria'
           ], required: false
@@ -37,6 +40,7 @@ class FavoritosCTR {
           model: CursosModel, as: 'curso', attributes: [
             'id',
             'nombre',
+            'descripcion',
             [literal(`(SELECT CONCAT('${urlFiles}', curso.imagen))`), 'imagen'],
             [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = curso.id_tipo_categoria)`), 'categoria'],
           ], required: false
@@ -45,6 +49,8 @@ class FavoritosCTR {
           model: BibliotecaModel, as: 'biblioteca', attributes: [
             'id',
             'nombre',
+            'autor',
+            'descripcion',
             [literal(`(SELECT CONCAT('${urlFiles}', biblioteca.imagen))`), 'imagen'],
             [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = biblioteca.id_tipo_categoria)`), 'categoria'],
           ], required: false
