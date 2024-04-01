@@ -18,16 +18,14 @@ class CursosClasesModel extends Model {
           comment: "1=Activo, 2=Inactivo"
         },
         nombre: {
-          type: DataTypes.STRING(50),
+          type: DataTypes.STRING(120),
           allowNull: false,
-          field: 'nombre',
-          unique: 'nombre'
+          field: 'nombre'
         },
         descripcion: {
           type: DataTypes.STRING(250),
           allowNull: false,
           field: 'descripcion',
-          unique: 'descripcion'
         },
         clase: {
           type: DataTypes.STRING(120),

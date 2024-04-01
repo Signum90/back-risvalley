@@ -23,6 +23,8 @@ class MulterConfig {
           'image/png',
           'video/mp4',
           'video/mpeg',
+          'video/x-msvideo',
+          'video/x-matroska',
           'application/pdf',
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

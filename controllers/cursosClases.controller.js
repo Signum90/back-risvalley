@@ -6,8 +6,10 @@ const CursosSesionesModel = require('../models/CursosSesiones');
 const { deleteFile } = require('../helpers/helpers');
 
 class CursosClasesCTR {
-  async getClassDetail() {
+  async getClassDetail(req, res) {
     try {
+      const id = req.params.idClase
+
       const classDetail = await CursosClasesModel.findOne({
         attributes: [
           'id',

@@ -32,6 +32,7 @@ const CursosModel = require('../models/Cursos');
 const CursosEstudiantesModel = require('../models/CursosEstudiantes');
 const FavoritosModel = require('../models/Favoritos');
 const CursosSesionesModel = require('../models/CursosSesiones');
+const CursosClasesModel = require('../models/CursosClases');
 
 //■► CLASE: Helpers de Datos ◄■:
 class Helpers {
@@ -109,7 +110,8 @@ class Helpers {
         'curso': CursosModel,
         'notificacion': NotificacionesModel,
         'favorito': FavoritosModel,
-        'sesion': CursosSesionesModel
+        'sesion': CursosSesionesModel,
+        'clase': CursosClasesModel
       }
       if (!models[model]) return false;
       const register = await models[model].findByPk(id);
@@ -160,6 +162,8 @@ class Helpers {
           'image/jpeg': 1,
           'video/mp4': 2,
           'video/mpeg': 2,
+          'video/x-msvideo': 2,
+          'video/x-matroska': 2,
           'application/pdf': 3,
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 4,
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 5
