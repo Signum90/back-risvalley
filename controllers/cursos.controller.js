@@ -8,6 +8,7 @@ const NotificacionesModel = require('../models/Notificaciones');
 const EntidadesModel = require('../models/Entidades');
 const CursosEstudiantesModel = require('../models/CursosEstudiantes');
 const CursosSesionesModel = require('../models/CursosSesiones');
+const CursosClasesModel = require('../models/CursosClases');
 
 class CursosCTR {
   async getCourses(req, res) {
@@ -154,7 +155,19 @@ class CursosCTR {
           where: {
             estado: 1
           },
-          required: false
+          required: false,
+          include: [{
+            model: CursosClasesModel,
+            as: 'clases',
+            attributes: [
+              'id',
+              'nombre'
+            ],
+            where: {
+              estado: 1
+            },
+            required: false
+          }],
         }],
       })
 
