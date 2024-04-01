@@ -15,7 +15,7 @@ class CursosClasesModel extends Model {
           field: 'estado',
           allowNull: false,
           defaultValue: 1,
-          comment: "1=Activo, 2=Inactivo"
+          comment: "0=Inactivo 1=Activo"
         },
         nombre: {
           type: DataTypes.STRING(120),

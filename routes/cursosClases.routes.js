@@ -14,7 +14,15 @@ router.post("/", Middlewares.validateJWTMiddleware,
   MulterConfig.upload.single('file'),
   ClasesValidator.postClassValidator,
   async (req, res) => await cursosClasesController.postClassCourse(req, res));
-//router.put()
-
+router.put("/:idClase/update", Middlewares.validateJWTMiddleware,
+  ClasesValidator.updateFieldClass,
+  async (req, res) => await cursosClasesController.putFieldClassCourse(req, res));
+router.put("/:idClase/update-file", Middlewares.validateJWTMiddleware,
+  MulterConfig.upload.single('file'),
+  ClasesValidator.updateFileValidator,
+  async (req, res) => await cursosClasesController.putFileClassCourse(req, res));
+router.delete("/:idClase/eliminar", Middlewares.validateJWTMiddleware,
+  ClasesValidator.validateIdClass,
+  async (req, res) => await cursosClasesController.deleteClassCourse(req, res));
 
 module.exports = router;

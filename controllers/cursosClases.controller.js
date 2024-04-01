@@ -55,17 +55,17 @@ class CursosClasesCTR {
   async putFieldClassCourse(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { token, body } = req;
+        const { token, body, params } = req;
         const { campo, value } = body;
-
-        const permission = await CursosClasesCTR.validateCoursePropiety(body.idCursoSesion, token);
+        const clase = await CursosClasesModel.findByPk(params.idClase);
+        const permission = await CursosClasesCTR.validateCoursePropiety(clase.idCursoSesion, token);
         if (!permission) return res.status(400).json({ type: 'error', msg: 'No tienes permiso para editar esta clase', status: 400 });
         const postData = {
           [campo]: value,
           updatedBy: token.id
         }
 
-        await CursosClasesModel.update(postData, { transaction: t });
+        await clase.update(postData, { transaction: t });
         return res.status(200).json({ msg: 'success', data: true });
       })
     } catch (error) {
@@ -76,12 +76,12 @@ class CursosClasesCTR {
   async putFileClassCourse(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
-        const { file, token, body, params } = req;
-
-        const permission = await CursosClasesCTR.validateCoursePropiety(body.idCursoSesion, token);
-        if (!permission) return res.status(400).json({ type: 'error', msg: 'No tienes permiso para editar esta clase', status: 400 });
+        const { file, token, params } = req;
 
         const classCourse = await CursosClasesModel.findByPk(params.idClase);
+        const permission = await CursosClasesCTR.validateCoursePropiety(classCourse.idCursoSesion, token);
+        if (!permission) return res.status(400).json({ type: 'error', msg: 'No tienes permiso para editar esta clase', status: 400 });
+
         const fileToDelete = classCourse?.clase;
 
         await classCourse.update({
@@ -106,18 +106,18 @@ class CursosClasesCTR {
       return await sequelize.transaction(async (t) => {
         const { token, params } = req;
 
-        const permission = await CursosClasesCTR.validateCoursePropiety(params.idCursoSesion, token);
+        const model = await CursosClasesModel.findByPk(params.idClase);
+        const permission = await CursosClasesCTR.validateCoursePropiety(model.idCursoSesion, token);
         if (!permission) return res.status(400).json({ type: 'error', msg: 'No tienes permiso para eliminar esta clase', status: 400 });
 
-        const model = await CursosClasesModel.findByPk(params.idCursoSesion);
-        const fileToDelete = classCourse?.clase;
-        await model.delete({ transaction: t })
+        const fileToDelete = model?.clase;
+        await model.destroy({ transaction: t })
         if (fileToDelete) {
           deleteFile(fileToDelete, (err) => {
             if (err) console.log("🚀 ~ CursosClasesCTR ~ deleteFile ~ err:", err)
           })
         }
-
+        return res.status(200).json({ msg: 'success', data: true });
       })
     } catch (error) {
       throw error;
