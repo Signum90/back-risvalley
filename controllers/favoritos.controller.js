@@ -32,6 +32,7 @@ class FavoritosCTR {
             'nombre',
             'descripcion',
             [literal(`(SELECT CONCAT('${urlFiles}', rm.recurso) FROM recursos_multimedia AS rm WHERE rm.id = reto.id_recurso_multimedia)`), 'recursoMultimedia'],
+            [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = reto.id_user_entidad)`), 'nombreEntidad'],
             'fechaInicioConvocatoria',
             'fechaFinConvocatoria'
           ], required: false
