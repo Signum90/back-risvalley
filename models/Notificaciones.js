@@ -108,6 +108,7 @@ class NotificacionesModel extends Model {
               case 22:
               case 23:
               case 24:
+              case 25:
                 tipoLabel = 'Reto';
                 break;
               case 31:

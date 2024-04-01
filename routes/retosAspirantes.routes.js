@@ -25,6 +25,14 @@ router.post("/aspirantes/create", Middlewares.validateJWTMiddleware, multerConfi
   Middlewares.scan_errors
 ], async (req, res) => await retosAspirantesController.saveCandidateChallenge(req, res))
 
+router.put("/aspirantes/:idRetoAspirante/seleccionar", Middlewares.validateJWTMiddleware, [
+  param('idRetoAspirante').notEmpty().isInt().custom(async (id) => {
+    const exists = await validateExistId('retoAspirante', id)
+    if (!exists) return Promise.reject('Id no válido');
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await retosAspirantesController.chooseAplicant(req, res));
+
 router.delete("/aspirantes/:idRetoAspirante/delete", [
   param('idRetoAspirante').notEmpty().isInt().custom(async (id) => {
     const exists = await validateExistId('retoAspirante', id)

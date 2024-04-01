@@ -90,10 +90,10 @@ class RetosAspirantesCTR {
 
       const idPostulation = params.idRetoAspirante;
       const model = await RetosAspirantesModel.findByPk(idPostulation);
-
       const challenge = await RetosTecnologicosModel.findOne({
         where: { id: model.idReto }
       })
+      const user = await UsersModel.findByPk(challenge.idUserEntidad)
       if (challenge.idUserEntidad != token.id) return res.status(400).json({ type: 'error', msg: 'No tienes permiso para elegir aspirantes en este reto', status: 400 });
 
       await sequelize.transaction(async (t) => {
@@ -103,7 +103,21 @@ class RetosAspirantesCTR {
       })
 
       await sequelize.transaction(async (t) => {
-        await challenge.update({ aspiranteElegido: 1 }, { transaction: t });
+        await model.update({ aspiranteElegido: 1 }, { transaction: t });
+      })
+
+      const notificationData = {
+        tipo: 25,
+        idReto: challenge.id,
+        userActivo: 1,
+        idUser: model.idUserAspirante,
+        createdBy: token.id,
+        contactoNombre: user.nombre,
+        contactoCorreo: user.email,
+        contactoTelefono: user.telefono
+      }
+      await sequelize.transaction(async (t) => {
+        await NotificacionesModel.create(notificationData, { transaction: t });
       })
 
       return res.status(200).json({ msg: 'success', data: true });
@@ -138,7 +152,7 @@ class RetosAspirantesCTR {
         where: {
           estado: 1
         },
-        raw:true
+        raw: true
       })
 
       const data = challenges.filter((e) => e.postulacion == 1)

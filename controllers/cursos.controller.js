@@ -158,6 +158,7 @@ class CursosCTR {
         }],
       })
 
+      let estudiantes;
       if (token?.superadmin || course.createdBy == token?.id) {
         const students = await CursosEstudiantesModel.findAll({
           attributes: [
@@ -166,10 +167,10 @@ class CursosCTR {
             [literal(`(SELECT u.nombre FROM users AS u WHERE idUser = u.id)`), 'nombreEstudiante']
           ]
         })
-        //course = students
+        estudiantes = students
       }
 
-      return res.status(200).json({ data: course, msg: 'success' });
+      return res.status(200).json({ data: course, estudiantes: estudiantes ?? undefined, msg: 'success', });
     } catch (error) {
       throw error;
     }
