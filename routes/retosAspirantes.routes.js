@@ -4,7 +4,7 @@ const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
 const RetosAspirantesCTR = require('../controllers/retosAspirantes.controller');
-const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
+const { validateExistId, validateFieldUnique, validateFieldUnique2 } = require('../helpers/helpers');
 
 const retosAspirantesController = new RetosAspirantesCTR();
 
@@ -18,7 +18,7 @@ router.post("/aspirantes/create", Middlewares.validateJWTMiddleware, multerConfi
   }),
   check('idReto').notEmpty().isInt().custom(async (id, { req }) => {
     const exists = await validateExistId('reto', id)
-    const unique = await validateFieldUnique('retoAspirante', 'id_reto', id, null, 'id_user_aspirante', req.token.id)
+    const unique = await validateFieldUnique('retoAspirante', { 'id_reto': id, 'id_user_aspirante': req.token.id })
     if (!exists) return Promise.reject('Id reto no válido');
     if (unique) return Promise.reject('El aspirante ya se encuentra registrado');
   }),

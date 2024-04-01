@@ -122,36 +122,24 @@ class Helpers {
       throw error;
     }
   }
-  //■► MET: Validar si un campo tiene un registro duplicado o ya existe un registro para ese valor ◄■:
-  async validateFieldUnique(model, campo, value, id = null, campo2 = null, value2 = null) {
+
+  async validateFieldUnique(model, condicion, id = null) {
     let exists = null
+    const models = {
+      'entidad': EntidadesModel,
+      'retoAspirante': RetosAspirantesModel,
+      'user': UsersModel,
+      'cursoEstudiante': CursosEstudiantesModel,
+      'favorito': FavoritosModel,
+    }
     const condition = {
-      [campo]: value,
       ...(id ? { id: { [Op.not]: id } } : {}),
-      ...(campo2 && value2 ? { [campo2]: value2 } : {})
+      ...condicion
     }
-    switch (model) {
-      case 'entidad':
-        exists = await EntidadesModel.findOne({ where: condition })
-        break;
-      case 'retoAspirante':
-        exists = await RetosAspirantesModel.findOne({ where: condition })
-        break;
-      case 'user':
-        exists = await UsersModel.findOne({ where: condition })
-        break;
-      case 'cursoEstudiante':
-        exists = await CursosEstudiantesModel.findOne({ where: condition })
-        break;
-      case 'favorito':
-        exists = await FavoritosModel.findOne({ where: condition })
-        break;
-      default:
-        exists = false;
-        break;
-    }
+    exists = await models[model].findOne({ where: condition })
     if (!exists) return false;
     return true;
+
   }
 
   async saveResourceMultimedia(file, createdBy) {

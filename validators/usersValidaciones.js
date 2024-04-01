@@ -5,7 +5,7 @@ const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
 
 class UsersValidator {
   static async validateUniqueEmail(email) {
-    const exists = await validateFieldUnique('user', 'email', email)
+    const exists = await validateFieldUnique('user', { 'email': email })
     if (exists) return Promise.reject('El correo electronico ya se encuentra registrado');
   }
   static async validateIdUserExists(id) {
@@ -88,7 +88,7 @@ class UsersValidator {
         .isLength({ max: 120 }).withMessage('El nombre de la entidad debe tener como máximo 120 caracteres').custom(async (nombre, { req }) => {
           if (req.body.tipo != 1) {
             if (!nombre) return Promise.reject('El nombre de la entidad es obligatorio');
-            const exists = await validateFieldUnique('entidad', 'nombre', nombre)
+            const exists = await validateFieldUnique('entidad', { 'nombre': nombre })
             if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
           }
         }),

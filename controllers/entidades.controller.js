@@ -140,7 +140,7 @@ class EntidadesCTR {
         if (!validateKeyData) return res.status(400).json({ type: 'error', msg: 'El identificador no concuerda con ningún usuario registrado', status: 400 });
 
         if (campo == 'nombre') {
-          const exists = await validateFieldUnique('entidad', 'nombre', value, id)
+          const exists = await validateFieldUnique('entidad', { 'nombre': value }, id)
           if (exists) return res.status(400).json({ type: 'error', msg: 'Ya existe una entidad con ese nombre', status: 400 });
         }
         const updateData = {

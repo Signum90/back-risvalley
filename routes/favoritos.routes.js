@@ -24,7 +24,7 @@ router.post("/", Middlewares.validateJWTMiddleware, [
     const exists = await validateExistId(word.word, id)
     if (!exists) return Promise.reject(`Id ${word.word} no válido`);
 
-    const unique = await validateFieldUnique('favorito', 'idUser', req.token.id, null, word.key, id)
+    const unique = await validateFieldUnique('favorito', { 'idUser': req.token.id, [word.key]: id })
     if (unique) return Promise.reject(`El ${word.word} ya hace parte de tus favoritos`)
 
   }),
