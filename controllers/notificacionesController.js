@@ -34,8 +34,8 @@ class NotificacionesCTR {
           'createdAt',
           'tipoLabel',
           [literal(`COALESCE(
-            (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = idReto),
-            (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = idReto),
+            (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = notificaciones.id_servicio),
+            (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = notificaciones.id_reto),
             (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante),
             (SELECT c.nombre FROM cursos AS c WHERE c.id = idCurso),
             (SELECT e.nombre FROM eventos AS e WHERE e.id = idEvento)
@@ -69,7 +69,6 @@ class NotificacionesCTR {
           createdAt,
           tipoLabel,
           idEvento,
-          nombre
         } = element;
 
         let keydata;
@@ -89,7 +88,7 @@ class NotificacionesCTR {
           notificacion,
           comentario,
           createdAt,
-          nombre,
+          nombre: element?.dataValues?.nombre,
         })
       }
       return res.status(200).json({ data, msg: 'success' });
