@@ -6,7 +6,7 @@ const { validateExistId, validateFieldUnique } = require('../helpers/helpers');
 class EntidadesValidator {
 
   static async validateUniqueName(nombre) {
-    const exists = await validateFieldUnique('entidad', 'nombre', nombre);
+    const exists = await validateFieldUnique('entidad', { 'nombre': nombre });
     if (exists) return Promise.reject('Ya existe una entidad con ese nombre');
   }
 
