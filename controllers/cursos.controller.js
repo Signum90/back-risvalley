@@ -36,7 +36,7 @@ class CursosCTR {
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'emailEntidad'],
         ],
         where: {
-          ...(token && token.superadmin ? {} : { estado: 1 }),
+          ...(token && token.superadmin ? {} : token && !token.superadmin ? { estado: { [Op.in]: [0, 1] } } : { estado: 1 }),
           ...(token && !token.superadmin ? { idUserResponsable: token.id } : {}),
           ...(nombre ? {
             [Op.or]: [
@@ -53,7 +53,7 @@ class CursosCTR {
 
       const count = await CursosModel.count({
         where: {
-          ...(token && token.superadmin ? {} : { estado: 1 }),
+          ...(token && token.superadmin ? {} : token && !token.superadmin ? { estado: { [Op.in]: [0, 1] } } : { estado: 1 }),
           ...(token && !token.superadmin ? { idUserResponsable: token.id } : {}),
           ...(nombre ? {
             [Op.or]: [
