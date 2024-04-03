@@ -20,12 +20,12 @@ router.get("/:idPqr/detalle", Middlewares.validateJWTMiddleware, [
 ], async (req, res) => await pqrsController.getDetailPQRS(req, res));
 router.post("/", [
   body('pqr').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage(customMessages.length),
-  body('tipo').notEmpty().isInt({ min: 1, max: 4 }),
+  body('tipo').notEmpty().isInt({ min: 1, max: 5 }),
   Middlewares.scan_errors
 ], Middlewares.validateJWTMiddleware, async (req, res) => await pqrsController.postPQRS(req, res));
 router.post("/invitado", [
   body('pqr').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage(customMessages.length),
-  body('tipo').notEmpty().isInt({ min: 1, max: 4 }),
+  body('tipo').notEmpty().isInt({ min: 1, max: 5 }),
   body('nombre').trim().notEmpty().withMessage(customMessages.required)
     .isString().isLength({ max: 120 }).withMessage('El campo nombre debe tener como máximo 120 caracteres'),
   body('email').trim().notEmpty().withMessage(customMessages.required)
