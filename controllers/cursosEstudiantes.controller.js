@@ -34,6 +34,11 @@ class CursosEstudiantesCTR {
         const { token, params } = req;
 
         const model = await CursosEstudiantesModel.findByPk(params.idEstudianteCurso);
+        const curso = await CursosModel.findByPk(model.idCurso);
+        if (curso.idUserResponsable != token.id && !token.superadmin && token.id != params.idEstudianteCurso) {
+          return res.status(400).json({ type: 'error', msg: 'No tienes permiso editar el estado del estudiante', status: 400 });
+        }
+
         const updateData = {
           estado: file.estado ? 0 : 1,
           updatedBy: token.id
