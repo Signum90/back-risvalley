@@ -8,19 +8,20 @@ const config_db = {
   database: process.env.DATABASE ?? "rispark",
   dialect: process.env.DIALECT ?? "mysql",
   secret: process.env.SECRETKEYJWT ?? '',
-  urlFiles: `https://risparkapi.cpcoriente.org/api/archivos/`,
+  urlFiles: `https://api.rispark.com.co/api/archivos/`,
   email: {
     smtp: {
-      service: 'gmail',
-      host: 'smtp.gmail.com' ?? process.env.MAIL_HOST,
-      port: 587 ?? process.env.MAIL_PORT,
-      secure: false,
+      //service: 'gmail',
+      //host: 'smtp.gmail.com' ?? process.env.MAIL_HOST,
+      host: 'mail.rispark.com.co', // Dirección del servidor SMTP de cPanel
+      port: 465,
+      secure: true,
       auth: {
-        user: 'juan.martinez@cpcoriente.org' ?? process.env.MAIL_USERNAME,
-        pass: 'bjif ptby kwao djml' ?? process.env.MAIL_PASSWORD,
+        user: 'info@rispark.com.co' ?? process.env.MAIL_USERNAME,
+        pass: 'em_::rispark2024' ?? process.env.MAIL_PASSWORD,
       },
     },
-    from: process.env.EMAIL_FROM,
+    from: 'info@rispark.com.co' ?? process.env.EMAIL_FROM,
   },
   url: {
     urlFront: process.env.APP_URL

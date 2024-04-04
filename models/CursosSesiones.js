@@ -21,7 +21,6 @@ class CursosSesionesModel extends Model {
           type: DataTypes.STRING(50),
           allowNull: false,
           field: 'nombre',
-          unique: 'nombre'
         },
         idCurso: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
