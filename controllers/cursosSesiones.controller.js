@@ -105,7 +105,8 @@ class CursosSesionesCTR {
         const { campo, value } = body
 
         const model = await CursosSesionesModel.findByPk(params.idSesion)
-        if (model.idUserResponsable != token.id && !token.superadmin) {
+        const curso = await CursosModel.findByPk(model.idCurso);
+        if (curso.idUserResponsable != token.id && !token.superadmin) {
           return res.status(400).json({ type: 'error', msg: 'No tienes permiso para editar esta sesión', status: 400 });
         }
         const updateData = {
