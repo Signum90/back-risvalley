@@ -41,7 +41,7 @@ class CursosEstudiantesCTR {
         }
 
         const updateData = {
-          estado: file.estado ? 0 : 1,
+          estado: model.estado ? 0 : 1,
           updatedBy: token.id
         }
         await model.update(updateData, { transaction: t })
