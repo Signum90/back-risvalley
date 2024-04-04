@@ -32,10 +32,11 @@ class CursosEstudiantesCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const { token, params } = req;
+        console.log("🚀 ~ CursosEstudiantesCTR ~ returnawaitsequelize.transaction ~ token:", token)
 
-        const model = await CursosEstudiantesModel.findByPk(params.idEstudianteCurso);
+        const model = await CursosEstudiantesModel.findByPk(params.idCursoEstudiante);
         const curso = await CursosModel.findByPk(model.idCurso);
-        if (curso.idUserResponsable != token.id && !token.superadmin && token.id != params.idEstudianteCurso) {
+        if (curso.idUserResponsable != token.id && !token.superadmin && token.id != params.idCursoEstudiante) {
           return res.status(400).json({ type: 'error', msg: 'No tienes permiso editar el estado del estudiante', status: 400 });
         }
 

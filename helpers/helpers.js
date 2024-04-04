@@ -111,7 +111,8 @@ class Helpers {
         'notificacion': NotificacionesModel,
         'favorito': FavoritosModel,
         'sesion': CursosSesionesModel,
-        'clase': CursosClasesModel
+        'clase': CursosClasesModel,
+        'estudiante': CursosEstudiantesModel
       }
       if (!models[model]) return false;
       const register = await models[model].findByPk(id);

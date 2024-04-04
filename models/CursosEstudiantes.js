@@ -4,6 +4,11 @@ class CursosEstudiantesModel extends Model {
   static initialize(sequelizeInstace) {
     const CursosEstudiantes = super.init(
       {
+        id: {
+          type: DataTypes.MEDIUMINT,
+          primaryKey: true,
+          autoIncrement: true
+        },
         idCurso: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: false,

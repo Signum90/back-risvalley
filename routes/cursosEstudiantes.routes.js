@@ -21,8 +21,8 @@ router.post('/adquirir', Middlewares.validateJWTMiddleware, [
 
 router.put('/:idCursoEstudiante/update-estado', Middlewares.validateJWTMiddleware, [
   param('idCursoEstudiante').trim().notEmpty().withMessage(customMessages.required).custom(async (id) => {
-    const exists = await validateExistId('curso', id)
-    if (!exists) return Promise.reject('Id curso no válido');
+    const exists = await validateExistId('estudiante', id);
+    if (!exists) return Promise.reject('Id no válido');
   }),
   Middlewares.scan_errors
 ], async (req, res) => await cursosEstudiantesController.updateStateSubscripcion(req, res));
