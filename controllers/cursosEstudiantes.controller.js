@@ -32,7 +32,6 @@ class CursosEstudiantesCTR {
     try {
       return await sequelize.transaction(async (t) => {
         const { token, params } = req;
-        console.log("🚀 ~ CursosEstudiantesCTR ~ returnawaitsequelize.transaction ~ token:", token)
 
         const model = await CursosEstudiantesModel.findByPk(params.idCursoEstudiante);
         const curso = await CursosModel.findByPk(model.idCurso);
