@@ -161,8 +161,7 @@ class CursosCTR {
             as: 'clases',
             attributes: [
               'id',
-              'nombre',
-              'estado'
+              'nombre'
             ],
             where: {
               estado: 1
@@ -178,6 +177,7 @@ class CursosCTR {
           attributes: [
             'id',
             'idUser',
+            'estado',
             [literal(`(SELECT u.nombre FROM users AS u WHERE idUser = u.id)`), 'nombreEstudiante']
           ]
         })
