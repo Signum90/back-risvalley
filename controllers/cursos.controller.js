@@ -150,6 +150,7 @@ class CursosCTR {
           attributes: [
             'id',
             'nombre',
+            'estado',
             [literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = sesiones.id AND cc.estado = 1)`), 'totalClases']
           ],
           where: {
