@@ -10,7 +10,8 @@ const NotificacionesModel = require('../models/Notificaciones');
 class EventosCTR {
   async getEvents(req = request, res = response) {
     try {
-      const { preview } = req.query
+      const { query, token } = req;
+      const { preview } = query
       const now = new Date();
 
       const events = await EventosModel.findAll({
@@ -35,7 +36,12 @@ class EventosCTR {
           [literal(`COALESCE((SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy), (SELECT nombre FROM users AS u WHERE u.id = createdBy))`), 'nombreResponsable']
         ],
         where: {
-          estado: 1,
+          ...(token ? {
+            createdBy: token.id,
+            estado: {
+              [Op.in]: [0, 1, 2]
+            }
+          } : { estado: 1 }),
           fechaInicio: { [Op.gte]: now }
         },
         order: [['fechaInicio', 'ASC']],
