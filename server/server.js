@@ -44,7 +44,9 @@ class Server {
     }
     //■► lista blanca:
     this.whitelist = ['http://localhost:80',
-      'http://localhost'];
+      'http://localhost',
+      'https://rispark.com.co'
+    ];
     //■► configuracion cors:
     this.config_cors = {
       origin: (origin, callback) => {
