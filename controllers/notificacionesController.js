@@ -93,6 +93,7 @@ class NotificacionesCTR {
       }
       return res.status(200).json({ data, msg: 'success' });
     } catch (error) {
+      console.log("🚀 ~ NotificacionesCTR ~ getNotifications ~ error:", error)
       throw error;
     }
   }
