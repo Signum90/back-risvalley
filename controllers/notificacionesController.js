@@ -13,6 +13,7 @@ class NotificacionesCTR {
   async getNotifications(req, res) {
     try {
       const { token } = req;
+      return [123];
 
       const notifications = await NotificacionesModel.findAll({
         attributes: [
@@ -33,13 +34,13 @@ class NotificacionesCTR {
           'idEvento',
           'createdAt',
           'tipoLabel',
-          [literal(`COALESCE(
-            (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = notificaciones.id_servicio),
-            (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = notificaciones.id_reto),
-            (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante),
-            (SELECT c.nombre FROM cursos AS c WHERE c.id = idCurso),
-            (SELECT e.nombre FROM eventos AS e WHERE e.id = idEvento)
-          )`), 'nombre']
+          //[literal(`COALESCE(
+          //  (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = notificaciones.id_servicio),
+          //  (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = notificaciones.id_reto),
+          //  (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante),
+          //  (SELECT c.nombre FROM cursos AS c WHERE c.id = idCurso),
+          //  (SELECT e.nombre FROM eventos AS e WHERE e.id = idEvento)
+          //)`), 'nombre']
         ],
         where: {
           ...(token.superadmin ? { idUser: null } : { idUser: token.id }),
