@@ -4,6 +4,7 @@ const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const EventosModel = require('../models/Eventos');
 const PqrsModel = require('../models/Pqrs');
+const CursosModel = require('../models/Cursos');
 
 class GeneralsCTR {
   async getStadisticsSoftware(req, res) {
@@ -14,6 +15,7 @@ class GeneralsCTR {
       const countServices = await ServiciosTecnologicosModel.count();
       const countEventos = await EventosModel.count();
       const countPQRs = await PqrsModel.count();
+      const countCourses = await CursosModel.count();
 
       const data = {
         'totalUsers': countUsers,
@@ -21,7 +23,8 @@ class GeneralsCTR {
         'totalRetos': countRetos,
         'totalServicios': countServices,
         'totalEventos': countEventos,
-        'totalPQRs': countPQRs
+        'totalPQRs': countPQRs,
+        'totalCursos': countCourses
       }
 
       return res.status(200).json({ msg: 'success', data });
