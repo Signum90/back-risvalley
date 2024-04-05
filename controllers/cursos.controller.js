@@ -141,31 +141,31 @@ class CursosCTR {
         where: {
           id
         },
-        include: [{
-          model: CursosSesionesModel,
-          as: 'sesiones',
-          attributes: [
-            'id',
-            'nombre',
-            [literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = sesiones.id AND cc.estado = 1)`), 'totalClases']
-          ],
-          where: {
-            estado: 1
-          },
-          required: false,
-          //include: [{
-          //  model: CursosClasesModel,
-          //  as: 'clases',
-          //  attributes: [
-          //    'id',
-          //    'nombre'
-          //  ],
-          //  where: {
-          //    estado: 1
-          //  },
-          //  required: false
-          //}],
-        }],
+        //include: [{
+        //  model: CursosSesionesModel,
+        //  as: 'sesiones',
+        //  attributes: [
+        //    'id',
+        //    'nombre',
+        //    [literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = sesiones.id AND cc.estado = 1)`), 'totalClases']
+        //  ],
+        //  where: {
+        //    estado: 1
+        //  },
+        //  required: false,
+        //include: [{
+        //  model: CursosClasesModel,
+        //  as: 'clases',
+        //  attributes: [
+        //    'id',
+        //    'nombre'
+        //  ],
+        //  where: {
+        //    estado: 1
+        //  },
+        //  required: false
+        //}],
+        //}],
       })
 
       //let estudiantes;

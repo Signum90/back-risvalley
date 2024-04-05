@@ -33,13 +33,13 @@ class NotificacionesCTR {
           'idEvento',
           'createdAt',
           'tipoLabel',
-          [literal(`COALESCE(
-            (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = notificaciones.id_servicio),
-            (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = notificaciones.id_reto),
-            (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante),
-            (SELECT c.nombre FROM cursos AS c WHERE c.id = idCurso),
-            (SELECT e.nombre FROM eventos AS e WHERE e.id = idEvento)
-          )`), 'nombre']
+          //[literal(`COALESCE(
+          //  (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = notificaciones.id_servicio),
+          //  (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = notificaciones.id_reto),
+          //  (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante),
+          //  (SELECT c.nombre FROM cursos AS c WHERE c.id = idCurso),
+          //  (SELECT e.nombre FROM eventos AS e WHERE e.id = idEvento)
+          //)`), 'nombre']
         ],
         where: {
           ...(token.superadmin ? {
@@ -75,10 +75,10 @@ class NotificacionesCTR {
         } = element;
 
         let keydata;
-        if (token.superadmin) {
-          const idRegister = idServicio || idReto || idPqr || idEvento;
-          keydata = await NotificacionesCTR.getKeydata(tipoLabel, idRegister);
-        }
+        //if (token.superadmin) {
+        //  const idRegister = idServicio || idReto || idPqr || idEvento;
+        //  keydata = await NotificacionesCTR.getKeydata(tipoLabel, idRegister);
+        //}
         data.push({
           idNotificacion: id,
           keydata,

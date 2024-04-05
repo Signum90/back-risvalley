@@ -25,25 +25,25 @@ class CursosSesionesCTR {
             [Op.in]: estados
           }
         },
-        include: [{
-          model: CursosClasesModel,
-          as: 'clases',
-          attributes: [
-            'id',
-            'nombre',
-            'descripcion',
-            'estado'
-          ],
-          where: {
-            estado: {
-              [Op.in]: estados
-            }
-          },
-          required: false
-        }],
+        //include: [{
+        //  model: CursosClasesModel,
+        //  as: 'clases',
+        //  attributes: [
+        //    'id',
+        //    'nombre',
+        //    'descripcion',
+        //    'estado'
+        //  ],
+        //  where: {
+        //    estado: {
+        //      [Op.in]: estados
+        //    }
+        //  },
+        //  required: false
+        //}],
         order: [
           ['createdAt', 'ASC'],
-          [{ model: CursosClasesModel, as: 'clases' }, 'createdAt', 'ASC']
+          //[{ model: CursosClasesModel, as: 'clases' }, 'createdAt', 'ASC']
         ]
 
       },)
