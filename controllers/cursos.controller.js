@@ -139,7 +139,7 @@ class CursosCTR {
           [literal(`(SELECT COUNT(1) FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id)`), 'totalEstudiantes']
         ],
         where: {
-          id
+          id: id
         },
         //include: [{
         //  model: CursosSesionesModel,
