@@ -17,7 +17,7 @@ class CursosSesionesCTR {
           'id',
           'estado',
           'nombre',
-          [literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = cursosSesiones.id AND cc.estado = 1)`), 'totalClases']
+          //[literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = cursosSesiones.id AND cc.estado = 1)`), 'totalClases']
         ],
         where: {
           idCurso: params.idCurso,
@@ -25,25 +25,25 @@ class CursosSesionesCTR {
             [Op.in]: estados
           }
         },
-        //include: [{
-        //  model: CursosClasesModel,
-        //  as: 'clases',
-        //  attributes: [
-        //    'id',
-        //    'nombre',
-        //    'descripcion',
-        //    'estado'
-        //  ],
-        //  where: {
-        //    estado: {
-        //      [Op.in]: estados
-        //    }
-        //  },
-        //  required: false
-        //}],
+        include: [{
+          model: CursosClasesModel,
+          as: 'clases',
+          attributes: [
+            'id',
+            'nombre',
+            'descripcion',
+            'estado'
+          ],
+          where: {
+            estado: {
+              [Op.in]: estados
+            }
+          },
+          required: false
+        }],
         order: [
           ['createdAt', 'ASC'],
-          //[{ model: CursosClasesModel, as: 'clases' }, 'createdAt', 'ASC']
+          [{ model: CursosClasesModel, as: 'clases' }, 'createdAt', 'ASC']
         ]
 
       },)

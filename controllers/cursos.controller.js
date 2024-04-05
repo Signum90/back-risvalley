@@ -116,7 +116,7 @@ class CursosCTR {
   async getDetailCourse(req, res) {
     try {
       const { params } = req
-      const id = params.idCurso;
+      const idCurso = params.idCurso;
 
       const course = await CursosModel.findOne({
         attributes: [
@@ -136,23 +136,23 @@ class CursosCTR {
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'nombreEntidad'],
           [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'telefonoEntidad'],
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'emailEntidad'],
-          [literal(`(SELECT COUNT(1) FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id)`), 'totalEstudiantes']
+          //[literal(`(SELECT COUNT(1) FROM cursos_estudiantes AS ce WHERE ce.id_curso = ${idCurso})`), 'totalEstudiantes']
         ],
         where: {
-          id: id
+          id: idCurso
         },
-        //include: [{
-        //  model: CursosSesionesModel,
-        //  as: 'sesiones',
-        //  attributes: [
-        //    'id',
-        //    'nombre',
-        //    [literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = sesiones.id AND cc.estado = 1)`), 'totalClases']
-        //  ],
-        //  where: {
-        //    estado: 1
-        //  },
-        //  required: false,
+        include: [{
+          model: CursosSesionesModel,
+          as: 'sesiones',
+          attributes: [
+            'id',
+            'nombre',
+            //[literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = sesiones.id AND cc.estado = 1)`), 'totalClases']
+          ],
+          where: {
+            estado: 1
+          },
+          required: false,
         //include: [{
         //  model: CursosClasesModel,
         //  as: 'clases',
@@ -165,7 +165,7 @@ class CursosCTR {
         //  },
         //  required: false
         //}],
-        //}],
+        }],
       })
 
       //let estudiantes;
