@@ -13,7 +13,6 @@ class NotificacionesCTR {
   async getNotifications(req, res) {
     try {
       const { token } = req;
-      return [123];
 
       const notifications = await NotificacionesModel.findAll({
         attributes: [
@@ -33,7 +32,7 @@ class NotificacionesCTR {
           'idPqr',
           'idEvento',
           'createdAt',
-          'tipoLabel',
+          //'tipoLabel',
           //[literal(`COALESCE(
           //  (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = notificaciones.id_servicio),
           //  (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = notificaciones.id_reto),
@@ -43,8 +42,7 @@ class NotificacionesCTR {
           //)`), 'nombre']
         ],
         where: {
-          ...(token.superadmin ? { idUser: null } : { idUser: token.id }),
-          //...(token.superadmin ? {} : { estado: 0 }),
+          //...(token.superadmin ? { idUser: null } : { idUser: token.id }),
           estado: 0
         },
         order: [['createdAt', 'Desc']],
@@ -74,8 +72,8 @@ class NotificacionesCTR {
 
         let keydata;
         if (token.superadmin) {
-          const idRegister = idServicio || idReto || idPqr || idEvento;
-          keydata = await NotificacionesCTR.getKeydata(tipoLabel, idRegister);
+          //const idRegister = idServicio || idReto || idPqr || idEvento;
+          //keydata = await NotificacionesCTR.getKeydata(tipoLabel, idRegister);
         }
         data.push({
           idNotificacion: id,
