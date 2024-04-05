@@ -1,5 +1,5 @@
 const { sequelize } = require('../db/connection');
-const { literal } = require('sequelize');
+const { literal, Op } = require('sequelize');
 const UsersModel = require('../models/Users');
 const NotificacionesModel = require('../models/Notificaciones');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
@@ -32,17 +32,21 @@ class NotificacionesCTR {
           'idPqr',
           'idEvento',
           'createdAt',
-          //'tipoLabel',
-          //[literal(`COALESCE(
-          //  (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = notificaciones.id_servicio),
-          //  (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = notificaciones.id_reto),
-          //  (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante),
-          //  (SELECT c.nombre FROM cursos AS c WHERE c.id = idCurso),
-          //  (SELECT e.nombre FROM eventos AS e WHERE e.id = idEvento)
-          //)`), 'nombre']
+          'tipoLabel',
+          [literal(`COALESCE(
+            (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = notificaciones.id_servicio),
+            (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = notificaciones.id_reto),
+            (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante),
+            (SELECT c.nombre FROM cursos AS c WHERE c.id = idCurso),
+            (SELECT e.nombre FROM eventos AS e WHERE e.id = idEvento)
+          )`), 'nombre']
         ],
         where: {
-          ...(token.superadmin ? { idUser: null } : { idUser: token.id }),
+          ...(token.superadmin ? {
+            idUser: {
+              [Op.is]: null,
+            }
+          } : { idUser: token.id }),
           estado: 0
         },
         order: [['createdAt', 'Desc']],
@@ -72,8 +76,8 @@ class NotificacionesCTR {
 
         let keydata;
         if (token.superadmin) {
-          //const idRegister = idServicio || idReto || idPqr || idEvento;
-          //keydata = await NotificacionesCTR.getKeydata(tipoLabel, idRegister);
+          const idRegister = idServicio || idReto || idPqr || idEvento;
+          keydata = await NotificacionesCTR.getKeydata(tipoLabel, idRegister);
         }
         data.push({
           idNotificacion: id,
