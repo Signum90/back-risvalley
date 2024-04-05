@@ -115,7 +115,7 @@ class CursosCTR {
 
   async getDetailCourse(req, res) {
     try {
-      const { params } = req
+      const { token, params } = req
       const id = params.idCurso;
 
       const course = await CursosModel.findOne({
@@ -137,9 +137,9 @@ class CursosCTR {
           [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'telefonoEntidad'],
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'emailEntidad'],
           [literal(`(SELECT COUNT(1) FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id)`), 'totalEstudiantes'],
-          //[literal(`COALESCE((SELECT 1 FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id AND ce.id_user = ${token?.id ?? null} AND ce.estado = 1), 0)`), 'cursoAdquirido'],
-          //[literal(`COALESCE((SELECT 1 FROM favoritos AS f WHERE f.id_curso = cursos.id AND f.id_user = ${token?.id ?? null}), 0)`), 'favorito'],
-          //[literal(`COALESCE((SELECT f.id FROM favoritos AS f WHERE f.id_curso = cursos.id AND f.id_user = ${token?.id ?? null}), 0)`), 'idFavorito']
+          [literal(`COALESCE((SELECT 1 FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id AND ce.id_user = ${token?.id ?? null} AND ce.estado = 1), 0)`), 'cursoAdquirido'],
+          [literal(`COALESCE((SELECT 1 FROM favoritos AS f WHERE f.id_curso = cursos.id AND f.id_user = ${token?.id ?? null}), 0)`), 'favorito'],
+          [literal(`COALESCE((SELECT f.id FROM favoritos AS f WHERE f.id_curso = cursos.id AND f.id_user = ${token?.id ?? null}), 0)`), 'idFavorito']
         ],
         where: {
           id
@@ -171,7 +171,7 @@ class CursosCTR {
         }],
       })
 
-      let estudiantes;
+      //let estudiantes;
       // if (token?.superadmin || course.createdBy == token?.id) {
       //   const students = await CursosEstudiantesModel.findAll({
       //     attributes: [
@@ -184,7 +184,7 @@ class CursosCTR {
       //   estudiantes = students
       // }
 
-      return res.status(200).json({ data: course, estudiantes: estudiantes ?? undefined, msg: 'success', });
+      return res.status(200).json({ data: course, msg: 'success', });
     } catch (error) {
       throw error;
     }

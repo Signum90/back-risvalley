@@ -42,7 +42,7 @@ class NotificacionesCTR {
           //)`), 'nombre']
         ],
         where: {
-          //...(token.superadmin ? { idUser: null } : { idUser: token.id }),
+          ...(token.superadmin ? { idUser: null } : { idUser: token.id }),
           estado: 0
         },
         order: [['createdAt', 'Desc']],
