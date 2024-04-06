@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { body, param } = require('express-validator');
+const { body, param, query } = require('express-validator');
 const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const FavoritosCTR = require('../controllers/favoritos.controller');
@@ -10,6 +10,22 @@ const favoritosController = new FavoritosCTR();
 const customMessages = CustomMessages.getValidationMessages();
 
 router.get("/", Middlewares.validateJWTMiddleware, async (req, res) => await favoritosController.getFavorites(req, res));
+router.get("/validar-favorito", Middlewares.validateJWTMiddleware, [
+  query('tipo').trim().notEmpty().withMessage(customMessages.required)
+    .isInt({ min: 1, max: 4 }).withMessage('El tipo debe ser un numero entre 1 y 4'),
+  query('id').trim().notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).custom(async (id, { req }) => {
+    const words = {
+      1: { word: 'servicio', key: 'idServicio' },
+      2: { word: 'reto', key: 'idReto' },
+      3: { word: 'curso', key: 'idCurso' },
+      4: { word: 'archivo', key: 'idBiblioteca' }
+    }
+    const word = words[req.query.tipo];
+    const exists = await validateExistId(word.word, id)
+    if (!exists) return Promise.reject(`Id ${word.word} no válido`);
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await favoritosController.validateFavorite(req, res));
 router.post("/", Middlewares.validateJWTMiddleware, [
   body('tipo').trim().notEmpty().withMessage(customMessages.required)
     .isInt({ min: 1, max: 4 }).withMessage('El tipo debe ser un numero entre 1 y 4'),

@@ -118,5 +118,31 @@ class FavoritosCTR {
     }
   }
 
+  async validateFavorite(req, res) {
+    try {
+      const { query, token } = req;
+      const campos = {
+        1: 'idServicio',
+        2: 'idReto',
+        3: 'idCurso',
+        4: 'idBiblioteca'
+      }
+
+      const campo = campos[query.tipo];
+
+      const favorite = await FavoritosModel.findOne({
+        attributes: ['id'],
+        where: {
+          [campo]: query.id,
+          idUser: token.id
+        }
+      })
+
+      return res.status(200).json({ msg: 'success', data: favorite ? true : false, id: favorite?.id ?? undefined  });
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }
 module.exports = FavoritosCTR;

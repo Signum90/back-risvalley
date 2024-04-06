@@ -33,7 +33,7 @@ class EventosCTR {
           [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = idCiudad)'), 'ciudad'],
           [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'departamento'],
           [literal('(SELECT d.id FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'idDepartamento'],
-          [literal(`COALESCE((SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy), (SELECT nombre FROM users AS u WHERE u.id = createdBy))`), 'nombreResponsable']
+          [literal('(SELECT nombre FROM users AS u WHERE u.id = createdBy)'), 'nombreResponsable']
         ],
         where: {
           ...(token ? {
@@ -76,7 +76,6 @@ class EventosCTR {
           [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = idCiudad)'), 'ciudad'],
           [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'departamento'],
           [literal('(SELECT d.id FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'idDepartamento'],
-          [literal(`COALESCE((SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy), (SELECT nombre FROM users AS u WHERE u.id = createdBy))`), 'nombreResponsable']
         ],
         where: { id },
       })
@@ -112,7 +111,6 @@ class EventosCTR {
           [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = idCiudad)'), 'ciudad'],
           [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'departamento'],
           [literal('(SELECT d.id FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'idDepartamento'],
-          [literal(`COALESCE((SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy), (SELECT nombre FROM users AS u WHERE u.id = createdBy))`), 'nombreResponsable']
         ],
         order: [['estado', 'ASC']],
         offset: (paginate - 1) * pageSize,

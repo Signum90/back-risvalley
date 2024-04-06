@@ -128,8 +128,6 @@ class RetosCTR {
   async getDetailTechnologicalChallenge(req, res) {
     try {
       const id = req.params.idReto;
-      const { authorization } = req.headers
-      const tokenData = authorization ? verifyToken(authorization?.split(' ')[1]) : null;
 
       const challenge = await RetosTecnologicosModel.findOne({
         attributes: [
@@ -151,10 +149,6 @@ class RetosCTR {
           [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'telefonoEntidad'],
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'emailEntidad'],
           [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'logoEntidad'],
-          [literal(`COALESCE( (SELECT 1 FROM favoritos AS f WHERE f.id_reto = idReto AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'favorito'],
-          [literal(`COALESCE( (SELECT 1 FROM retos_aspirantes AS ra WHERE ra.id_reto = idReto AND ra.id_user_aspirante = ${tokenData?.id ?? null}), 0)`), 'postulado'],
-          [literal(`COALESCE( (SELECT f.id FROM favoritos AS f WHERE f.id_reto = idReto AND f.id_user = ${tokenData?.id ?? null}), 0)`), 'idFavorito']
-
         ],
         where: {
           id

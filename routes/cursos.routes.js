@@ -8,6 +8,14 @@ const CursosValidator = require('../validators/cursosValidaciones');
 const cursosController = new CursosCTR();
 
 router.get("/", async (req, res) => await cursosController.getCourses(req, res));
+router.get("/:idCurso/estudiantes",
+  Middlewares.validateJWTMiddleware,
+  CursosValidator.detailCourseValidation,
+  async (req, res) => await cursosController.getStudentsCourse(req, res));
+router.get("/curso-adquirido",
+  Middlewares.validateJWTMiddleware,
+  CursosValidator.validateStudentCourseValidation,
+  async (req, res) => await cursosController.validateStudentCourse(req, res));
 router.get("/adquiridos", Middlewares.validateJWTMiddleware, async (req, res) => await cursosController.getCourseAcquire(req, res));
 router.get("/dashboard", Middlewares.validateAdminMiddleware, async (req, res) => await cursosController.getCourses(req, res));
 router.get("/usuario", Middlewares.validateJWTMiddleware, async (req, res) => await cursosController.getCourses(req, res));

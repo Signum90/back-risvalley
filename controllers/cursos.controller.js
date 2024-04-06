@@ -136,7 +136,6 @@ class CursosCTR {
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'nombreEntidad'],
           [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'telefonoEntidad'],
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserResponsable)`), 'emailEntidad'],
-          //[literal(`(SELECT COUNT(1) FROM cursos_estudiantes AS ce WHERE ce.id_curso = ${idCurso})`), 'totalEstudiantes']
         ],
         where: {
           id: idCurso
@@ -147,39 +146,25 @@ class CursosCTR {
           attributes: [
             'id',
             'nombre',
-            //[literal(`(SELECT COUNT(1) FROM cursos_clases AS cc WHERE cc.id_curso_sesion = sesiones.id AND cc.estado = 1)`), 'totalClases']
           ],
           where: {
             estado: 1
           },
           required: false,
-        //include: [{
-        //  model: CursosClasesModel,
-        //  as: 'clases',
-        //  attributes: [
-        //    'id',
-        //    'nombre'
-        //  ],
-        //  where: {
-        //    estado: 1
-        //  },
-        //  required: false
-        //}],
+          include: [{
+            model: CursosClasesModel,
+            as: 'clases',
+            attributes: [
+              'id',
+              'nombre'
+            ],
+            where: {
+              estado: 1
+            },
+            required: false
+          }],
         }],
       })
-
-      //let estudiantes;
-      // if (token?.superadmin || course.createdBy == token?.id) {
-      //   const students = await CursosEstudiantesModel.findAll({
-      //     attributes: [
-      //       'id',
-      //       'idUser',
-      //       'estado',
-      //       [literal(`(SELECT u.nombre FROM users AS u WHERE idUser = u.id)`), 'nombreEstudiante']
-      //     ]
-      //   })
-      //   estudiantes = students
-      // }
 
       return res.status(200).json({ data: course, msg: 'success', });
     } catch (error) {
@@ -308,6 +293,56 @@ class CursosCTR {
         }
         return res.status(200).json({ msg: 'success', data: model });
       })
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async validateStudentCourse(req, res) {
+    try {
+      const { query, token } = req;
+
+      const courseStudent = await CursosEstudiantesModel.findOne({
+        where: {
+          idUser: token.id,
+          estado: 1,
+          idCurso: query.idCurso
+        }
+      })
+
+      return res.status(200).json({ msg: 'success', data: courseStudent ? true : false, id: courseStudent?.id ?? undefined });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getStudentsCourse(req, res) {
+    try {
+      const { token, params } = req;
+
+      const model = await CursosModel.findByPk(params.idCurso);
+      if (model.idUserResponsable != token.id && !token.superadmin) {
+        return res.status(400).json({
+          type: 'error',
+          msg: 'No puedes acceder al listado de estudiantes',
+          status: 400
+        });
+      }
+
+      const students = await CursosEstudiantesModel.findAll({
+        attributes: [
+          'id',
+          'idUser',
+          'estado',
+          [literal(`(SELECT u.nombre FROM users AS u WHERE idUser = u.id)`), 'nombreEstudiante']
+        ],
+        where: {
+          idCurso: params.idCurso
+        }
+      })
+
+      return res.status(200).json({ msg: 'success', data: students });
+
     } catch (error) {
       throw error;
     }
