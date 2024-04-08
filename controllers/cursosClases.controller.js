@@ -1,5 +1,4 @@
 const { sequelize } = require('../db/connection');
-const { Op, literal } = require('sequelize');
 const CursosClasesModel = require('../models/CursosClases');
 const CursosModel = require('../models/Cursos');
 const CursosSesionesModel = require('../models/CursosSesiones');
