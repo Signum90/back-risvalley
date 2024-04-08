@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { param, check } = require('express-validator');
+const { param, check, query } = require('express-validator');
 const router = Router();
 const Middlewares = require('../middlewares/middlewares');
 const multerConfig = require('../config/MulterConfig');
@@ -11,6 +11,13 @@ const retosAspirantesController = new RetosAspirantesCTR();
 //■► RUTEO: ===================================== ◄■:
 router.get("/:idReto/aspirantes", Middlewares.validateJWTMiddleware, async (req, res) => await retosAspirantesController.getCandidatesChallenge(req, res));
 router.get("/aspiraciones", Middlewares.validateJWTMiddleware, async (req, res) => await retosAspirantesController.getMyCandidacy(req, res));
+router.get("/aspirantes/validar", Middlewares.validateJWTMiddleware, [
+  query('idReto').notEmpty().isInt().custom(async (id, { req }) => {
+    const exists = await validateExistId('reto', id)
+    if (!exists) return Promise.reject('Id reto no válido');
+  }),
+  Middlewares.scan_errors
+], async (req, res) => await retosAspirantesController.validateCandidacy(req, res));
 
 router.post("/aspirantes/create", Middlewares.validateJWTMiddleware, multerConfig.upload.single('fichaTecnica'), [
   check('fichaTecnica').custom(async (ficha, { req }) => {

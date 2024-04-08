@@ -162,6 +162,23 @@ class RetosAspirantesCTR {
       throw error;
     }
   }
+
+  async validateCandidacy(req, res) {
+    try {
+      const { token, query } = req;
+
+      const candidate = await RetosAspirantesModel.findOne({
+        where: {
+          idUserAspirante: token.id,
+          idReto: query.idReto
+        }
+      })
+
+      return res.status(200).json({ msg: 'success', data: candidate ? true : false, id: candidate?.id ?? undefined });
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 //■► EXPORTAR:  ◄■:
