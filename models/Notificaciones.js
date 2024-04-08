@@ -1,4 +1,11 @@
 const { DataTypes, Model } = require('sequelize');
+const ServiciosTecnologicosModel = require('./ServiciosTecnologicos');
+const RetosTecnologicosModel = require('./RetosTecnologicos');
+const CursosModel = require('./Cursos');
+const BibliotecaModel = require('./Biblioteca');
+const PqrsModel = require('./Pqrs');
+const RetosAspirantesModel = require('./RetosAspirantes');
+const EventosModel = require('./Eventos');
 
 class NotificacionesModel extends Model {
   static initialize(sequelizeInstace) {
@@ -210,6 +217,12 @@ class NotificacionesModel extends Model {
         timestamps: false
       },
     );
+    Notificaciones.belongsTo(ServiciosTecnologicosModel.initialize(sequelizeInstace), { foreignKey: 'id_servicio', as: 'servicio' });
+    Notificaciones.belongsTo(RetosTecnologicosModel.initialize(sequelizeInstace), { foreignKey: 'id_reto', as: 'reto' });
+    Notificaciones.belongsTo(RetosAspirantesModel.initialize(sequelizeInstace), { foreignKey: 'id_reto_aspirante', as: 'retoAspirante' });
+    Notificaciones.belongsTo(CursosModel.initialize(sequelizeInstace), { foreignKey: 'id_curso', as: 'curso' });
+    Notificaciones.belongsTo(EventosModel.initialize(sequelizeInstace), { foreignKey: 'id_evento', as: 'evento' });
+    Notificaciones.belongsTo(PqrsModel.initialize(sequelizeInstace), { foreignKey: 'id_pqr', as: 'pqr' });
     return Notificaciones;
   }
 }

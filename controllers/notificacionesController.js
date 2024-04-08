@@ -8,6 +8,7 @@ const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const EventosModel = require('../models/Eventos');
 const CursosModel = require('../models/Cursos');
 const PqrsModel = require('../models/Pqrs');
+const RetosAspirantesModel = require('../models/RetosAspirantes');
 
 class NotificacionesCTR {
   async getNotifications(req, res) {
@@ -32,14 +33,7 @@ class NotificacionesCTR {
           'idPqr',
           'idEvento',
           'createdAt',
-          'tipoLabel',
-          //[literal(`COALESCE(
-          //  (SELECT s.nombre FROM servicios_tecnologicos AS s WHERE s.id = notificaciones.id_servicio),
-          //  (SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = notificaciones.id_reto),
-          //  (SELECT r.nombre FROM retos_aspirantes AS ra INNER JOIN retos_tecnologicos AS r ON r.id = ra.id_reto WHERE ra.id = idRetoAspirante),
-          //  (SELECT c.nombre FROM cursos AS c WHERE c.id = idCurso),
-          //  (SELECT e.nombre FROM eventos AS e WHERE e.id = idEvento)
-          //)`), 'nombre']
+          'tipoLabel'
         ],
         where: {
           ...(token.superadmin ? {
@@ -49,51 +43,46 @@ class NotificacionesCTR {
           } : { idUser: token.id }),
           estado: 0
         },
+        include: [{
+          model: ServiciosTecnologicosModel, as: 'servicio', attributes: [
+            'nombre',
+            'keydata',
+          ], required: false
+        },
+        {
+          model: RetosTecnologicosModel, as: 'reto', attributes: [
+            'nombre',
+            'keydata',
+          ], required: false
+        },
+        {
+          model: RetosAspirantesModel, as: 'retoAspirante', attributes: [
+            [literal(`(SELECT r.nombre FROM retos_tecnologicos AS r WHERE r.id = retoAspirante.id_reto)`), 'nombre'],
+            [literal(`(SELECT r.keydata FROM retos_tecnologicos AS r WHERE r.id = retoAspirante.id_reto)`), 'keydata'],
+          ], required: false
+        },
+        {
+          model: CursosModel, as: 'curso', attributes: [
+            'nombre',
+            'keydata'
+          ], required: false
+        },
+        {
+          model: EventosModel, as: 'evento', attributes: [
+            'nombre',
+            'keydata'
+          ], required: false
+        },
+        {
+          model: PqrsModel, as: 'pqr', attributes: [
+            ['pqr', 'nombre'],
+          ], required: false
+        },
+        ],
         order: [['createdAt', 'Desc']],
       })
-      const data = [];
+      const data = NotificacionesCTR.mapDataNotification(notifications);
 
-      for (let index = 0; index < notifications.length; index++) {
-        const element = notifications[index];
-
-        const { id,
-          idServicio,
-          idUser,
-          idReto,
-          idRetoAspirante,
-          contactoNombre,
-          contactoCorreo,
-          contactoTelefono,
-          userActivo,
-          tipo,
-          comentario,
-          notificacion,
-          idPqr,
-          createdAt,
-          tipoLabel,
-          idEvento,
-        } = element;
-
-        let keydata;
-        //if (token.superadmin) {
-        //  const idRegister = idServicio || idReto || idPqr || idEvento;
-        //  keydata = await NotificacionesCTR.getKeydata(tipoLabel, idRegister);
-        //}
-        data.push({
-          idNotificacion: id,
-          keydata,
-          id: idServicio || idReto || idPqr || idEvento,
-          contactoNombre,
-          contactoCorreo,
-          contactoTelefono,
-          userActivo,
-          tipoLabel,
-          notificacion,
-          comentario,
-          createdAt,
-          nombre: element?.dataValues?.nombre,
-        })
-      }
       return res.status(200).json({ data, msg: 'success' });
     } catch (error) {
       console.log("🚀 ~ NotificacionesCTR ~ getNotifications ~ error:", error)
@@ -171,22 +160,52 @@ class NotificacionesCTR {
     }
   }
 
-  static async getKeydata(model, id) {
-    try {
-      const models = {
-        'Servicio': ServiciosTecnologicosModel,
-        'Reto': RetosTecnologicosModel,
-        'Evento': EventosModel,
-        'Curso': CursosModel,
-        'Pqrs': PqrsModel
-      }
+  static mapDataNotification(notifications) {
+    const data = [];
 
-      const registro = await models[model].findByPk(id);
+    for (let index = 0; index < notifications.length; index++) {
+      const element = notifications[index];
 
-      return registro?.keydata ?? null;
-    } catch (error) {
-      throw error;
+      const { id,
+        idServicio,
+        idReto,
+        idRetoAspirante,
+        contactoNombre,
+        contactoCorreo,
+        contactoTelefono,
+        userActivo,
+        comentario,
+        notificacion,
+        idPqr,
+        createdAt,
+        tipoLabel,
+        idEvento,
+        servicio,
+        reto,
+        retoAspirante,
+        curso,
+        evento,
+        biblioteca,
+        pqr,
+      } = element;
+
+      const item = servicio || reto || retoAspirante || curso || evento || biblioteca || pqr;
+      data.push({
+        idNotificacion: id,
+        id: idServicio || idReto || idPqr || idEvento || idRetoAspirante,
+        contactoNombre,
+        contactoCorreo,
+        contactoTelefono,
+        userActivo,
+        tipoLabel,
+        notificacion,
+        comentario,
+        createdAt,
+        nombre: item?.nombre || item?.dataValues?.nombre,
+        keydata: item?.keydata || item?.dataValues?.keydata
+      })
     }
+    return data;
   }
 }
 

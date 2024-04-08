@@ -138,7 +138,7 @@ class FavoritosCTR {
         }
       })
 
-      return res.status(200).json({ msg: 'success', data: favorite ? true : false, id: favorite?.id ?? undefined  });
+      return res.status(200).json({ msg: 'success', data: favorite ? true : false, id: favorite?.id ?? undefined });
     } catch (error) {
       throw error;
     }
