@@ -3,11 +3,15 @@ const CursosClasesModel = require('../models/CursosClases');
 const CursosModel = require('../models/Cursos');
 const CursosSesionesModel = require('../models/CursosSesiones');
 const { deleteFile } = require('../helpers/helpers');
+const { literal } = require('sequelize');
 
 class CursosClasesCTR {
   async getClassDetail(req, res) {
     try {
-      const id = req.params.idClase
+      const { token, params } = req;
+      const id = params.idClase;
+      const validate = await CursosClasesCTR.validateAccesClass(id, token);
+      if (!validate) return res.status(400).json({ type: 'error', msg: 'No puede acceder a la clase', status: 404 });
 
       const classDetail = await CursosClasesModel.findOne({
         attributes: [
@@ -135,6 +139,35 @@ class CursosClasesCTR {
       });
       if (curso.idUserResponsable != token.id && !token.superadmin) return false;
       return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async validateAccesClass(idClase, token) {
+    try {
+      if (token.superadmin) return true;
+
+      const curso = await CursosModel.findOne({
+        attributes: [
+          'id',
+          'idUserResponsable',
+          [literal(`(SELECT IFNULL((SELECT 1 FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id AND ce.id_user = ${token.id} AND ce.estado = 1), 0))`), 'matriculaActiva'],
+        ],
+        include: [{
+          model: CursosSesionesModel,
+          as: 'sesiones',
+          include: [{
+            model: CursosClasesModel,
+            as: 'clases',
+            required: true,
+            where: { id: idClase }
+          }]
+        }]
+      });
+      if (curso.idUserResponsable != token.id && !curso?.dataValues.matriculaActiva) return false;
+      return true;
+
     } catch (error) {
       throw error;
     }
