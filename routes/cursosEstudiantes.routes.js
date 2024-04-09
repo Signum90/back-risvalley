@@ -14,7 +14,7 @@ router.post('/adquirir', Middlewares.validateJWTMiddleware, [
     const exists = await validateExistId('curso', id)
     if (!exists) return Promise.reject('Id curso no válido');
     const unique = await validateFieldUnique('cursoEstudiante', { 'idUser': req.token.id, 'idCurso': id })
-    if (unique) return Promise.reject('El usuario ya está inscrito en el curso ')
+    if (unique) return Promise.reject('El usuario ya está inscrito en el curso. Pongase en contacto con el administrador')
   }),
   Middlewares.scan_errors
 ], async (req, res) => await cursosEstudiantesController.acquireCourse(req, res));
