@@ -288,6 +288,8 @@ class ServiciosTecnologicosCTR {
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoClienteServicio)'), 'tipoClienteServicio'],
           [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
+          [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'emailEntidad'],
+          [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'telefonoEntidad'],
           [col('contacto.nombre'), 'nombreContacto'],
           [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.telefono'), 'telefonoContacto'],
