@@ -32,11 +32,11 @@ class ServiciosTecnologicosCTR {
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoClienteServicio)'), 'tipoClienteServicio'],
           [col('contacto.nombre'), 'nombreContacto'],
           [col('contacto.telefono'), 'telefonoContacto'],
-          [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.email'), 'correoContacto'],
           [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
-          [literal(`(SELECT u.nombre FROM users AS u WHERE u.id = contacto.id)`), 'nombreUser'],
+          [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'emailEntidad'],
+          [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'telefonoEntidad'],
           [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE e.id_user_responsable = contacto.id)`), 'urlLogo'],
         ],
         where: {
