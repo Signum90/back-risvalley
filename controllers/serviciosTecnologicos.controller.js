@@ -6,6 +6,7 @@ const UsersModel = require('../models/Users');
 const { urlFiles } = require('../config/config');
 const bcrypt = require('bcrypt');
 const NotificacionesModel = require('../models/Notificaciones');
+const EntidadesModel = require('../models/Entidades');
 class ServiciosTecnologicosCTR {
   async getTechnologicalService(req, res) {
     try {
@@ -68,6 +69,9 @@ class ServiciosTecnologicosCTR {
       return await sequelize.transaction(async (t) => {
         const { body, file, token } = req;
         const keydata = await generateKeyWord();
+
+        const entidad = await EntidadesModel.findOne({ where: { idUserResponsable: token.id } });
+        if (!entidad) return res.status(400).json({ type: 'error', msg: 'Por favor cree una entidad unipersonal para crear cursos', status: 400 });
 
         const postData = {
           nombre: body.nombre,
