@@ -4,6 +4,7 @@ const CursosModel = require('../models/Cursos');
 const CursosSesionesModel = require('../models/CursosSesiones');
 const { deleteFile } = require('../helpers/helpers');
 const { literal } = require('sequelize');
+const CursosEstudiantesModel = require('../models/CursosEstudiantes');
 
 class CursosClasesCTR {
   async getClassDetail(req, res) {
@@ -176,8 +177,7 @@ class CursosClasesCTR {
       const curso = await CursosModel.findOne({
         attributes: [
           'id',
-          'idUserResponsable',
-          [literal(`(SELECT IFNULL((SELECT 1 FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id AND ce.id_user = ${token.id} AND ce.estado = 1), 0))`), 'matriculaActiva'],
+          'idUserResponsable'
         ],
         include: [{
           model: CursosSesionesModel,
@@ -190,7 +190,17 @@ class CursosClasesCTR {
           }]
         }]
       });
-      if (curso.idUserResponsable != token.id && !curso?.dataValues.matriculaActiva) return false;
+      if (curso.idUserResponsable != token.id) return false;
+
+      const matriculaActiva = await CursosEstudiantesModel.findOne({
+        where: {
+          idUser: token.id,
+          idCurso: curso.id,
+          estado: 1
+        }
+      })
+      if(!matriculaActiva) return false;
+
       return true;
 
     } catch (error) {
