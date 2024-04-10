@@ -9,7 +9,7 @@ class CursosClasesCTR {
   async getClassDetail(req, res) {
     try {
       const { token, params } = req;
-      const id = params.idClase;
+      const idClase = params.idClase;
       const validate = await CursosClasesCTR.validateAccesClass(id, token);
       if (!validate) return res.status(404).json({ type: 'error', msg: 'No puede acceder a la clase', status: 404 });
 
@@ -22,7 +22,7 @@ class CursosClasesCTR {
           'urlClase',
           'estado'
         ],
-        where: { id }
+        where: { id: idClase }
       })
 
       return res.status(200).json({ msg: 'success', data: classDetail });
