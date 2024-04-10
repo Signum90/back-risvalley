@@ -10,7 +10,7 @@ class CursosClasesCTR {
     try {
       const { token, params } = req;
       const idClase = params.idClase;
-      const validate = await CursosClasesCTR.validateAccesClass(id, token);
+      const validate = await CursosClasesCTR.validateAccesClass(idClase, token);
       if (!validate) return res.status(404).json({ type: 'error', msg: 'No puede acceder a la clase', status: 404 });
 
       const classDetail = await CursosClasesModel.findOne({
