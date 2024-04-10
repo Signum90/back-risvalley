@@ -36,6 +36,7 @@ class ServiciosTecnologicosCTR {
           [col('contacto.email'), 'correoContacto'],
           [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
+          [literal(`(SELECT u.nombre FROM users AS u WHERE u.id = contacto.id)`), 'nombreUser'],
           [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE e.id_user_responsable = contacto.id)`), 'urlLogo'],
         ],
         where: {
