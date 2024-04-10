@@ -190,7 +190,6 @@ class CursosClasesCTR {
           }]
         }]
       });
-      if (curso.idUserResponsable != token.id) return false;
 
       const matriculaActiva = await CursosEstudiantesModel.findOne({
         where: {
@@ -199,7 +198,7 @@ class CursosClasesCTR {
           estado: 1
         }
       })
-      if(!matriculaActiva) return false;
+      if(!matriculaActiva && curso.idUserResponsable != token.id) return false;
 
       return true;
 
