@@ -12,6 +12,11 @@ class ClasesValidator {
     const exists = await validateExistId('clase', id)
     if (!exists) return Promise.reject('Id clase no válido');
   }
+  static async validateExitsSession(id) {
+    const exists = await validateExistId('sesion', id)
+    if (!exists) return Promise.reject('Id sesion no válido');
+  }
+
 
   static get postClassValidator() {
     const customMessages = CustomMessages.getValidationMessages();
@@ -43,6 +48,16 @@ class ClasesValidator {
     return [
       param('idClase').trim().notEmpty().withMessage(customMessages.required)
         .isInt().withMessage(customMessages.int).custom(ClasesValidator.validateExitsClass),
+      Middlewares.scan_errors
+    ]
+  }
+
+  static get validateIdSesion() {
+    const customMessages = CustomMessages.getValidationMessages();
+
+    return [
+      param('idSesion').trim().notEmpty().withMessage(customMessages.required)
+        .isInt().withMessage(customMessages.int).custom(ClasesValidator.validateExitsSession),
       Middlewares.scan_errors
     ]
   }

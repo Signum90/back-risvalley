@@ -31,6 +31,31 @@ class CursosClasesCTR {
     }
   }
 
+  async getClassSesion(req, res) {
+    try {
+      const { params } = req;
+
+      const data = await CursosClasesModel.findAll({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'clase',
+          'urlClase',
+          'estado'
+        ],
+        where: {
+          idCursoSesion: params.idSesion
+        },
+        order: [['createdAt', 'ASC']]
+      })
+
+      return res.status(200).json({ msg: 'success', data });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async postClassCourse(req, res) {
     try {
       return await sequelize.transaction(async (t) => {
