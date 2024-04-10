@@ -23,7 +23,9 @@ class PqrsModel extends Model {
               2: 'Quejas',
               3: 'Reclamos',
               4: 'Sugerencias',
-              5:'contacto'
+              5: 'contacto',
+              6: 'solicitud',
+              7: 'denuncia'
             }
 
             const tipo = this.getDataValue('tipo');
