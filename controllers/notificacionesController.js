@@ -169,6 +169,7 @@ class NotificacionesCTR {
       const { id,
         idServicio,
         idReto,
+        idCurso,
         idRetoAspirante,
         contactoNombre,
         contactoCorreo,
@@ -192,7 +193,7 @@ class NotificacionesCTR {
       const item = servicio || reto || retoAspirante || curso || evento || biblioteca || pqr;
       data.push({
         idNotificacion: id,
-        id: idServicio || idReto || idPqr || idEvento || idRetoAspirante,
+        id: idServicio || idReto || idPqr || idEvento || idRetoAspirante || idCurso,
         contactoNombre,
         contactoCorreo,
         contactoTelefono,
