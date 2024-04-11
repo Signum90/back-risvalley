@@ -90,8 +90,8 @@ class EventosModel extends Model {
             model: 'users',
             key: 'id',
           },
-          onDelete: 'NO ACTION',
-          field: 'created_by'
+          field: 'created_by',
+          onDelete: 'CASCADE',
         },
         updatedBy: {
           type: DataTypes.MEDIUMINT.UNSIGNED,

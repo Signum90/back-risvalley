@@ -1,12 +1,13 @@
 const RetosTecnologicosModel = require('../models/RetosTecnologicos');
 const { sequelize } = require('../db/connection');
 const { literal, Op, where } = require('sequelize');
-const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord, verifyToken } = require('../helpers/helpers');
+const { deleteFile, saveResourceMultimedia, deleteResourceMultimedia, generateKeyWord, registerKeyData, validateKeyWord } = require('../helpers/helpers');
 const { urlFiles } = require('../config/config');
 const EntidadesModel = require('../models/Entidades');
 const bcrypt = require('bcrypt');
 const NotificacionesModel = require('../models/Notificaciones');
 const UsersModel = require('../models/Users');
+const KeyWordsModel = require('../models/KeyWords');
 
 class RetosCTR {
   async getTechnologicalChallenges(req, res) {
@@ -326,7 +327,7 @@ class RetosCTR {
         const fileToDelete = reto?.fichaTecnica;
 
         const multimediaFile = await deleteResourceMultimedia(reto.idRecursoMultimedia)
-        await deleteKeyWord(validateKeyData.id);
+        await KeyWordsModel.destroy({ where: { id: validateKeyData.id } }, { transaction: t })
         await reto.destroy({ transaction: t });
         deleteFile(fileToDelete, (err) => {
           if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)

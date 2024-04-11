@@ -35,7 +35,7 @@ class KeyWordsModel extends Model {
             model: 'users',
             key: 'id'
           },
-          onDelete: 'NO ACTION',
+          onDelete: 'CASCADE',
           field: 'created_by'
         },
         createdAt: {

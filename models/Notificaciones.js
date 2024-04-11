@@ -30,7 +30,7 @@ class NotificacionesModel extends Model {
             model: 'users',
             key: 'id',
           },
-          onDelete: 'NO ACTION',
+          onDelete: 'CASCADE',
           comment: "NULL=notificaciones superadmin",
           field: 'id_user'
         },
@@ -200,7 +200,7 @@ class NotificacionesModel extends Model {
             model: 'users',
             key: 'id',
           },
-          onDelete: 'NO ACTION',
+          onDelete: 'CASCADE',
           field: 'created_by'
         },
         createdAt: {

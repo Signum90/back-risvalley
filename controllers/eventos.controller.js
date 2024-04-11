@@ -2,10 +2,11 @@ const { response, request } = require('express');
 const { sequelize } = require('../db/connection');
 const EventosModel = require('../models/Eventos');
 const { Op, literal } = require('sequelize');
-const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord } = require('../helpers/helpers');
+const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
 const bcrypt = require('bcrypt');
 const NotificacionesModel = require('../models/Notificaciones');
+const KeyWordsModel = require('../models/KeyWords');
 
 class EventosCTR {
   async getEvents(req = request, res = response) {
@@ -259,8 +260,8 @@ class EventosCTR {
         if (event.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para editar el evento', status: 400 });
         const fileToDelete = event?.logo;
 
+        await KeyWordsModel.destroy({ where: { id: validateKeyData.id } }, { transaction: t })
         await event.destroy({ transaction: t });
-        await deleteKeyWord(validateKeyData.id);
         if (fileToDelete) {
           deleteFile(fileToDelete, (err) => {
             if (err) console.log("🚀 ~ EventosCTR ~ deleteFile ~ err:", err)

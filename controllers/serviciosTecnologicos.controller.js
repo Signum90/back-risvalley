@@ -1,11 +1,12 @@
 const { sequelize } = require('../db/connection');
 const { literal, col, Op } = require('sequelize');
-const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord, deleteKeyWord, saveNotification, verifyToken } = require('../helpers/helpers');
+const { deleteFile, generateKeyWord, registerKeyData, validateKeyWord } = require('../helpers/helpers');
 const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
 const UsersModel = require('../models/Users');
 const { urlFiles } = require('../config/config');
 const bcrypt = require('bcrypt');
 const NotificacionesModel = require('../models/Notificaciones');
+const KeyWordsModel = require('../models/KeyWords');
 class ServiciosTecnologicosCTR {
   async getTechnologicalService(req, res) {
     try {
@@ -247,8 +248,8 @@ class ServiciosTecnologicosCTR {
         if (service.createdBy != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar el servicio', status: 400 });
         const fileToDelete = service?.imagen;
 
+        await KeyWordsModel.destroy({ where: { id: validateKeyData.id } }, { transaction: t })
         await service.destroy({ transaction: t });
-        await deleteKeyWord(validateKeyData.id);
 
         if (fileToDelete) {
           deleteFile(fileToDelete, (err) => {

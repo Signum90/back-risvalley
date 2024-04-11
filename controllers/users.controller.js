@@ -4,7 +4,7 @@
 //■► PAQUETES EXTERNOS:  ◄■:
 const { response, request } = require('express');
 const { sequelize } = require('../db/connection');
-const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate, generatePasswordTemporal, validateKeyWord, deleteFile, deleteKeyWord } = require('../helpers/helpers');
+const { generateKeyWord, registerKeyData, generateCodeTemporal, sendEmail, registerUserValidate, generatePasswordTemporal, validateKeyWord, deleteFile } = require('../helpers/helpers');
 const { readHTMLFile } = require('../config/email')
 const hbs = require('hbs');
 const bcrypt = require('bcrypt')
@@ -13,6 +13,7 @@ const config = require('../config/config');
 const UsersModel = require("../models/Users");
 const EntidadesModel = require('../models/Entidades');
 const { literal } = require('sequelize');
+const KeyWordsModel = require('../models/KeyWords');
 
 //■► CLASE: Controlador de Usuarios ◄■:
 class UsersCTR {
@@ -270,7 +271,7 @@ class UsersCTR {
         if (entidad) return res.status(400).json({ type: 'error', status: 400, msg: 'El usuario no puede ser eliminado porque tiene una entidad a su cargo' });
         const user = await UsersModel.findByPk(id)
         if (user.id != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar el usuario', status: 400 });
-        await deleteKeyWord(validateKeyData.id);
+        await KeyWordsModel.destroy({ where: { id: validateKeyData.id } }, { transaction: t })
         await user.destroy({ transaction: t });
 
         return res.status(200).json({ msg: 'success' });

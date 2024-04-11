@@ -6,9 +6,10 @@ const { response, request } = require('express');
 const EntidadesModel = require('../models/Entidades');
 const { sequelize } = require('../db/connection');
 const { literal } = require('sequelize');
-const { deleteFile, validateFieldUnique, validateKeyWord, generateKeyWord, registerKeyData, deleteKeyWord } = require('../helpers/helpers');
+const { deleteFile, validateFieldUnique, validateKeyWord, generateKeyWord, registerKeyData } = require('../helpers/helpers');
 const UsersModel = require('../models/Users');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const KeyWordsModel = require('../models/KeyWords');
 
 class EntidadesCTR {
   async getEntidades(req = request, res = response) {
@@ -198,8 +199,8 @@ class EntidadesCTR {
         if (entidad.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar la entidad', status: 400 });
         const fileToDelete = entidad?.logo;
 
+        await KeyWordsModel.destroy({ where: { id: validateKeyData.id } }, { transaction: t })
         await entidad.destroy({ transaction: t });
-        await deleteKeyWord(validateKeyData.id);
         if (fileToDelete) {
           deleteFile(fileToDelete, (err) => {
             if (err) console.log("🚀 ~ EntidadesCTR ~ deleteFile ~ err:", err)
