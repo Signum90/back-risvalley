@@ -10,6 +10,10 @@ const { deleteFile, validateFieldUnique, validateKeyWord, generateKeyWord, regis
 const UsersModel = require('../models/Users');
 const bcrypt = require('bcrypt');
 const KeyWordsModel = require('../models/KeyWords');
+const ServiciosTecnologicosModel = require('../models/ServiciosTecnologicos');
+const RetosTecnologicosModel = require('../models/RetosTecnologicos');
+const EventosModel = require('../models/Eventos');
+const CursosModel = require('../models/Cursos');
 
 class EntidadesCTR {
   async getEntidades(req = request, res = response) {
@@ -197,7 +201,13 @@ class EntidadesCTR {
 
         const entidad = await EntidadesModel.findByPk(id);
         if (entidad.idUserResponsable != token.id && !token.superadmin) return res.status(400).json({ type: 'error', msg: 'No tienes permisos para eliminar la entidad', status: 400 });
+        const course = await CursosModel.findOne({ idUserResponsable: entidad.idUserResponsable });
+        if (course) return res.status(400).json({ type: 'error', msg: 'La entidad no puede eliminarse porque tiene cursos creados', status: 400 });
         const fileToDelete = entidad?.logo;
+
+        await ServiciosTecnologicosModel.destroy({ where: { createdBy: entidad.idUserResponsable } }, { transaction: t });
+        await RetosTecnologicosModel.destroy({ where: { idUserEntidad: entidad.idUserResponsable } }, { transaction: t });
+        await EventosModel.destroy({ where: { createdBy: entidad.idUserResponsable } }, { transaction: t });
 
         await KeyWordsModel.destroy({ where: { id: validateKeyData.id } }, { transaction: t })
         await entidad.destroy({ transaction: t });
