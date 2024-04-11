@@ -9,6 +9,7 @@ const EntidadesModel = require('../models/Entidades');
 const CursosEstudiantesModel = require('../models/CursosEstudiantes');
 const CursosSesionesModel = require('../models/CursosSesiones');
 const CursosClasesModel = require('../models/CursosClases');
+const UsersModel = require('../models/Users');
 
 class CursosCTR {
   async getCourses(req, res) {
@@ -197,12 +198,15 @@ class CursosCTR {
         }, { transaction: t })
 
         await registerKeyData(model.id, body.nombre, keydata, 'CU');
-
+        const contact = await UsersModel.findByPk(token.id);
         const notificationData = {
           tipo: 33,
           idCurso: model.id,
           userActivo: 1,
-          createdBy: token.id
+          createdBy: token.id,
+          contactoNombre: contact.nombre,
+          contactoCorreo: contact.email,
+          contactoTelefono: contact.telefono
         }
         await NotificacionesModel.create(notificationData, { transaction: t });
 
