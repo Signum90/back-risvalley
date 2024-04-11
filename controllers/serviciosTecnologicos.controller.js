@@ -7,6 +7,7 @@ const { urlFiles } = require('../config/config');
 const bcrypt = require('bcrypt');
 const NotificacionesModel = require('../models/Notificaciones');
 const KeyWordsModel = require('../models/KeyWords');
+const EntidadesModel = require('../models/Entidades');
 class ServiciosTecnologicosCTR {
   async getTechnologicalService(req, res) {
     try {
@@ -32,10 +33,11 @@ class ServiciosTecnologicosCTR {
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoClienteServicio)'), 'tipoClienteServicio'],
           [col('contacto.nombre'), 'nombreContacto'],
           [col('contacto.telefono'), 'telefonoContacto'],
-          [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.email'), 'correoContacto'],
           [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
+          [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'emailEntidad'],
+          [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'telefonoEntidad'],
           [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE e.id_user_responsable = contacto.id)`), 'urlLogo'],
         ],
         where: {
@@ -69,6 +71,9 @@ class ServiciosTecnologicosCTR {
       return await sequelize.transaction(async (t) => {
         const { body, file, token } = req;
         const keydata = await generateKeyWord();
+
+        const entidad = await EntidadesModel.findOne({ where: { idUserResponsable: token.id } });
+        if (!entidad) return res.status(400).json({ type: 'error', msg: 'Por favor cree una entidad unipersonal para crear cursos', status: 400 });
 
         const postData = {
           nombre: body.nombre,
@@ -284,6 +289,8 @@ class ServiciosTecnologicosCTR {
           [literal('(SELECT x.nombre FROM x_tipos AS x WHERE id = idTipoClienteServicio)'), 'tipoClienteServicio'],
           [literal(`(SELECT url_dominio FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'urlDominio'],
           [literal(`(SELECT e.nombre FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'nombreEntidad'],
+          [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'emailEntidad'],
+          [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = contacto.id)`), 'telefonoEntidad'],
           [col('contacto.nombre'), 'nombreContacto'],
           [col('contacto.telefono'), 'telefonoContacto'],
           [col('contacto.telefono'), 'telefonoContacto'],

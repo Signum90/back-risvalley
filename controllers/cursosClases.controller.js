@@ -4,13 +4,14 @@ const CursosModel = require('../models/Cursos');
 const CursosSesionesModel = require('../models/CursosSesiones');
 const { deleteFile } = require('../helpers/helpers');
 const { literal } = require('sequelize');
+const CursosEstudiantesModel = require('../models/CursosEstudiantes');
 
 class CursosClasesCTR {
   async getClassDetail(req, res) {
     try {
       const { token, params } = req;
-      const id = params.idClase;
-      const validate = await CursosClasesCTR.validateAccesClass(id, token);
+      const idClase = params.idClase;
+      const validate = await CursosClasesCTR.validateAccesClass(idClase, token);
       if (!validate) return res.status(404).json({ type: 'error', msg: 'No puede acceder a la clase', status: 404 });
 
       const classDetail = await CursosClasesModel.findOne({
@@ -22,10 +23,35 @@ class CursosClasesCTR {
           'urlClase',
           'estado'
         ],
-        where: { id }
+        where: { id: idClase }
       })
 
       return res.status(200).json({ msg: 'success', data: classDetail });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getClassSesion(req, res) {
+    try {
+      const { params } = req;
+
+      const data = await CursosClasesModel.findAll({
+        attributes: [
+          'id',
+          'nombre',
+          'descripcion',
+          'clase',
+          'urlClase',
+          'estado'
+        ],
+        where: {
+          idCursoSesion: params.idSesion
+        },
+        order: [['createdAt', 'ASC']]
+      })
+
+      return res.status(200).json({ msg: 'success', data });
     } catch (error) {
       throw error;
     }
@@ -151,8 +177,7 @@ class CursosClasesCTR {
       const curso = await CursosModel.findOne({
         attributes: [
           'id',
-          'idUserResponsable',
-          [literal(`(SELECT IFNULL((SELECT 1 FROM cursos_estudiantes AS ce WHERE ce.id_curso = cursos.id AND ce.id_user = ${token.id} AND ce.estado = 1), 0))`), 'matriculaActiva'],
+          'idUserResponsable'
         ],
         include: [{
           model: CursosSesionesModel,
@@ -165,7 +190,16 @@ class CursosClasesCTR {
           }]
         }]
       });
-      if (curso.idUserResponsable != token.id && !curso?.dataValues.matriculaActiva) return false;
+
+      const matriculaActiva = await CursosEstudiantesModel.findOne({
+        where: {
+          idUser: token.id,
+          idCurso: curso.id,
+          estado: 1
+        }
+      })
+      if(!matriculaActiva && curso.idUserResponsable != token.id) return false;
+
       return true;
 
     } catch (error) {

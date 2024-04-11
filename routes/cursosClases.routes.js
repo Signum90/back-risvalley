@@ -10,6 +10,9 @@ const cursosClasesController = new CursosClasesCTR();
 router.get("/:idClase/detalle", Middlewares.validateJWTMiddleware,
   ClasesValidator.validateIdClass,
   async (req, res) => await cursosClasesController.getClassDetail(req, res));
+router.get("/sesion/:idSesion/lista", Middlewares.validateAdminMiddleware,
+  ClasesValidator.validateIdSesion,
+  async (req, res) => await cursosClasesController.getClassSesion(req, res));
 router.post("/", Middlewares.validateJWTMiddleware,
   MulterConfig.upload.single('file'),
   ClasesValidator.postClassValidator,
