@@ -121,7 +121,7 @@ class EntidadesValidator {
     const validations = {
       'nombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage(customMessages.length),
       'descripcion': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage(customMessages.length),
-      'sigla': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 10 }).withMessage(customMessages.length),
+      'sigla': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 10 }).withMessage(customMessages.length),
       'tipo': body('value').notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }).withMessage('El campo tipo debe ser un número entre 1 y 3'),
       'idTipoNaturalezaJuridica': body('value').notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int),
       'contactoNombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 70 }).withMessage(customMessages.length),
