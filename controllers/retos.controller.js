@@ -150,7 +150,7 @@ class RetosCTR {
           [literal(`(SELECT u.nombre FROM users AS u WHERE u.id = idUserEntidad)`), 'nombreContacto'],
           [literal(`(SELECT e.telefono FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'telefonoEntidad'],
           [literal(`(SELECT e.email FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'emailEntidad'],
-          [literal(`(SELECT IFNULL(CONCAT('${urlFiles}', e.logo), '/public/img/not_content/not_logo.png') FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'logoEntidad'],
+          [literal(`(SELECT CONCAT('${urlFiles}', e.logo) FROM entidades AS e WHERE id_user_responsable = idUserEntidad)`), 'logoEntidad'],
         ],
         where: {
           id

@@ -32,9 +32,10 @@ class ServiciosValidator {
         .custom(ServiciosValidator.validateExitsType),
       check('idTipoClienteServicio').notEmpty().isInt().custom(ServiciosValidator.validateExitsType),
       check('imagen').custom(async (imagen, { req }) => {
-        const imageFormat = ['image/jpeg', 'image/png'];
-        if (!req.file) return Promise.reject('El campo imagen es obligatorio');
-        if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Por favor ingrese una imagen valida');
+        if (req.file) {
+          const imageFormat = ['image/jpeg', 'image/png'];
+          if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Por favor ingrese una imagen valida');
+        }
       }),
       Middlewares.scan_errors
     ]
@@ -57,9 +58,11 @@ class ServiciosValidator {
         .custom(ServiciosValidator.validateExitsType),
       check('idTipoClienteServicio').notEmpty().isInt().custom(ServiciosValidator.validateExitsType),
       check('imagen').custom(async (imagen, { req }) => {
-        const imageFormat = ['image/jpeg', 'image/png'];
-        if (!req.file) return Promise.reject('El campo imagen es obligatorio');
-        if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Por favor ingrese una imagen valida');
+        if (req.file) {
+          const imageFormat = ['image/jpeg', 'image/png'];
+          if (!imageFormat.includes(req.file.mimetype)) return Promise.reject('Por favor ingrese una imagen valida');
+        }
+        //if (!req.file) return Promise.reject('El campo imagen es obligatorio');
       }),
       Middlewares.scan_errors
     ]

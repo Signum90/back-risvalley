@@ -48,7 +48,7 @@ class ServiciosTecnologicosModel extends Model {
         },
         imagen: {
           type: DataTypes.STRING(120),
-          allowNull: false,
+          allowNull: true,
           field: 'imagen',
           comment: "Archivo JPG JPEG PNG",
         },
