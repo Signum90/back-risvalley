@@ -97,10 +97,7 @@ class UsersValidator {
         .custom(async (descripcion, { req }) => {
           if (req.body.tipo != 1 && !descripcion) return Promise.reject('La descripcion de la entidad es obligatoria');
         }),
-      check('sigla').trim().isString().withMessage(customMessages.string)
-        .isLength({ max: 10 }).withMessage('El campo sigla debe tener como máximo 10 caracteres').custom(async (sigla, { req }) => {
-          if (req.body.tipo != 1 && !sigla) return Promise.reject('Las siglas de la entidad son obligatorias');
-        }),
+      check('sigla').trim().isLength({ max: 10 }).withMessage('El campo sigla debe tener como máximo 10 caracteres'),
       check('tipoEntidad').custom(async (tipoEntidad, { req }) => {
         if (req.body.tipo != 1) {
           if (!tipoEntidad) return Promise.reject('El tipo de la entidad es obligatorio');
