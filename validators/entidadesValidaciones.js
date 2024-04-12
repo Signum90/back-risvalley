@@ -138,7 +138,7 @@ class EntidadesValidator {
       param('idEntidad').notEmpty().isInt().custom(EntidadesValidator.validateEntidadId),
       body('keydata').trim().notEmpty().withMessage(customMessages.required),
       //validacion dinamica dependiendo del campo que se va a editar
-      body('value').notEmpty().custom(async (id, { req }) => {
+      body('value').custom(async (id, { req }) => {
         const validate = validations[req.body.campo]
         if (!validate) return Promise.reject('Campo no válido');
         //ejecuta la validacion encontrada
