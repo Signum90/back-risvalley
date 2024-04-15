@@ -2658,9 +2658,16 @@ class GeneralsCTR {
           })
         }
 
-        const keysData = await KeyWordsModel.bulkCreate(keydata, { transaction: t });
+        await KeyWordsModel.bulkCreate(keydata, { transaction: t });
 
-        return res.status(200).json({ msg: 'success', dataUsers });
+        const dataScript = data.map((e) => {
+          return {
+            email: e.email,
+            password: e.contrasena
+          }
+        })
+
+        return res.status(200).json({ msg: 'success', data: dataScript });
 
       })
     } catch (error) {
