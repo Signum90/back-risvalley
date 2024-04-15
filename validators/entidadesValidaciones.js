@@ -38,7 +38,7 @@ class EntidadesValidator {
         .custom(EntidadesValidator.validateExistsUser),
       check('descripcion').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
-        .isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 150 caracteres'),
+        .isLength({ max: 250 }).withMessage('El campo descripcion debe tener como máximo 250 caracteres'),
       check('sigla').trim().isString().withMessage(customMessages.string)
         .isLength({ max: 10 }).withMessage('El campo sigla debe tener como máximo 10 caracteres'),
       check('tipo').notEmpty().withMessage(customMessages.required)
@@ -80,7 +80,7 @@ class EntidadesValidator {
         .custom(EntidadesValidator.validateUniqueName),
       check('descripcion').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
-        .isLength({ max: 150 }).withMessage('El campo descripcion debe tener como máximo 80 caracteres'),
+        .isLength({ max: 250 }).withMessage('El campo descripcion debe tener como máximo 250 caracteres'),
       check('sigla').trim().isString().withMessage(customMessages.string)
         .isLength({ max: 10 }).withMessage('El campo sigla debe tener como máximo 10 caracteres'),
       check('tipo').notEmpty().withMessage(customMessages.required)
@@ -118,7 +118,7 @@ class EntidadesValidator {
     const customMessages = CustomMessages.getValidationMessages();
     const validations = {
       'nombre': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage(customMessages.length),
-      'descripcion': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage(customMessages.length),
+      'descripcion': body('value').trim().notEmpty().withMessage(customMessages.required).isString().withMessage(customMessages.string).isLength({ max: 250 }).withMessage(customMessages.length),
       'sigla': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 10 }).withMessage(customMessages.length),
       'tipo': body('value').notEmpty().withMessage(customMessages.required).isInt({ min: 1, max: 3 }).withMessage('El campo tipo debe ser un número entre 1 y 3'),
       'idTipoNaturalezaJuridica': body('value').notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int),
