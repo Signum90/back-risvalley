@@ -24,6 +24,7 @@ class TypesCTR {
           { nombre: 'Sociedad en Comandita por Acciones', clasificacion: 1 },
           { nombre: 'Sociedad por Acciones Simplificada', clasificacion: 1 },
           { nombre: 'Empresa Asociativa de trabajo', clasificacion: 1 },
+          { nombre: 'Entidad sin animo de lucro', clasificacion: 1 },
           { nombre: 'Promoción y divulgación científica', clasificacion: 2 },
           { nombre: 'Servicios tecnológicos', clasificacion: 2 },
           { nombre: 'Apropiación social de conocimiento', clasificacion: 2 },
