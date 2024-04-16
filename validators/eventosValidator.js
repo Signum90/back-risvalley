@@ -33,6 +33,8 @@ class EventosValidator {
         .isInt().withMessage(customMessages.int),
       check('descripcion').trim().notEmpty().withMessage(customMessages.required)
         .isString().isLength({ max: 250 }).withMessage('El campo descripción no debe tener más de 250 caracteres'),
+      check('direccion').isString().withMessage(customMessages.string)
+        .isLength({ max: 80 }).withMessage('El campo direccion debe tener como máximo 80 caracteres'),
       check('idCiudad').notEmpty().withMessage(customMessages.required)
         .isInt().withMessage(customMessages.int)
         .custom(EventosValidator.validateExitsCity),
@@ -60,6 +62,8 @@ class EventosValidator {
         .isLength({ max: 80 }).withMessage('El campo URL no debe tener más de 180 caracteres'),
       check('precio').trim().optional({ nullable: true })
         .isInt().withMessage(customMessages.int),
+      check('direccion').isString().withMessage(customMessages.string)
+        .isLength({ max: 80 }).withMessage('El campo direccion debe tener como máximo 80 caracteres'),
       check('descripcion').trim().notEmpty().withMessage(customMessages.required)
         .isString().isLength({ max: 250 }).withMessage('El campo descripción no debe tener más de 250 caracteres'),
       check('idCiudad').notEmpty().withMessage(customMessages.required)
@@ -101,7 +105,8 @@ class EventosValidator {
       'urlRegistro': body('value').trim().notEmpty().isString().isLength({ max: 80 }),
       'precio': body('value').trim().optional({ nullable: true }).isInt().withMessage('El precio debe ser un número entero'),
       'idCiudad': check('value').notEmpty().withMessage(customMessages.required).isInt().withMessage(customMessages.int).custom(EventosValidator.validateExitsCity),
-      'estado': body('value').notEmpty().isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un valor entre 0 y 1')
+      'estado': body('value').notEmpty().isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un valor entre 0 y 1'),
+      'direccion': body('value').isString().withMessage(customMessages.string).isLength({ max: 80 }).withMessage('El campo direccion debe tener como máximo 80 caracteres'),
     }
 
     return [

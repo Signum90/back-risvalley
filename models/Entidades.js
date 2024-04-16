@@ -33,7 +33,7 @@ class EntidadesModel extends Model {
           comment: "1=Privada, 2=Pública 3=Mixta"
         },
         telefono: {
-          type: DataTypes.BIGINT,
+          type: DataTypes.STRING(100),
           allowNull: false,
           field: 'telefono',
         },
@@ -99,7 +99,7 @@ class EntidadesModel extends Model {
           field: 'contacto_correo',
         },
         contactoTelefono: {
-          type: DataTypes.BIGINT,
+          type: DataTypes.STRING(100),
           allowNull: false,
           field: 'contacto_telefono',
         },

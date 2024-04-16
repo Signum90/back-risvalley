@@ -2571,21 +2571,22 @@ class GeneralsCTR {
         for (let index = 0; index < dataUsers.length; index++) {
           const element = dataUsers[index];
           const key = await generateKeyWord();
+          const item = data.find((e) => e.email == element.email)
 
           keydata.push({
             word: 'U' + '-' + element?.email?.split('@')[0] + index + 2,
             idRegistroAsociado: element.id,
-            key: data.find((e) => e.email == element.email)?.key
+            key: item?.key
           });
           entidades.push({
             nombre: element.nombre,
             tipo: 2,
             telefono: element.telefono,
             email: element.email,
-            descripcion: element.descripcion,
+            descripcion: item.descripcion,
             idTipoNaturalezaJuridica: 1,
             idUserResponsable: element.id,
-            contactonombre: element.nombre,
+            contactoNombre: element.nombre,
             contactoCorreo: element.nombre,
             contactoCorreo: element.email,
             contactoTelefono: element.telefono,
@@ -2638,7 +2639,7 @@ class GeneralsCTR {
             nombre: element.nombre,
             descripcion: entity.descripcion,
             estado: 1,
-            imagen: '/img',
+            //imagen: '/img',
             idTipoServicio: tipos[entity.tipoLabel] ?? 17,
             idTipoClienteServicio: tipos[entity.tipoCliente] ?? 33,
             keydata: await bcrypt.hash(key, 10),

@@ -25,6 +25,11 @@ class EventosModel extends Model {
           field: 'logo',
           allowNull: true,
         },
+        direccion: {
+          type: DataTypes.STRING(80),
+          allowNull: true,
+          field: 'direccion',
+        },
         idCiudad: {
           type: DataTypes.MEDIUMINT.UNSIGNED,
           allowNull: false,

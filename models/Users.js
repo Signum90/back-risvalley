@@ -52,12 +52,12 @@ class UsersModel extends Model {
           }
         },
         telefono: {
-          type: DataTypes.BIGINT,
+          type: DataTypes.STRING(100),
           allowNull: true,
           field: 'telefono'
         },
         email: {
-          type: DataTypes.STRING(30),
+          type: DataTypes.STRING(80),
           unique: true,
           allowNull: false
         },

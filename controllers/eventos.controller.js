@@ -20,6 +20,7 @@ class EventosCTR {
           'id',
           'nombre',
           'descripcion',
+          'direccion',
           'logo',
           'fechaInicio',
           'urlRegistro',
@@ -65,6 +66,7 @@ class EventosCTR {
           'descripcion',
           'logo',
           'fechaInicio',
+          'direccion',
           'urlRegistro',
           'precio',
           'idCiudad',
@@ -102,6 +104,7 @@ class EventosCTR {
           'fechaInicio',
           'keydata',
           'urlRegistro',
+          'direccion',
           'precio',
           'idCiudad',
           'tipoResponsable',
@@ -129,14 +132,14 @@ class EventosCTR {
     try {
       return await sequelize.transaction(async (t) => {
 
-        const { nombre, descripcion, fechaInicio, urlRegistro, precio, idCiudad, idUserResponsable } = req.body;
+        const { nombre, descripcion, fechaInicio, urlRegistro, precio, idCiudad, idUserResponsable, direccion } = req.body;
         const { file, token } = req
         const idContact = token.superadmin && idUserResponsable ? idUserResponsable : token.id;
         const contact = await UsersModel.findByPk(idContact);
         const keydata = await generateKeyWord();
 
         const model = await EventosModel.create({
-          nombre, descripcion, urlRegistro, precio, idCiudad,
+          nombre, descripcion, urlRegistro, precio, idCiudad, direccion,
           estado: token.superadmin ? 1 : 2,
           tipoResponsable: contact.tipo,
           keydata: await bcrypt.hash(keydata, 10),
@@ -163,6 +166,7 @@ class EventosCTR {
         return res.status(200).json({ msg: 'success', data: model });
       })
     } catch (error) {
+      console.log("🚀 ~ EventosCTR ~ saveEvent ~ error:", error)
       return res.status(400).json({ error });
     }
   }
