@@ -39,12 +39,7 @@ class CursosCTR {
         where: {
           ...(token && token.superadmin ? {} : token && !token.superadmin ? { estado: { [Op.in]: [0, 1, 2] } } : { estado: 1 }),
           ...(token && !token.superadmin ? { idUserResponsable: token.id } : {}),
-          ...(nombre ? {
-            [Op.or]: [
-              { nombre: { [Op.like]: `%${nombre}%` } },
-              literal(`(SELECT e.nombre FROM entidades AS e WHERE e.id_user_responsable = id_user_responsable) LIKE '%${nombre}%'`)
-            ]
-          } : {}),
+          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
           ...(idsCategorias ? { idTipoCategoria: { [Op.in]: ids } } : {}),
         },
         order: [['createdAt', 'Desc']],
@@ -56,12 +51,7 @@ class CursosCTR {
         where: {
           ...(token && token.superadmin ? {} : token && !token.superadmin ? { estado: { [Op.in]: [0, 1] } } : { estado: 1 }),
           ...(token && !token.superadmin ? { idUserResponsable: token.id } : {}),
-          ...(nombre ? {
-            [Op.or]: [
-              { nombre: { [Op.like]: `%${nombre}%` } },
-              literal(`(SELECT e.nombre FROM entidades AS e WHERE e.id_user_responsable = id_user_responsable) LIKE '%${nombre}%'`)
-            ]
-          } : {}),
+          ...(nombre ? { nombre: { [Op.like]: `%${nombre}%` } } : {}),
           ...(idsCategorias ? { idTipoCategoria: { [Op.in]: ids } } : {}),
         }
       })
