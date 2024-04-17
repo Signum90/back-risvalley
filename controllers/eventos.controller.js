@@ -115,7 +115,7 @@ class EventosCTR {
           [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = idCiudad)'), 'ciudad'],
           [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'departamento'],
           [literal('(SELECT d.id FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'idDepartamento'],
-          [literal(`(SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy))`), 'nombreResponsable']
+          [literal(`(SELECT nombre FROM entidades AS e WHERE e.id_user_responsable = createdBy)`), 'nombreResponsable']
         ],
         order: [['estado', 'ASC']],
         offset: (paginate - 1) * pageSize,
