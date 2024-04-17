@@ -23,7 +23,7 @@ class RetosValidator {
         .isLength({ max: 120 }).withMessage('El campo nombre debe tener máximo 120 caracteres'),
       check('descripcion').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
-        .isLength({ max: 150 }).withMessage('El campo descripción debe tener máximo 150 caracteres'),
+        .isLength({ max: 250 }).withMessage('El campo descripción debe tener máximo 250 caracteres'),
       check('fechaInicioConvocatoria').notEmpty().withMessage(customMessages.required)
         .isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a la actual'),
       check('fechaFinConvocatoria').notEmpty().withMessage(customMessages.required)
@@ -62,7 +62,7 @@ class RetosValidator {
         .isLength({ max: 120 }).withMessage('El campo nombre debe tener máximo 120 caracteres'),
       check('descripcion').trim().notEmpty().withMessage(customMessages.required)
         .isString().withMessage(customMessages.string)
-        .isLength({ max: 150 }).withMessage('El campo descripción debe tener máximo 150 caracteres'),
+        .isLength({ max: 250 }).withMessage('El campo descripción debe tener máximo 250 caracteres'),
       check('fechaInicioConvocatoria').notEmpty().withMessage(customMessages.required)
         .isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a la actual'),
       check('fechaFinConvocatoria').notEmpty().withMessage(customMessages.required)
@@ -127,7 +127,7 @@ class RetosValidator {
 
     const validations = {
       'nombre': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 120 }).withMessage('El nombre no puede tener más de 120 caracteres'),
-      'descripcion': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 150 }).withMessage('La descripción no puede tener más de 150 caracteres'),
+      'descripcion': body('value').trim().isString().withMessage(customMessages.string).isLength({ max: 250 }).withMessage('La descripción no puede tener más de 250 caracteres'),
       'fechaInicioConvocatoria': body('value').isAfter(new Date().toString()).withMessage('La fecha de inicio debe ser mayor a hoy'),
       'fechaFinConvocatoria': body('value').isAfter(new Date().toString()).withMessage('La fecha de fin debe ser mayor a hoy'),
       'estado': body('value').notEmpty().isInt({ min: 0, max: 1 }).withMessage('El estado debe ser un valor entre 0 y 1')
