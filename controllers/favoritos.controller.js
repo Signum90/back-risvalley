@@ -44,6 +44,7 @@ class FavoritosCTR {
             'descripcion',
             [literal(`(SELECT CONCAT('${urlFiles}', curso.imagen))`), 'imagen'],
             [literal(`(SELECT x.nombre FROM x_tipos AS x WHERE x.id = curso.id_tipo_categoria)`), 'categoria'],
+            [literal(`(SELECT e.nombre FROM entidades AS e WHERE e.id_user_responsable = curso.id_user_responsable)`), 'nombreEntidad']
           ], required: false
         },
         {
