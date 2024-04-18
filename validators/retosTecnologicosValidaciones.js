@@ -45,6 +45,8 @@ class RetosValidator {
           'image/png',
           'video/mp4',
           'video/mpeg',
+          'video/x-msvideo',
+          'video/x-matroska',
         ];
         if (!req.files['recursoMultimedia']) return Promise.reject('El recurso multimedia es obligatorio');
         if (!imageFormat.includes(req.files['recursoMultimedia'][0].mimetype)) return Promise.reject('El archivo multimedia debe ser una imagen o un video');
@@ -84,6 +86,8 @@ class RetosValidator {
           'image/png',
           'video/mp4',
           'video/mpeg',
+          'video/x-msvideo',
+          'video/x-matroska',
         ];
         if (!req.files['recursoMultimedia']) return Promise.reject('El recurso multimedia es obligatorio');
         if (!imageFormat.includes(req.files['recursoMultimedia'][0].mimetype)) return Promise.reject('El archivo multimedia debe ser una imagen o un video');
