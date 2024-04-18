@@ -117,7 +117,14 @@ class RetosValidator {
         if (req.body.campo == 'fichaTecnica') {
           formats = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
         } else {
-          formats = ['image/jpeg', 'image/png', 'video/mp4', 'video/mpeg']
+          formats = [
+            'image/jpeg',
+            'image/png',
+            'video/mp4',
+            'video/mpeg',
+            'video/x-msvideo',
+            'video/x-matroska',
+          ]
         }
         if (!formats.includes(req.file.mimetype)) return Promise.reject('Archivo no válido');
       }),
