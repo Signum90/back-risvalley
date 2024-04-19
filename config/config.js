@@ -9,6 +9,7 @@ const config_db = {
   dialect: process.env.DIALECT ?? "mysql",
   secret: process.env.SECRETKEYJWT ?? '',
   urlFiles: `https://api.rispark.com.co/api/archivos/`,
+  TZ : 'America/Bogota',
   email: {
     smtp: {
       //service: 'gmail',
