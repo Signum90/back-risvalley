@@ -30,7 +30,7 @@ class EventosCTR {
           'keydata',
           'tipoResponsable',
           'createdBy',
-          'estadoLabel',
+          //'estadoLabel',
           'urlLogo',
           [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = idCiudad)'), 'ciudad'],
           [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'departamento'],
@@ -50,9 +50,10 @@ class EventosCTR {
         limit: preview ? 4 : null,
         raw: true
       })
-
+      const states = { 0: 'inactivo', 1: 'activo', 2: 'pendiente aprobacion' };
       events.forEach(element => {
         element.fechaInicio = new Date(element.fechaInicio.setUTCHours(element.fechaInicio.getUTCHours() - 5))
+        element.estadoLabel = states[element.estado] ?? '';
       });
 
       return res.status(200).json({ msg: 'success', data: events });
@@ -80,7 +81,7 @@ class EventosCTR {
           'keydata',
           'tipoResponsable',
           'createdBy',
-          'estadoLabel',
+          //'estadoLabel',
           'urlLogo',
           [literal('(SELECT c.nombre FROM ciudades AS c WHERE c.id = idCiudad)'), 'ciudad'],
           [literal('(SELECT d.nombre FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'departamento'],
@@ -89,8 +90,9 @@ class EventosCTR {
         where: { id },
         raw:true
       })
-
+      const states = { 0: 'inactivo', 1: 'activo', 2: 'pendiente aprobacion' }
       event.fechaInicio = new Date(event.fechaInicio.setUTCHours(event.fechaInicio.getUTCHours() - 5))
+      event.estadoLabel = states[event.estado] ?? '';
 
       return res.status(200).json({ msg: 'success', data: event });
     } catch (error) {
@@ -133,8 +135,10 @@ class EventosCTR {
       })
       const total = await EventosModel.count();
 
+      const states = { 0: 'inactivo', 1: 'activo', 2: 'pendiente aprobacion' };
       events.forEach(element => {
         element.fechaInicio = new Date(element.fechaInicio.setUTCHours(element.fechaInicio.getUTCHours() - 5))
+        element.estadoLabel = states[element.estado] ?? '';
       });
 
       return res.status(200).json({ msg: 'success', data: events, total });
