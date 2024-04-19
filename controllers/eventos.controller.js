@@ -47,8 +47,14 @@ class EventosCTR {
           fechaInicio: { [Op.gte]: now }
         },
         order: [['fechaInicio', 'ASC']],
-        limit: preview ? 4 : null
+        limit: preview ? 4 : null,
+        raw: true
       })
+
+      events.forEach(element => {
+        element.fechaInicio = new Date(element.fechaInicio.setUTCHours(element.fechaInicio.getUTCHours() - 5))
+      });
+
       return res.status(200).json({ msg: 'success', data: events });
     } catch (error) {
       return res.status(400).json({ data: error });
@@ -81,7 +87,10 @@ class EventosCTR {
           [literal('(SELECT d.id FROM ciudades AS c INNER JOIN departamentos AS d ON d.id = c.id_departamento WHERE c.id = idCiudad)'), 'idDepartamento'],
         ],
         where: { id },
+        raw:true
       })
+
+      event.fechaInicio = new Date(event.fechaInicio.setUTCHours(event.fechaInicio.getUTCHours() - 5))
 
       return res.status(200).json({ msg: 'success', data: event });
     } catch (error) {
@@ -119,12 +128,18 @@ class EventosCTR {
         ],
         order: [['estado', 'ASC']],
         offset: (paginate - 1) * pageSize,
-        limit: pageSize
+        limit: pageSize,
+        raw: true
       })
       const total = await EventosModel.count();
 
+      events.forEach(element => {
+        element.fechaInicio = new Date(element.fechaInicio.setUTCHours(element.fechaInicio.getUTCHours() - 5))
+      });
+
       return res.status(200).json({ msg: 'success', data: events, total });
     } catch (error) {
+      console.log("🚀 ~ EventosCTR ~ getEventsDashboard ~ error:", error)
       return res.status(400).json({ data: error });
     }
   }
